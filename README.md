@@ -5,9 +5,10 @@
 
 ### Dependencies
 
-- (go) [https://github.com/gocraft/web](https://github.com/gocraft/web)
-- (go) [https://github.com/pilu/fresh](https://github.com/pilu/fresh)
-- (node) [https://github.com/gulpjs/gulp](https://github.com/gulpjs/gulp)
+- (go) [https://github.com/pilu/traffic]()
+- (go) [https://github.com/pilu/fresh]()
+- (go) [https://bitbucket.org/liamstask/goose]()
+- (node) [https://github.com/gulpjs/gulp]()
 
 
 ### Setting up

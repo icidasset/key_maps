@@ -1,8 +1,8 @@
 package api
 
 import (
-  "encoding/json"
-  "github.com/pilu/traffic"
+	"database/sql"
+	"github.com/pilu/traffic"
 )
 
 //
@@ -12,23 +12,28 @@ import (
 //  -> http://godoc.org/github.com/lib/pq
 //
 
-type List struct {
-  Id int
+type Map struct {
+	Id int
 }
 
 
-func renderJSON(w traffic.ResponseWriter, mj []byte) {
-  w.Header().Set("Content-Type", "application/json")
-  w.Write(mj)
+func GetMaps(w traffic.ResponseWriter, r *traffic.Request) {
+	db, _ := sql.Open("postgres", "user=icidasset dbname=keymaps_development")
+	defer db.Close()
+
+	// db query
+	rows, _ := db.Query("SELECT * FROM maps")
+	defer rows.Close()
+
+	// collect data
+	for rows.Next() {
+	}
+
+	// output json
+	w.WriteJSON(rows)
 }
 
 
-func GetLists(w traffic.ResponseWriter, r *traffic.Request) {
-  m := make(map[string]string)
-  m["an"] = "example"
-  m["a"] = "test"
-
-  j, _ := json.Marshal(m)
-
-  renderJSON(w, j)
+func GetMap(w traffic.ResponseWriter, r *traffic.Request) {
+	// w.Write
 }

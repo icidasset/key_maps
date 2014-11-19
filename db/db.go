@@ -19,10 +19,7 @@ func Close() {
 }
 
 
-func Query(query string) {
-  // rows, _ := db.Query("SELECT * FROM maps")
-
-  // defer rows.Close()
-  // for rows.Next() {}
-  // return rows
+func Query(query string) *sql.Rows {
+  rows, _ := db.Query(query)
+  return rows
 }

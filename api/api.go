@@ -26,6 +26,12 @@ func BeforeFilter(w traffic.ResponseWriter, r *traffic.Request) {
 //  [ROUTES]
 //
 func GetMaps(w traffic.ResponseWriter, r *traffic.Request) {
+  rows := db.Query("SELECT * FROM maps")
+
+  // for rows.Next() {}
+  // return rows
+
+  rows.Close()
   db.Close()
 }
 

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"github.com/icidasset/key-maps/api"
-	_ "github.com/lib/pq"
-	"github.com/pilu/traffic"
-	"html/template"
+  "github.com/icidasset/key-maps/api"
+  "github.com/pilu/traffic"
+  "html/template"
 )
 
 
@@ -13,12 +12,12 @@ import (
 //  -> HTML files (for js application)
 //
 func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
-	tmpl, _ := template.ParseFiles(
-		"views/layout.html",
-		"views/index.html",
-	)
+  tmpl, _ := template.ParseFiles(
+    "views/layout.html",
+    "views/index.html",
+  )
 
-	tmpl.ExecuteTemplate(w, "layout", nil)
+  tmpl.ExecuteTemplate(w, "layout", nil)
 }
 
 
@@ -26,12 +25,12 @@ func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
 //  [Errors]
 //
 func notFoundHandler(w traffic.ResponseWriter, r *traffic.Request) {
-	w.WriteText("404")
+  w.WriteText("404")
 }
 
 
 func errorHandler(w traffic.ResponseWriter, r *traffic.Request, err interface {}) {
-	w.WriteText("500")
+  w.WriteText("500")
 }
 
 
@@ -39,16 +38,16 @@ func errorHandler(w traffic.ResponseWriter, r *traffic.Request, err interface {}
 //  [Main]
 //
 func main() {
-	r := traffic.New()
+  r := traffic.New()
 
-	// routes
-	r.Get("/api/maps/?", api.GetMaps)
-	r.Get("/", rootHandler)
+  // routes
+  r.Get("/api/maps/?", api.GetMaps).AddBeforeFilter(api.BeforeFilter)
+  r.Get("/", rootHandler)
 
-	// errors
-	r.NotFoundHandler = notFoundHandler
-	r.ErrorHandler = errorHandler
+  // errors
+  r.NotFoundHandler = notFoundHandler
+  r.ErrorHandler = errorHandler
 
-	// setup server
-	r.Run()
+  // setup server
+  r.Run()
 }

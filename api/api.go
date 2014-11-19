@@ -1,8 +1,8 @@
 package api
 
 import (
-	"database/sql"
-	"github.com/pilu/traffic"
+  "github.com/icidasset/key-maps/db"
+  "github.com/pilu/traffic"
 )
 
 //
@@ -13,27 +13,23 @@ import (
 //
 
 type Map struct {
-	Id int
+  Id int
 }
 
 
+func BeforeFilter(w traffic.ResponseWriter, r *traffic.Request) {
+  db.Open()
+}
+
+
+//
+//  [ROUTES]
+//
 func GetMaps(w traffic.ResponseWriter, r *traffic.Request) {
-	db, _ := sql.Open("postgres", "user=icidasset dbname=keymaps_development")
-	defer db.Close()
-
-	// db query
-	rows, _ := db.Query("SELECT * FROM maps")
-	defer rows.Close()
-
-	// collect data
-	for rows.Next() {
-	}
-
-	// output json
-	w.WriteJSON(rows)
+  db.Close()
 }
 
 
 func GetMap(w traffic.ResponseWriter, r *traffic.Request) {
-	// w.Write
+  db.Close()
 }

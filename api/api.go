@@ -13,12 +13,7 @@ import (
 //
 
 type Map struct {
-  Id int
-}
-
-
-func BeforeFilter(w traffic.ResponseWriter, r *traffic.Request) {
-  db.Open()
+  Id int `db:"id"`
 }
 
 
@@ -26,16 +21,11 @@ func BeforeFilter(w traffic.ResponseWriter, r *traffic.Request) {
 //  [ROUTES]
 //
 func GetMaps(w traffic.ResponseWriter, r *traffic.Request) {
-  rows := db.Query("SELECT * FROM maps")
-
-  // for rows.Next() {}
-  // return rows
-
-  rows.Close()
-  db.Close()
+  maps := []Map{}
+  db.Select(&maps, "SELECT * FROM maps")
 }
 
 
 func GetMap(w traffic.ResponseWriter, r *traffic.Request) {
-  db.Close()
+  //
 }

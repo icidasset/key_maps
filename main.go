@@ -2,6 +2,7 @@ package main
 
 import (
   "github.com/icidasset/key-maps/api"
+  "github.com/icidasset/key-maps/db"
   "github.com/pilu/traffic"
   "html/template"
 )
@@ -40,8 +41,15 @@ func errorHandler(w traffic.ResponseWriter, r *traffic.Request, err interface {}
 func main() {
   r := traffic.New()
 
+  // prepare database
+  if err := db.Open(); err != nil {
+    panic(err)
+  }
+
+  defer db.Close()
+
   // routes
-  r.Get("/api/maps/?", api.GetMaps).AddBeforeFilter(api.BeforeFilter)
+  r.Get("/api/maps/?", api.GetMaps)
   r.Get("/", rootHandler)
 
   // errors

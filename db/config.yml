@@ -1,0 +1,11 @@
+development:
+  dialect: postgres
+  datasource: user=icidasset dbname=keymaps_development sslmode=disable
+  dir: db/migrations
+  table: migrations
+
+production:
+  dialect: postgres
+  datasource: sslmode=disable
+  dir: db/migrations
+  table: migrations

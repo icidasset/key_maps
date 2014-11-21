@@ -49,7 +49,8 @@ func main() {
   defer db.Close()
 
   // routes
-  r.Get("/api/maps/?", api.GetMaps)
+  r.Get("/api/maps", api.GetMaps)
+  r.Get("/api/maps/:id", api.GetMap)
   r.Get("/", rootHandler)
 
   // errors

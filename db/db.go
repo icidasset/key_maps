@@ -22,6 +22,11 @@ func Close() {
 }
 
 
-func Select(hash interface{}, query string) error {
+func Select(hash interface{}, query string, args ...interface{}) error {
   return db.Select(hash, query)
+}
+
+
+func Get(hash interface{}, query string, args ...interface{}) error {
+  return db.Get(hash, query)
 }

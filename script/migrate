@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+sql-migrate up -config=db/config.yml

@@ -1,10 +1,13 @@
 package main
 
 import (
+  "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/api"
   "github.com/icidasset/key-maps/db"
-  "github.com/pilu/traffic"
+  "github.com/martini-contrib/binding"
+  "github.com/martini-contrib/render"
   "html/template"
+  "net/http"
 )
 
 
@@ -12,7 +15,7 @@ import (
 //  [Root]
 //  -> HTML files (for js application)
 //
-func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
+func rootHandler(w http.ResponseWriter) {
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
@@ -23,23 +26,11 @@ func rootHandler(w traffic.ResponseWriter, r *traffic.Request) {
 
 
 //
-//  [Errors]
-//
-func notFoundHandler(w traffic.ResponseWriter, r *traffic.Request) {
-  w.WriteText("404")
-}
-
-
-func errorHandler(w traffic.ResponseWriter, r *traffic.Request, err interface {}) {
-  w.WriteText("500")
-}
-
-
-//
 //  [Main]
 //
 func main() {
-  r := traffic.New()
+  r := martini.Classic()
+  r.Use(render.Renderer())
 
   // prepare database
   if err := db.Open(); err != nil {
@@ -49,13 +40,11 @@ func main() {
   defer db.Close()
 
   // routes
-  r.Get("/api/maps", api.GetMaps)
-  r.Get("/api/maps/:id", api.GetMap)
-  r.Get("/", rootHandler)
+  r.Get("/api/maps", api.Maps__Index)
+  r.Get("/api/maps/:id", api.Maps__Show)
+  r.Post("/api/maps", binding.Bind(api.MapFormData{}), api.Maps__Create)
 
-  // errors
-  r.NotFoundHandler = notFoundHandler
-  r.ErrorHandler = errorHandler
+  r.Get("/", rootHandler)
 
   // setup server
   r.Run()

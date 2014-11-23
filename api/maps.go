@@ -1,12 +1,11 @@
 package api
 
 import (
-  // "fmt"
   "github.com/extemporalgenome/slug"
   "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/render"
-  // "net/http"
+  _ "net/http"
   "time"
 )
 
@@ -18,8 +17,8 @@ import (
 //
 
 type Map struct {
-  Id int              `json:"id" db:"id"`
-  Name string         `json:"name" db:"name"`
+  Id int              `json:"id"`
+  Name string         `json:"name"`
   Slug string         `json:"slug"`
   Structure string    `json:"structure"`
   CreatedAt time.Time `json:"created_at" db:"created_at"`
@@ -36,9 +35,14 @@ type MapFormData struct {
 //
 //  [MAPS]
 //
-func Maps__Index() {
-  maps := []Map{}
-  db.Inst().Select(&maps, "SELECT * FROM maps")
+func Maps__Index(r render.Render) {
+  m := []Map{}
+
+  // execute query
+  db.Inst().Select(&m, "SELECT * FROM maps")
+
+  // render
+  r.JSON(200, m)
 }
 
 
@@ -46,7 +50,7 @@ func Maps__Show(params martini.Params, r render.Render) {
   m := Map{}
 
   // execute query
-  db.Inst().Get(&m, "SELECT * FROM maps WHERE id=$1", params["id"])
+  db.Inst().Get(&m, "SELECT * FROM maps WHERE id = $1", params["id"])
 
   // if none found
   if m.Id == 0 {

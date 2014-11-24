@@ -4,8 +4,8 @@ CREATE TABLE maps (
   name varchar(256) UNIQUE NOT NULL,
   slug varchar(256) UNIQUE NOT NULL,
   structure text NOT NULL,
-  created_at time,
-  updated_at time
+  created_at timestamp,
+  updated_at timestamp
 );
 
 -- +migrate Down

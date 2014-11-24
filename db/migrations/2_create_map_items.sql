@@ -2,8 +2,8 @@
 CREATE TABLE map_items (
   id serial PRIMARY KEY,
   structure_data text NOT NULL,
-  created_at time,
-  updated_at time
+  created_at timestamp,
+  updated_at timestamp
 );
 
 -- +migrate Down

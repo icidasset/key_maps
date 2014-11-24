@@ -3,7 +3,7 @@ package api
 import (
   "github.com/extemporalgenome/slug"
   "github.com/go-martini/martini"
-  "github.com/lib/pq"
+  _ "github.com/lib/pq"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/render"
   _ "net/http"
@@ -22,8 +22,8 @@ type Map struct {
   Name string             `json:"name"`
   Slug string             `json:"slug"`
   Structure string        `json:"structure"`
-  CreatedAt pq.NullTime   `json:"created_at" db:"created_at"`
-  UpdatedAt pq.NullTime   `json:"updated_at" db:"updated_at"`
+  CreatedAt time.Time     `json:"created_at" db:"created_at"`
+  UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
 }
 
 
@@ -55,16 +55,15 @@ func Maps__Show(params martini.Params, r render.Render) {
   m := Map{}
 
   // execute query
-  db.Inst().Get(&m, "SELECT * FROM maps WHERE id = $1", params["id"])
+  err := db.Inst().Get(&m, "SELECT * FROM maps WHERE id = $1", params["id"])
 
-  // if none found
-  if m.Id == 0 {
+  // render
+  if err != nil {
+    panic(err)
+  } else if m.Id == 0 {
     r.JSON(404, nil)
-
-  // render map as json
   } else {
     r.JSON(200, m)
-
   }
 }
 
@@ -75,8 +74,7 @@ func Maps__Create(mfd MapFormData, r render.Render) {
 
   // make new map
   slug := slug.Slug(mfd.Name)
-  now := pq.NullTime{}
-  now.Scan(time.Now())
+  now := time.Now()
 
   new_map := Map{Name: mfd.Name, Slug: slug, Structure: mfd.Structure, CreatedAt: now, UpdatedAt: now}
 
@@ -90,9 +88,7 @@ func Maps__Create(mfd MapFormData, r render.Render) {
   // render map as json
   } else {
     m := Map{}
-
     db.Inst().Get(&m, "SELECT * FROM maps WHERE slug = $1", slug)
-
     r.JSON(200, m)
 
   }

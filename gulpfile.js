@@ -4,6 +4,7 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     sass = require("gulp-sass"),
     traceur = require("gulp-traceur"),
+    wrap_umd = require("gulp-wrap-umd"),
     bourbon = require("node-bourbon").includePaths;
 
 

@@ -1,6 +1,3 @@
-import setup_namespace from "lib/namespace";
+import setup_namespace from "./lib/namespace";
 
-
-export var initialize = function() {
-  setup_namespace();
-};
+setup_namespace();

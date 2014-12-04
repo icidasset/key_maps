@@ -4,7 +4,7 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     sass = require("gulp-sass"),
     traceur = require("gulp-traceur"),
-    wrap_umd = require("gulp-wrap-umd"),
+    amd = require("amd-optimize"),
     bourbon = require("node-bourbon").includePaths;
 
 
@@ -20,7 +20,8 @@ var paths = {
     "./assets/javascripts/vendor/jquery.js",
     "./assets/javascripts/vendor/handlebars.js",
     "./assets/javascripts/vendor/ember.js",
-    "./assets/javascripts/vendor/ember-data.js"
+    "./assets/javascripts/vendor/ember-data.js",
+    "./assets/javascripts/vendor/require.js"
   ],
 };
 
@@ -34,14 +35,18 @@ gulp.task("stylesheets", function() {
 
 gulp.task("javascripts_application", function() {
   return gulp.src(paths.javascripts_application)
-    .pipe(traceur())
+    .pipe(traceur({ modules: "amd" }))
+    .pipe(amd("application"))
     .pipe(concat("application.js"))
     .pipe(gulp.dest("./public/javascripts"));
 });
 
 
 gulp.task("javascripts_vendor", function() {
-  return gulp.src(paths.javascripts_vendor)
+  var vendor = paths.javascripts_vendor.slice(0);
+  vendor.unshift(traceur.RUNTIME_PATH);
+
+  return gulp.src(vendor)
     .pipe(concat("vendor.js"))
     .pipe(gulp.dest("./public/javascripts"));
 });

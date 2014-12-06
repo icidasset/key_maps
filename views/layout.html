@@ -6,10 +6,17 @@
   <meta charset="utf-8">
   <title>Key Maps</title>
 
+  <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700,300italic,400italic,700italic" />
+  <link rel="stylesheet" href="stylesheets/application.css" />
+
 </head>
 <body>
 
   {{template "body"}}
+
+  {{range $f := .}}
+    {{$f}}
+  {{end}}
 
   <script src="javascripts/vendor.js"></script>
   <script src="javascripts/application.js"></script>

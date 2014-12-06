@@ -7,10 +7,13 @@ var gulp = require("gulp"),
     es6ify = require("es6ify"),
     browserify = require("browserify"),
     transform = require("vinyl-transform"),
-    bourbon = require("node-bourbon").includePaths;
+    bourbon = require("node-bourbon");
 
 
 var paths = {
+  fonts: [
+    "./assets/fonts/**/*"
+  ],
   stylesheets: [
     "./assets/stylesheets/*.scss"
   ],
@@ -31,9 +34,24 @@ var paths = {
 };
 
 
+function swallow_error(error) {
+  console.log(error.toString());
+  this.emit("end");
+}
+
+
+gulp.task("fonts", function() {
+  return gulp.src(paths.fonts, { base: "./assets/fonts/" })
+    .pipe(gulp.dest("./public/fonts"));
+});
+
+
 gulp.task("stylesheets", function() {
   return gulp.src(paths.stylesheets)
-    .pipe(sass())
+    .pipe(sass({
+      includePaths: require('node-bourbon').includePaths
+    }))
+    .on("error", swallow_error)
     .pipe(gulp.dest("./public/stylesheets"));
 });
 
@@ -68,6 +86,7 @@ gulp.task("watch", function() {
 
 
 gulp.task("default", [
+  "fonts",
   "stylesheets",
   "javascripts_application",
   "javascripts_vendor",

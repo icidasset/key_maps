@@ -7,6 +7,7 @@ import (
   "github.com/martini-contrib/binding"
   "github.com/martini-contrib/render"
   "html/template"
+  "io/ioutil"
   "net/http"
 )
 
@@ -16,12 +17,20 @@ import (
 //  -> HTML files (for js application)
 //
 func rootHandler(w http.ResponseWriter) {
+  files, _ := ioutil.ReadDir("./views/templates/")
+  filepaths := make([]string, len(files))
+
+  for _, f := range files {
+    p := "views/templates/" + f.Name()
+    filepaths = append(filepaths, p)
+  }
+
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
   )
 
-  tmpl.ExecuteTemplate(w, "layout", nil)
+  tmpl.ExecuteTemplate(w, "layout", filepaths)
 }
 
 

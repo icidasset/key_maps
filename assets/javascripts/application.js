@@ -1,3 +1,2 @@
-import setup_namespace from "./lib/namespace";
-
-setup_namespace();
+import "./lib/namespace";
+import "./lib/router";

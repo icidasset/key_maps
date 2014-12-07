@@ -1,5 +1,4 @@
-{{define "layout"}}
-<!doctype html>
+{{ define "layout" }}<!doctype html>
 <html>
 <head>
 
@@ -12,11 +11,9 @@
 </head>
 <body>
 
-  {{template "body"}}
+  {{ template "body" }}
 
-  {{range $f := .}}
-    {{$f}}
-  {{end}}
+  {{ template "ember_templates" }}
 
   <script src="javascripts/vendor.js"></script>
   <script src="javascripts/application.js"></script>

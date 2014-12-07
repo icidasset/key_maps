@@ -17,7 +17,7 @@ var paths = {
   stylesheets: [
     "./assets/stylesheets/*.scss"
   ],
-  javascript_all: [
+  javascripts_all: [
     "./assets/javascripts/**/*.js"
   ],
   javascripts_application: [

@@ -6,7 +6,8 @@ import (
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/binding"
   "github.com/martini-contrib/render"
-  "html/template"
+  "strings"
+  "text/template"
   "io/ioutil"
   "net/http"
 )
@@ -17,20 +18,28 @@ import (
 //  -> HTML files (for js application)
 //
 func rootHandler(w http.ResponseWriter) {
-  files, _ := ioutil.ReadDir("./views/templates/")
-  filepaths := make([]string, len(files))
+  ember_tmpl_base_path := "views/ember_templates/"
+  files, _ := ioutil.ReadDir(ember_tmpl_base_path)
+  filenames := make([]string, 0)
 
   for _, f := range files {
-    p := "views/templates/" + f.Name()
-    filepaths = append(filepaths, p)
+    name := f.Name()
+    if strings.HasSuffix(name, ".html") {
+      filenames = append(filenames, ember_tmpl_base_path + name)
+    }
   }
+
+  ember_tmpl, _ := template.ParseFiles(
+    filenames...
+  )
 
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
   )
 
-  tmpl.ExecuteTemplate(w, "layout", filepaths)
+  tmpl.AddParseTree("ember_templates", ember_tmpl.Tree)
+  tmpl.ExecuteTemplate(w, "layout", nil)
 }
 
 

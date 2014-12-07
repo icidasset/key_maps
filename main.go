@@ -12,34 +12,37 @@ import (
   "net/http"
 )
 
+type TemplateData struct {
+  EmberTemplates string
+}
+
 
 //
 //  [Root]
 //  -> HTML files (for js application)
 //
 func rootHandler(w http.ResponseWriter) {
-  ember_tmpl_base_path := "views/ember_templates/"
-  files, _ := ioutil.ReadDir(ember_tmpl_base_path)
-  filenames := make([]string, 0)
+  et_base_path := "views/ember_templates/"
+  et_files, _ := ioutil.ReadDir(et_base_path)
+  et_file_contents := make([]string, 0)
 
-  for _, f := range files {
+  for _, f := range et_files {
     name := f.Name()
     if strings.HasSuffix(name, ".html") {
-      filenames = append(filenames, ember_tmpl_base_path + name)
+      c, _ := ioutil.ReadFile(et_base_path + name)
+      et_file_contents = append(et_file_contents, string(c))
     }
   }
 
-  ember_tmpl, _ := template.ParseFiles(
-    filenames...
-  )
+  et := strings.Join(et_file_contents, "\n")
 
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
   )
 
-  tmpl.AddParseTree("ember_templates", ember_tmpl.Tree)
-  tmpl.ExecuteTemplate(w, "layout", nil)
+  tmpl_data := TemplateData{ EmberTemplates: et }
+  tmpl.ExecuteTemplate(w, "layout", tmpl_data)
 }
 
 

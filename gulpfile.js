@@ -14,8 +14,11 @@ var paths = {
   fonts: [
     "./assets/fonts/**/*"
   ],
+  stylesheets_all: [
+    "./assets/stylesheets/**/*.scss"
+  ],
   stylesheets: [
-    "./assets/stylesheets/*.scss"
+    "./assets/stylesheets/application.scss"
   ],
   javascripts_all: [
     "./assets/javascripts/**/*.js"
@@ -79,7 +82,7 @@ gulp.task("javascripts_vendor", function() {
 
 
 gulp.task("watch", function() {
-  gulp.watch(paths.stylesheets, ["stylesheets"]);
+  gulp.watch(paths.stylesheets_all, ["stylesheets"]);
   gulp.watch(paths.javascripts_all, ["javascripts_application"]);
   gulp.watch(paths.javascripts_vendor, ["javascripts_vendor"]);
 });

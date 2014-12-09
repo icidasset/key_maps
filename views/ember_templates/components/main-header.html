@@ -1,0 +1,22 @@
+<script type="text/x-handlebars" data-template-name="components/main-header">
+
+  <div class="mod-map-selector" {{action "toggleMapSelector"}}>
+    <div class="map-selector__dropdown">
+      <span class="dropdown__selected">
+        Select or create a new keymap
+      </span>
+      <i class="dropdown__select-icon ti-angle-down"></i>
+      <ul class="dropdown__list">
+        <li>Quotes</li>
+        <li action="add"><i class="ti-plus"></i> Add new</li>
+      </ul>
+    </div>
+
+    <div class="map-selector__input"></div>
+  </div>
+
+  {{#link-to "index" class="logo"}}
+    Keymaps
+  {{/link-to}}
+
+</script>

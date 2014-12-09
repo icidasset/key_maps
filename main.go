@@ -16,32 +16,40 @@ type TemplateData struct {
   EmberTemplates string
 }
 
+func ScanTemplatesDir(path string) string {
+  files, _ := ioutil.ReadDir(path)
+  templates := make([]string, 0)
+
+  for _, f := range files {
+    name := f.Name()
+
+    if f.IsDir() {
+      t := ScanTemplatesDir(path + name + "/")
+      templates = append(templates, t)
+
+    } else if strings.HasSuffix(name, ".html") {
+      c, _ := ioutil.ReadFile(path + name)
+      templates = append(templates, string(c))
+    }
+  }
+
+  return strings.Join(templates, "\n")
+}
+
+
 
 //
 //  [Root]
 //  -> HTML files (for js application)
 //
 func rootHandler(w http.ResponseWriter) {
-  et_base_path := "views/ember_templates/"
-  et_files, _ := ioutil.ReadDir(et_base_path)
-  et_file_contents := make([]string, 0)
-
-  for _, f := range et_files {
-    name := f.Name()
-    if strings.HasSuffix(name, ".html") {
-      c, _ := ioutil.ReadFile(et_base_path + name)
-      et_file_contents = append(et_file_contents, string(c))
-    }
-  }
-
-  et := strings.Join(et_file_contents, "\n")
-
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
   )
 
-  tmpl_data := TemplateData{ EmberTemplates: et }
+  ember_templates := ScanTemplatesDir("views/ember_templates/")
+  tmpl_data := TemplateData{ EmberTemplates: ember_templates }
   tmpl.ExecuteTemplate(w, "layout", tmpl_data)
 }
 

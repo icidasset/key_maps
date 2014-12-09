@@ -1,25 +1,6 @@
 <script type="text/x-handlebars">
 
-  <header class="mod-header">
-    <div class="mod-map-selector">
-      <div class="map-selector__dropdown">
-        <span class="dropdown__selected">
-          Select or create a new keymap
-        </span>
-        <i class="dropdown__select-icon ti-angle-double-down"></i>
-        <ul class="dropdown__list">
-          <li>Quotes</li>
-          <li><i class="ti-plus"></i> Add new</li>
-        </ul>
-      </div>
-
-      <div class="map-selector__input"></div>
-    </div>
-
-    {{#link-to "index" class="logo"}}
-      Keymaps
-    {{/link-to}}
-  </header>
+  {{partial "header"}}
 
   {{outlet}}
 

@@ -25,7 +25,7 @@
   .logo {
     @include font-smoothing;
     border-left: 1px solid $header_border_color;
-    color: rgba($black, .45);
+    color: $black;
     float: right;
     font-weight: bold;
     height: 100%;

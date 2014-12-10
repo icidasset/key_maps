@@ -52,7 +52,7 @@ gulp.task("fonts", function() {
 gulp.task("stylesheets", function() {
   return gulp.src(paths.stylesheets)
     .pipe(sass({
-      includePaths: require('node-bourbon').includePaths
+      includePaths: require("node-bourbon").includePaths
     }))
     .on("error", swallow_error)
     .pipe(gulp.dest("./public/stylesheets"));

@@ -46,7 +46,7 @@ func Maps__Index(r render.Render) {
   if err != nil {
     panic(err)
   } else {
-    r.JSON(200, m)
+    r.JSON(200, map[string][]Map{ "maps": m })
   }
 }
 
@@ -63,7 +63,7 @@ func Maps__Show(params martini.Params, r render.Render) {
   } else if m.Id == 0 {
     r.JSON(404, nil)
   } else {
-    r.JSON(200, m)
+    r.JSON(200, map[string]Map{ "map": m })
   }
 }
 
@@ -89,7 +89,7 @@ func Maps__Create(mfd MapFormData, r render.Render) {
   } else {
     m := Map{}
     db.Inst().Get(&m, "SELECT * FROM maps WHERE slug = $1", slug)
-    r.JSON(200, m)
+    r.JSON(200, map[string]Map{ "map": m })
 
   }
 }

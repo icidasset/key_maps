@@ -68,6 +68,7 @@ gulp.task("javascripts_application", function() {
 
   return gulp.src(paths.javascripts_application)
     .pipe(browserified)
+    .on("error", swallow_error)
     .pipe(concat("application.js"))
     .pipe(replace("\n\n//# sourceMappingURL=<compileOutput>\n\n", ""))
     .pipe(gulp.dest("./public/javascripts"));

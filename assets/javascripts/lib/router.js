@@ -3,4 +3,11 @@ App.Router.map(function() {
 });
 
 
+App.ApplicationRoute = Ember.Route.extend({
+  model: function() {
+    this.store.find("map");
+  }
+});
+
+
 App.MapRoute = Ember.Route.extend({});

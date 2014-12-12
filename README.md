@@ -7,7 +7,7 @@
 
 - (go) [https://github.com/pilu/traffic]()
 - (go) [https://github.com/pilu/fresh]()
-- (go) [https://bitbucket.org/liamstask/goose]()
+- (go) [https://github.com/rubenv/sql-migrate]()
 - (node) [https://github.com/gulpjs/gulp]()
 
 

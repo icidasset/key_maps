@@ -3,4 +3,4 @@ App.Router.map(function() {
 });
 
 
-App.ApplicationRoute = Ember.Route.extend({});
+App.MapRoute = Ember.Route.extend({});

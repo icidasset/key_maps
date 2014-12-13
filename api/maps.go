@@ -19,17 +19,16 @@ import (
 
 type Map struct {
   Id int                  `json:"id"`
-  Name string             `json:"name"`
   Slug string             `json:"slug"`
-  Structure string        `json:"structure"`
+  Name string             `json:"name" form:"name" binding:"required"`
+  Structure string        `json:"structure" form:"structure" binding:"required"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
 }
 
 
 type MapFormData struct {
-  Name string         `form:"maps[name]" binding:"required"`
-  Structure string    `form:"maps[structure]" binding:"required"`
+  Map Map         `form:"map" binding:"required"`
 }
 
 
@@ -73,10 +72,10 @@ func Maps__Create(mfd MapFormData, r render.Render) {
            " VALUES (:name, :slug, :structure, :created_at, :updated_at)"
 
   // make new map
-  slug := slug.Slug(mfd.Name)
+  slug := slug.Slug(mfd.Map.Name)
   now := time.Now()
 
-  new_map := Map{Name: mfd.Name, Slug: slug, Structure: mfd.Structure, CreatedAt: now, UpdatedAt: now}
+  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, CreatedAt: now, UpdatedAt: now}
 
   // execute query
   _, err := db.Inst().NamedExec(query, new_map)

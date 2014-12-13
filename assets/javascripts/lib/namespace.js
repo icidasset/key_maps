@@ -1,1 +1,1 @@
-window.App = Ember.Application.create();
+window.K = Ember.Application.create();

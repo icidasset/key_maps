@@ -1,12 +1,27 @@
 .mod-map-selector {
   position: relative;
 
+  &.has-selected-map {
+    //
+  }
+
+  //
+  //  Input + Match
+  //
   .map-selector__input {
     color: rgba($black, .65);
     font-size: 1.5rem;
     font-weight: 300;
     height: 100%;
+    line-height: $main_header_height;
     position: relative;
+    z-index: 1;
+
+    input[type="text"],
+    .map-selector__match {
+      height: 100%;
+      padding: 0 $general_padding;
+    }
 
     input[type="text"] {
       @include appearance(none);
@@ -14,18 +29,64 @@
       background: none;
       border: 0;
       display: block;
-      height: 100%;
-      padding: 0 $general_padding;
+      position: relative;
       width: 100%;
+      z-index: 2;
 
       &:focus {
         outline: none;
       }
     }
 
+    .map-selector__match {
+      color: rgba($black, .35);
+      left: 0;
+      position: absolute;
+      text-indent: 1px;
+      top: 1px;
+      width: 100%;
+      z-index: 1;
+
+      > span {
+        display: inline-block;
+        visibility: hidden;
+      }
+    }
+
     input::-webkit-input-placeholder { color: rgba($black, .325); }
     input::-moz-placeholder { color: rgba($black, .325); }
     input:-ms-input-placeholder { color: rgba($black, .325); }
+  }
+
+
+  //
+  //  Message
+  //
+  .map-selector__message {
+    @include transform(translateY(-50%));
+    @include transition(opacity $default_transition_duration);
+    background-color: $fuchsia;
+    border-radius: $general_border_radius;
+    color: white;
+    font-size: 0.65em;
+    font-weight: 600;
+    letter-spacing: -0.0125em;
+    line-height: 1;
+    opacity: 0;
+    padding: 7px 9px;
+    pointer-events: none;
+    position: absolute;
+    right: $general_padding;
+    text-transform: uppercase;
+    top: 50%;
+
+    &.is-visible {
+      opacity: 1;
+    }
+
+    > span {
+      color: rgba(white, .625);
+    }
   }
 
 

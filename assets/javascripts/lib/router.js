@@ -1,13 +1,19 @@
-App.Router.map(function() {
-  this.route("map", { path: "/:map_slug" });
+K.Router.map(function() {
+  this.route("map", { path: "/:slug" });
 });
 
 
-App.ApplicationRoute = Ember.Route.extend({
+K.ApplicationRoute = Ember.Route.extend({
   model: function() {
-    this.store.find("map");
+    return this.store.find("map");
   }
 });
 
 
-App.MapRoute = Ember.Route.extend({});
+K.MapRoute = Ember.Route.extend({
+  model: function(params) {
+    return this.store.filter("map", function(m) {
+      return m.get("slug") == params.slug;
+    });
+  }
+});

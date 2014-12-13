@@ -1,0 +1,19 @@
+<script type="text/x-handlebars" data-template-name="components/application-header">
+
+  <div class="mod-map-selector">
+    <div class="map-selector__input">
+      {{input value=map_selector_value key-up="input_key_up" placeholder="Type to select or create a map"}}
+
+      <div class="map-selector__match">
+        {{{map_match_mask}}}
+      </div>
+    </div>
+
+    <div {{bind-attr class=":map-selector__message map_selector_show_message:is-visible"}}>{{{map_selector_message}}}</div>
+  </div>
+
+  {{#link-to "index" class="logo"}}
+    Keymaps
+  {{/link-to}}
+
+</script>

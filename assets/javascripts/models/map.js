@@ -1,7 +1,7 @@
 var attr = DS.attr;
 
 
-App.Map = DS.Model.extend({
+K.Map = DS.Model.extend({
   name: attr("string"),
   slug: attr("string"),
   structure: attr(),

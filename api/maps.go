@@ -6,7 +6,6 @@ import (
   _ "github.com/lib/pq"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/render"
-  _ "net/http"
   "time"
 )
 
@@ -24,17 +23,15 @@ type Map struct {
   Structure string        `json:"structure" form:"structure" binding:"required"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
+  UserId int              `json:"user_id" from:"user_id" binding:"required"`
 }
 
 
 type MapFormData struct {
-  Map Map         `form:"map" binding:"required"`
+  Map Map `form:"map" binding:"required"`
 }
 
 
-//
-//  [MAPS]
-//
 func Maps__Index(r render.Render) {
   m := []Map{}
 

@@ -33,6 +33,7 @@ var paths = {
     "./assets/javascripts/vendor/handlebars.js",
     "./assets/javascripts/vendor/ember.js",
     "./assets/javascripts/vendor/ember-data.js",
+    "./assets/javascripts/vendor/ember-simple-auth.js",
 
     "./assets/javascripts/vendor/fuse.js",
   ],

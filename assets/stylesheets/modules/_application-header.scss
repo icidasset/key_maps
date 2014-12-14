@@ -3,7 +3,7 @@
   @include align-items(stretch);
   @include flex-direction(row);
   background: white;
-  border-bottom: 1px solid $header_border_color;
+  border-bottom: 2px solid $header_border_color;
   color: $black;
   font-size: 1.05rem;
   height: $main_header_height;
@@ -23,7 +23,7 @@
 
   .logo {
     @include font-smoothing;
-    border-left: 1px solid $header_border_color;
+    border-left: 2px solid $header_border_color;
     color: $black;
     float: right;
     font-weight: bold;

@@ -1,0 +1,35 @@
+.form {
+  @include clearfix;
+  border-bottom: 2px solid #ECECEC;
+  margin: 35px 0;
+
+  .field {
+    float: left;
+    width: 50%;
+  }
+
+  .field.full-width {
+    width: 100%;
+  }
+
+  .field input,
+  .field textarea {
+    @include appearance(none);
+    background: none;
+    border: 2px solid #ECECEC;
+    border-bottom: 0;
+    box-sizing: border-box;
+    padding: 20px 18px;
+    width: 100%;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  .field.secondary input {
+    border-left: 0;
+  }
+
+
+}

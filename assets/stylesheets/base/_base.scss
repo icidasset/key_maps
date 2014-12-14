@@ -11,5 +11,14 @@ body {
 }
 
 a {
+  color: $blue;
   text-decoration: none;
+}
+
+h1 {
+  font-size: 1.85rem;
+  font-weight: 300;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
 }

@@ -1,3 +1,4 @@
+import "./lib/environment";
 import "./lib/namespace";
 import "./lib/store";
 import "./lib/router";

@@ -69,6 +69,9 @@ func main() {
   defer db.Close()
 
   // routes
+  // r.Get("/api/users/:id", api.Users__Show)
+  r.Post("/api/users", binding.Bind(api.UserFormData{}), api.Users__Create)
+
   r.Get("/api/maps", api.Maps__Index)
   r.Get("/api/maps/:id", api.Maps__Show)
   r.Post("/api/maps", binding.Bind(api.MapFormData{}), api.Maps__Create)

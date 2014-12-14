@@ -112,7 +112,17 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
 
 
   select_map: function(slug) {
-    this.get("targetObject").transitionToRoute("map", slug);
+    var transition = this.get("targetObject").transitionToRoute("map", slug);
+    var match;
+
+    if (!transition.intent) {
+      match = this.get("map_match");
+
+      this.set("map_selector_value", match.item.name);
+      this.set("map_selector_show_message", false);
+
+      document.activeElement.blur();
+    }
   }
 
 });

@@ -17,6 +17,7 @@ K.MapController = Ember.Controller.extend({
 
     if (m) {
       header_component.set("map_selector_value", m.get("name"));
+      header_component.set("map_selector_show_message", false);
       document.activeElement.blur();
     }
   }.observes(

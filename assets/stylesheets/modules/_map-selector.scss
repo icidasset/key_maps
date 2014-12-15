@@ -33,6 +33,10 @@
       width: 100%;
       z-index: 2;
 
+      @include placeholder {
+        color: rgba($black, .325);
+      }
+
       &:focus {
         outline: none;
       }
@@ -52,10 +56,6 @@
         visibility: hidden;
       }
     }
-
-    input::-webkit-input-placeholder { color: rgba($black, .325); }
-    input::-moz-placeholder { color: rgba($black, .325); }
-    input:-ms-input-placeholder { color: rgba($black, .325); }
   }
 
 

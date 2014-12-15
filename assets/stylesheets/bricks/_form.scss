@@ -1,10 +1,10 @@
 .form {
   @include clearfix;
-  border-bottom: 2px solid #ECECEC;
   margin: 35px 0;
 
   .field {
     float: left;
+    margin-top: -2px;
     width: 50%;
   }
 
@@ -12,23 +12,48 @@
     width: 100%;
   }
 
-  .field input,
-  .field textarea {
+  input,
+  textarea {
     @include appearance(none);
     background: none;
     border: 2px solid #ECECEC;
-    border-bottom: 0;
     box-sizing: border-box;
     padding: 20px 18px;
+    position: relative;
     width: 100%;
+    z-index: 1;
+
+    @include placeholder {
+      color: rgba($black, .325);
+    }
 
     &:focus {
+      border-color: lighten($blue, 50);
+      color: $blue;
       outline: none;
+      z-index: 9;
+
+      @include placeholder {
+        color: rgba(lighten($blue, 42.5), .75);
+      }
+    }
+  }
+
+  input[type="password"] {
+    letter-spacing: 0.25em;
+
+    @include placeholder {
+      letter-spacing: 0;
     }
   }
 
   .field.secondary input {
-    border-left: 0;
+    margin-left: -2px;
+    width: calc(100% + 2px);
+  }
+
+  button {
+    margin-top: 21px;
   }
 
 

@@ -12,11 +12,11 @@ import (
 
 
 type User struct {
-  Id int                      `json:"id"`
-  Email string                `json:"email"`
-  EncryptedPassword string    `json:"-"`
-  CreatedAt time.Time         `json:"created_at" db:"created_at"`
-  UpdatedAt time.Time         `json:"updated_at" db:"updated_at"`
+  Id int
+  Email string
+  EncryptedPassword string
+  CreatedAt time.Time         `db:"created_at"`
+  UpdatedAt time.Time         `db:"updated_at"`
 }
 
 
@@ -28,7 +28,7 @@ type UserNew struct {
 
 
 type UserNewFormData struct {
-  User UserNew `form:"user" binding:"required"`
+  User UserNew                `form:"user" binding:"required"`
 }
 
 
@@ -39,7 +39,12 @@ type UserAuth struct {
 
 
 type UserAuthFormData struct {
-  User UserAuth `form:"user" binding:"required"`
+  User UserAuth               `form:"user" binding:"required"`
+}
+
+
+type UserPublic struct {
+  Token string                `json:"token"`
 }
 
 
@@ -52,12 +57,18 @@ func Users__Create(ufd UserNewFormData, r render.Render) {
 
   // make new user
   encryped_password, _ := bcrypt.GenerateFromPassword(
-     []byte(ufd.User.Password),
-     bcrypt.DefaultCost,
+    []byte(ufd.User.Password),
+    bcrypt.DefaultCost,
   )
+
   now := time.Now()
 
-  new_user := User{Email: ufd.User.Email, EncryptedPassword: string(encryped_password), CreatedAt: now, UpdatedAt: now}
+  new_user := User{
+    Email: ufd.User.Email,
+    EncryptedPassword: string(encryped_password),
+    CreatedAt: now,
+    UpdatedAt: now,
+  }
 
   // execute query
   _, err := db.Inst().NamedExec(query, new_user)
@@ -65,23 +76,35 @@ func Users__Create(ufd UserNewFormData, r render.Render) {
   // if error
   if err != nil {
     r.JSON(500, err.Error())
+    return
+  }
 
   // render user as json
-  } else {
-    u := User{}
-    db.Inst().Get(&u, "SELECT * FROM users WHERE email = $1 LIMIT 1", new_user.Email)
-    r.JSON(200, map[string]User{ "user": u })
+  user := User{}
 
-  }
+  db.Inst().Get(
+    &user,
+    "SELECT * FROM users WHERE email = $1 LIMIT 1",
+    new_user.Email,
+  )
+
+  token := generate_new_token(&user)
+  r.JSON(200, UserPublic{ Token: token })
 }
 
 
 func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
   user := User{}
-  db.Inst().Get(&user, "SELECT * FROM users WHERE email = $1 LIMIT 1", ufd.User.Email)
+
+  db.Inst().Get(
+    &user,
+    "SELECT * FROM users WHERE email = $1 LIMIT 1",
+    ufd.User.Email,
+  )
 
   if user.Email == "" {
-    // STOP, user doesn't exist
+    // {err} user doesn't exist
+    r.JSON(500, map[string]string{ "error" : "User not found." })
   }
 
   bcrypt_check_err := bcrypt.CompareHashAndPassword(
@@ -90,11 +113,12 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
   )
 
   if bcrypt_check_err != nil {
-    // STOP, invalid password
+    // {err} invalid password
+    r.JSON(500, map[string]string{ "error" : "Invalid password." })
   }
 
-  var token_string string = generate_new_token(&user)
-  r.JSON(200, map[string]string{ "token" : token_string })
+  token := generate_new_token(&user)
+  r.JSON(200, UserPublic{ Token: token })
 }
 
 

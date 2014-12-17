@@ -10,6 +10,7 @@ import (
   "time"
 )
 
+
 type User struct {
   Id int                      `json:"id"`
   Email string                `json:"email"`
@@ -65,7 +66,7 @@ func Users__Create(ufd UserNewFormData, r render.Render) {
   if err != nil {
     r.JSON(500, err.Error())
 
-  // render map as json
+  // render user as json
   } else {
     u := User{}
     db.Inst().Get(&u, "SELECT * FROM users WHERE email = $1 LIMIT 1", new_user.Email)
@@ -92,10 +93,20 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
     // STOP, invalid password
   }
 
+  var token_string string = generate_new_token(&user)
+  r.JSON(200, map[string]string{ "token" : token_string })
+}
+
+
+
+//
+//  Helpers
+//
+func generate_new_token(user *User) string {
   token := jwt.New(jwt.GetSigningMethod("HS256"))
   token.Claims["user_id"] = user.Id
   token.Claims["exp"] = time.Now().Add(time.Minute * 5).Unix()
   token_string, _ := token.SignedString([]byte("TODO - SECRET KEY"))
 
-  r.JSON(200, map[string]string{ "token" : token_string })
+  return token_string
 }

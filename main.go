@@ -10,11 +10,17 @@ import (
   "text/template"
   "io/ioutil"
   "net/http"
+  "os"
 )
+
+
+var SecretKey string
+
 
 type TemplateData struct {
   EmberTemplates string
 }
+
 
 func ScanTemplatesDir(path string) string {
   files, _ := ioutil.ReadDir(path)
@@ -68,8 +74,10 @@ func main() {
 
   defer db.Close()
 
+  // environment variables
+  SecretKey = os.Getenv("SECRET_KEY")
+
   // routes
-  // r.Get("/api/users/:id", api.Users__Show)
   r.Post("/api/users", binding.Bind(api.UserNewFormData{}), api.Users__Create)
   r.Post("/api/users/authenticate", binding.Bind(api.UserAuthFormData{}), api.Users__Authenticate)
 

@@ -5,6 +5,7 @@ import "./lib/router";
 
 import "./controllers/application";
 import "./controllers/map";
+import "./controllers/sign-up-controller";
 
 import "./models/map";
 

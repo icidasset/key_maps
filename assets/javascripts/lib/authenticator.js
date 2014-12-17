@@ -1,5 +1,5 @@
 K.Authenticator = SimpleAuth.Authenticators.Base.extend({
-  serverTokenEndpoint: "/api/authenticate",
+  serverTokenEndpoint: "/api/users/authenticate",
 
   restore: function(data) {
     //

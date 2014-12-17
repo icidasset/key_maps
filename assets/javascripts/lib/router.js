@@ -16,6 +16,13 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 
 
 //
+//  Sign in/up
+//
+K.SignUpRoute = Ember.Route.extend(SimpleAuth.UnauthenticatedRouteMixin);
+
+
+
+//
 //  Authenticated Routes
 //
 K.IndexRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin);

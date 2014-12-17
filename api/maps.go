@@ -3,8 +3,8 @@ package api
 import (
   "github.com/extemporalgenome/slug"
   "github.com/go-martini/martini"
-  _ "github.com/lib/pq"
   "github.com/icidasset/key-maps/db"
+  _ "github.com/lib/pq"
   "github.com/martini-contrib/render"
   "time"
 )
@@ -32,6 +32,10 @@ type MapFormData struct {
 }
 
 
+
+//
+//  Routes
+//
 func Maps__Index(r render.Render) {
   m := []Map{}
 

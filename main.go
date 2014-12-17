@@ -70,7 +70,8 @@ func main() {
 
   // routes
   // r.Get("/api/users/:id", api.Users__Show)
-  r.Post("/api/users", binding.Bind(api.UserFormData{}), api.Users__Create)
+  r.Post("/api/users", binding.Bind(api.UserNewFormData{}), api.Users__Create)
+  r.Post("/api/users/authenticate", binding.Bind(api.UserAuthFormData{}), api.Users__Authenticate)
 
   r.Get("/api/maps", api.Maps__Index)
   r.Get("/api/maps/:id", api.Maps__Show)

@@ -3,15 +3,15 @@
   <div class="content-wrapper">
     <h1>Sign up</h1>
 
-    <form class="form">
+    <form class="form" {{action "submit" on="submit"}}>
       <div class="field full-width">
-        <input type="text" placeholder="Email" />
+        {{input value=model.email placeholder="Email"}}
       </div>
       <div class="field">
-        <input type="password" placeholder="Password" />
+        {{input value=model.password placeholder="Password" type="password"}}
       </div>
       <div class="field secondary">
-        <input type="password" placeholder="Password confirmation" />
+        {{input value=model.password_confirmation placeholder="Password confirmation" type="password"}}
       </div>
 
       <button class="btn" type="submit">Sign up</button>

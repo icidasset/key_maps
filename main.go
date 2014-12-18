@@ -80,6 +80,7 @@ func main() {
   // routes
   r.Post("/api/users", binding.Bind(api.UserAuthFormData{}), api.Users__Create)
   r.Post("/api/users/authenticate", binding.Bind(api.UserAuthFormData{}), api.Users__Authenticate)
+  r.Get("/api/users/verify-token", api.Users__VerifyToken)
 
   r.Get("/api/maps", api.Maps__Index)
   r.Get("/api/maps/:id", api.Maps__Show)

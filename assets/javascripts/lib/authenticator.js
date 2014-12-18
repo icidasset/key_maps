@@ -1,14 +1,21 @@
 K.Authenticator = SimpleAuth.Authenticators.Base.extend({
-  serverTokenEndpoint: "/api/users/authenticate",
   identificationField: "email",
   tokenPropertyName: "token",
 
 
   restore: function(properties) {
     var _this = this;
+    var url = "/api/users/verify-token";
+
     return new Ember.RSVP.Promise(function(resolve, reject) {
+      console.log(properties);
       if (!Ember.isEmpty(properties[_this.tokenPropertyName])) {
-        resolve(properties);
+        _this.makeRequest(properties, url, "GET").then(function(response) {
+          if (response.is_valid) resolve(properties);
+          else reject();
+        }, function() {
+          reject();
+        });
       } else {
         reject();
       }
@@ -18,9 +25,14 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
 
   authenticate: function(credentials) {
     var _this = this;
+    var url = "/api/users/authenticate";
+
     return new Ember.RSVP.Promise(function(resolve, reject) {
-      var data = _this.getAuthenticateData(credentials);
-      _this.makeRequest(data).then(function(response) {
+      var data = JSON.stringify({
+        user: _this.getAuthenticateData(credentials)
+      });
+
+      _this.makeRequest(data, url, "POST").then(function(response) {
         Ember.run(function() {
           resolve(_this.getResponseData(response.user));
         });
@@ -54,11 +66,11 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
   },
 
 
-  makeRequest: function(data) {
+  makeRequest: function(data, url, method) {
     return Ember.$.ajax({
-      url: this.serverTokenEndpoint,
-      type: "POST",
-      data: JSON.stringify({ user: data }),
+      url: url,
+      type: method,
+      data: data,
       dataType: "json",
       contentType: "application/json",
       beforeSend: function(xhr, settings) {

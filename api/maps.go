@@ -9,12 +9,6 @@ import (
   "time"
 )
 
-//
-//  [API]
-//  -> https://gobyexample.com/json
-//  -> http://www.alexedwards.net/blog/golang-response-snippets
-//  -> http://godoc.org/github.com/lib/pq
-//
 
 type Map struct {
   Id int                  `json:"id"`

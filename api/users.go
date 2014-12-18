@@ -1,12 +1,10 @@
 package api
 
 import (
-  "github.com/dgrijalva/jwt-go"
-  _ "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
-  _ "github.com/lib/pq"
   "github.com/martini-contrib/render"
   "golang.org/x/crypto/bcrypt"
+  "net/http"
   "time"
 )
 
@@ -76,7 +74,7 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
     new_user.Email,
   )
 
-  token := generate_new_token(&user)
+  token := GenerateToken(&user)
   user_public := UserPublic{ Token: token }
 
   r.JSON(200, map[string]UserPublic{ "user": user_public })
@@ -94,7 +92,7 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 
   if user.Email == "" {
     // {err} user doesn't exist
-    r.JSON(500, map[string]string{ "error" : "User not found." })
+    r.JSON(500, map[string]string{ "error": "User not found." })
   }
 
   bcrypt_check_err := bcrypt.CompareHashAndPassword(
@@ -104,25 +102,19 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 
   if bcrypt_check_err != nil {
     // {err} invalid password
-    r.JSON(500, map[string]string{ "error" : "Invalid password." })
+    r.JSON(500, map[string]string{ "error": "Invalid password." })
   }
 
-  token := generate_new_token(&user)
+  token := GenerateToken(&user)
   user_public := UserPublic{ Token: token }
 
   r.JSON(200, map[string]UserPublic{ "user": user_public })
 }
 
 
+func Users__VerifyToken(req *http.Request, r render.Render) {
+  qs := req.URL.Query()
+  is_valid := VerifyToken(qs.Get("token"))
 
-//
-//  Helpers
-//
-func generate_new_token(user *User) string {
-  token := jwt.New(jwt.GetSigningMethod("HS256"))
-  token.Claims["user_id"] = user.Id
-  token.Claims["exp"] = time.Now().Add(time.Minute * 5).Unix()
-  token_string, _ := token.SignedString([]byte("TODO - SECRET KEY"))
-
-  return token_string
+  r.JSON(200, map[string]bool{ "is_valid": is_valid })
 }

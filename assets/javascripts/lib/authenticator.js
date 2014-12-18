@@ -8,7 +8,6 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
     var url = "/api/users/verify-token";
 
     return new Ember.RSVP.Promise(function(resolve, reject) {
-      console.log(properties);
       if (!Ember.isEmpty(properties[_this.tokenPropertyName])) {
         _this.makeRequest(properties, url, "GET").then(function(response) {
           if (response.is_valid) resolve(properties);

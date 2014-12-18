@@ -5,8 +5,7 @@
 
 ### Dependencies
 
-- (go) [https://github.com/pilu/traffic]()
-- (go) [https://github.com/pilu/fresh]()
+- (go) [https://github.com/go-martini/martini]()
 - (go) [https://github.com/rubenv/sql-migrate]()
 - (node) [https://github.com/gulpjs/gulp]()
 
@@ -18,7 +17,7 @@
 
 ```bash
 # start/watch server
-fresh
+script/server
 
 # build/watch assets
 gulp

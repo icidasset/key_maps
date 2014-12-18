@@ -10,11 +10,7 @@ import (
   "text/template"
   "io/ioutil"
   "net/http"
-  "os"
 )
-
-
-var SecretKey string
 
 
 type TemplateData struct {
@@ -40,6 +36,14 @@ func ScanTemplatesDir(path string) string {
   }
 
   return strings.Join(templates, "\n")
+}
+
+
+func MustBeAuthenticatedMiddleware(res http.ResponseWriter, req *http.Request) {
+  // x := req.Header.Get("Authorization")
+  //
+  // res.Header().Set("TEST", x)
+  // http.Error(res, x, http.StatusUnauthorized)
 }
 
 
@@ -74,17 +78,33 @@ func main() {
 
   defer db.Close()
 
-  // environment variables
-  SecretKey = os.Getenv("SECRET_KEY")
-
   // routes
-  r.Post("/api/users", binding.Bind(api.UserAuthFormData{}), api.Users__Create)
-  r.Post("/api/users/authenticate", binding.Bind(api.UserAuthFormData{}), api.Users__Authenticate)
-  r.Get("/api/users/verify-token", api.Users__VerifyToken)
+  r.Group("/api/users", func(r martini.Router) {
+    r.Get("/verify-token", api.Users__VerifyToken)
 
-  r.Get("/api/maps", api.Maps__Index)
-  r.Get("/api/maps/:id", api.Maps__Show)
-  r.Post("/api/maps", binding.Bind(api.MapFormData{}), api.Maps__Create)
+    r.Post(
+      "",
+      binding.Bind(api.UserAuthFormData{}),
+      api.Users__Create,
+    )
+
+    r.Post(
+      "/authenticate",
+      binding.Bind(api.UserAuthFormData{}),
+      api.Users__Authenticate,
+    )
+  })
+
+  r.Group("/api/maps", func(r martini.Router) {
+    r.Get("", api.Maps__Index)
+    r.Get("/:id", api.Maps__Show)
+
+    r.Post(
+      "",
+      binding.Bind(api.MapFormData{}),
+      api.Maps__Create,
+    )
+  }, MustBeAuthenticatedMiddleware)
 
   r.Get("/", rootHandler)
 

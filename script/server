@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+SECRET_KEY=doesntmatter go run main.go

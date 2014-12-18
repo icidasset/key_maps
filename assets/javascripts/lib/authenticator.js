@@ -22,7 +22,7 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
       var data = _this.getAuthenticateData(credentials);
       _this.makeRequest(data).then(function(response) {
         Ember.run(function() {
-          resolve(_this.getResponseData(response));
+          resolve(_this.getResponseData(response.user));
         });
       }, function(xhr) {
         Ember.run(function() {

@@ -2,11 +2,17 @@ import "./lib/environment";
 import "./lib/namespace";
 import "./lib/store";
 import "./lib/router";
+import "./lib/authenticator";
+import "./lib/authorizer";
+
+import "./initializers/authentication";
 
 import "./controllers/application";
 import "./controllers/map";
-import "./controllers/sign-up-controller";
+import "./controllers/sign-in";
+import "./controllers/sign-up";
 
 import "./models/map";
+import "./models/user";
 
 import "./components/application-header";

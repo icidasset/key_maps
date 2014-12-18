@@ -18,7 +18,11 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 //
 //  Sign in/up
 //
-K.SignUpRoute = Ember.Route.extend(SimpleAuth.UnauthenticatedRouteMixin);
+K.SignUpRoute = Ember.Route.extend(SimpleAuth.UnauthenticatedRouteMixin, {
+  model: function() {
+    return this.store.createRecord("user");
+  }
+});
 
 
 

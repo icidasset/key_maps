@@ -78,7 +78,7 @@ func main() {
   SecretKey = os.Getenv("SECRET_KEY")
 
   // routes
-  r.Post("/api/users", binding.Bind(api.UserNewFormData{}), api.Users__Create)
+  r.Post("/api/users", binding.Bind(api.UserAuthFormData{}), api.Users__Create)
   r.Post("/api/users/authenticate", binding.Bind(api.UserAuthFormData{}), api.Users__Authenticate)
 
   r.Get("/api/maps", api.Maps__Index)

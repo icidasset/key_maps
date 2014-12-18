@@ -3,17 +3,19 @@
   <div class="content-wrapper">
     <h1>Sign in</h1>
 
-    <form class="form">
+    <form class="form" {{action "authenticate" on="submit"}}>
       <div class="field">
-        <input type="text" placeholder="Email" />
+        {{input value=identification placeholder="Email"}}
       </div>
       <div class="field secondary">
-        <input type="password" placeholder="Password" />
+        {{input value=password placeholder="Password" type="password"}}
       </div>
+
+      <button class="btn" type="submit">Sign in</button>
     </form>
 
     <p>
-      Or {{#link-to "sign_up"}}sign up{{/link-to}} if you haven't got an account yet.
+      Or {{#link-to "sign_up"}}sign up{{/link-to}} if you haven"t got an account yet.
     </p>
   </div>
 

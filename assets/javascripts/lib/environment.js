@@ -1,7 +1,9 @@
 window.ENV = {
 
   "simple-auth" : {
-    "authenticationRoute": "/sign-in"
+    authenticationRoute: "/sign-in",
+    authorizer: "authorizer:custom",
+    store: "simple-auth-session-store:local-storage"
   }
 
 };

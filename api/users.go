@@ -14,21 +14,9 @@ import (
 type User struct {
   Id int
   Email string
-  EncryptedPassword string
+  EncryptedPassword string    `db:"encrypted_password"`
   CreatedAt time.Time         `db:"created_at"`
   UpdatedAt time.Time         `db:"updated_at"`
-}
-
-
-type UserNew struct {
-  Email string                `form:"email" binding:"required"`
-  Password string             `form:"password" binding:"required"`
-  PasswordConfirmation string `form:"password_confirmation" binding:"required"`
-}
-
-
-type UserNewFormData struct {
-  User UserNew                `form:"user" binding:"required"`
 }
 
 
@@ -52,7 +40,7 @@ type UserPublic struct {
 //
 //  Routes
 //
-func Users__Create(ufd UserNewFormData, r render.Render) {
+func Users__Create(ufd UserAuthFormData, r render.Render) {
   query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at)"
 
   // make new user
@@ -89,7 +77,9 @@ func Users__Create(ufd UserNewFormData, r render.Render) {
   )
 
   token := generate_new_token(&user)
-  r.JSON(200, UserPublic{ Token: token })
+  user_public := UserPublic{ Token: token }
+
+  r.JSON(200, map[string]UserPublic{ "user": user_public })
 }
 
 
@@ -118,7 +108,9 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
   }
 
   token := generate_new_token(&user)
-  r.JSON(200, UserPublic{ Token: token })
+  user_public := UserPublic{ Token: token }
+
+  r.JSON(200, map[string]UserPublic{ "user": user_public })
 }
 
 

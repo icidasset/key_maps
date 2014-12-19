@@ -102,12 +102,19 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
 
   // other
   create_map: function(name) {
-    var new_map = this.get("targetObject").store.createRecord("map", {
+    var controller = this.get("targetObject");
+    var comp = this, new_map;
+
+    new_map = controller.store.createRecord("map", {
       name: name,
       structure: "{}"
     });
 
-    new_map.save();
+    new_map.save().then(function() {
+      comp.select_map(new_map.get("slug"));
+    }, function() {
+      controller.transitionToRoute("index");
+    });
   },
 
 

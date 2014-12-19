@@ -23,6 +23,6 @@ K.ApplicationController = Ember.Controller.extend({
         slug: m.get("slug")
       };
     });
-  }.observes("model")
+  }.observes("model.@each", "model.@each.slug")
 
 });

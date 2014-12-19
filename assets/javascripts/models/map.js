@@ -6,6 +6,5 @@ K.Map = DS.Model.extend({
   slug: attr("string"),
   structure: attr(),
   created_at: attr(),
-  updated_at: attr(),
-  user_id: attr()
+  updated_at: attr()
 });

@@ -17,7 +17,7 @@ type Map struct {
   Structure string        `json:"structure" form:"structure" binding:"required"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
-  UserId int              `json:"user_id" db:"user_id"`
+  UserId int              `json:"-" db:"user_id"`
 }
 
 
@@ -89,7 +89,7 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
 
     db.Inst().Get(
       &m,
-      "SELECT * FROM maps WHERE slug = $1 ADND user_id = $2",
+      "SELECT * FROM maps WHERE slug = $1 AND user_id = $2",
       slug,
       u.Id,
     )

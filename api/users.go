@@ -19,13 +19,13 @@ type User struct {
 
 
 type UserAuth struct {
-  Email string                `form:"email" binding:"required"`
-  Password string             `form:"password" binding:"required"`
+  Email string                `form:"email"`
+  Password string             `form:"password"`
 }
 
 
 type UserAuthFormData struct {
-  User UserAuth               `form:"user" binding:"required"`
+  User UserAuth               `form:"user"`
 }
 
 
@@ -36,7 +36,7 @@ type UserPublic struct {
 
 
 //
-//  Routes
+//  -> CREATE
 //
 func Users__Create(ufd UserAuthFormData, r render.Render) {
   query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at)"
@@ -61,7 +61,7 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
 
   // if error
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, map[string]string{ "error": err.Error() })
     return
   }
 
@@ -81,6 +81,10 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
 }
 
 
+
+//
+//  -> AUTHENTICATE
+//
 func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
   user := User{}
 
@@ -115,6 +119,10 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 }
 
 
+
+//
+//  -> VERIFY TOKEN
+//
 func Users__VerifyToken(req *http.Request, r render.Render) {
   qs := req.URL.Query()
   is_valid := VerifyToken(qs.Get("token"))

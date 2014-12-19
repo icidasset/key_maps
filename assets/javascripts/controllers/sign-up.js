@@ -43,8 +43,9 @@ K.SignUpController = Ember.Controller.extend({
           "authenticator:custom",
           { token: response.get("token") }
         );
-      }, function() {
-        alert("Something went wrong, please try again.");
+      }, function(xhr) {
+        // xhr.responseJSON.error
+        _this.set("errors", ["Email is already taken."]);
       });
     }
 

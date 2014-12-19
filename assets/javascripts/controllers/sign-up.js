@@ -39,7 +39,10 @@ K.SignUpController = Ember.Controller.extend({
 
       // create model
       return m.save().then(function(response) {
-        _this.get("session").restore(response);
+        _this.get("session").authenticate(
+          "authenticator:custom",
+          { token: response.get("token") }
+        );
       }, function() {
         alert("Something went wrong, please try again.");
       });

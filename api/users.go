@@ -90,21 +90,24 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
     ufd.User.Email,
   )
 
+  // <email>
   if user.Email == "" {
-    // {err} user doesn't exist
-    r.JSON(500, map[string]string{ "error": "User not found." })
+    r.JSON(200, map[string]string{ "error": "User not found." })
+    return
   }
 
+  // <password>
   bcrypt_check_err := bcrypt.CompareHashAndPassword(
     []byte(user.EncryptedPassword),
     []byte(ufd.User.Password),
   )
 
   if bcrypt_check_err != nil {
-    // {err} invalid password
-    r.JSON(500, map[string]string{ "error": "Invalid password." })
+    r.JSON(200, map[string]string{ "error": "Invalid password." })
+    return
   }
 
+  // <success>
   token := GenerateToken(&user)
   user_public := UserPublic{ Token: token }
 

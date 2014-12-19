@@ -1,6 +1,7 @@
 K.Router.map(function() {
   this.route("sign_in", { path: "/sign-in" });
   this.route("sign_up", { path: "/sign-up" });
+  this.route("sign_out", { path: "/sign-out" });
 
   // authenticated routes
   this.route("map", { path: "/:slug" });
@@ -13,9 +14,7 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
   },
 
   get_model: function() {
-    if (!this.get("session.isAuthenticated")) {
-      return { maps: [] };
-    } else {
+    if (this.get("session.isAuthenticated")) {
       return this.store.find("map");
     }
   },
@@ -30,11 +29,28 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 
 
 //
-//  Sign in/up
+//  Sign in/up/out
 //
+K.SignInRoute = Ember.Route.extend({
+  actions: {
+    sessionAuthenticationFailed: function(error) {
+      this.set("sign_in_error", error);
+    }
+  }
+});
+
+
 K.SignUpRoute = Ember.Route.extend(SimpleAuth.UnauthenticatedRouteMixin, {
   model: function() {
     return this.store.createRecord("user");
+  }
+});
+
+
+K.SignOutRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
+  beforeModel: function(transition) {
+    transition.abort();
+    this.send("invalidateSession");
   }
 });
 

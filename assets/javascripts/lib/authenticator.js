@@ -23,6 +23,15 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
 
 
   authenticate: function(credentials) {
+    if (credentials.token) {
+      return this.authenticateToken(credentials.token);
+    } else {
+      return this.authenticateStandard(credentials);
+    }
+  },
+
+
+  authenticateStandard: function(credentials) {
     var _this = this;
     var url = "/api/users/authenticate";
 
@@ -33,14 +42,25 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
 
       _this.makeRequest(data, url, "POST").then(function(response) {
         Ember.run(function() {
-          resolve(_this.getResponseData(response.user));
+          if (response.user && response.user.token) {
+            resolve(response.user);
+          } else {
+            reject(response.error);
+          }
         });
+
       }, function(xhr) {
         Ember.run(function() {
           reject(xhr.responseJSON || xhr.responseText);
         });
+
       });
     });
+  },
+
+
+  authenticateToken: function(token) {
+    return { user: { token: token }};
   },
 
 
@@ -52,11 +72,6 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
     authentication[this.identificationField] = credentials.identification;
 
     return authentication;
-  },
-
-
-  getResponseData: function(response) {
-    return response;
   },
 
 

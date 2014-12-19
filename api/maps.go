@@ -86,7 +86,14 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
   // render map as json
   } else {
     m := Map{}
-    db.Inst().Get(&m, "SELECT * FROM maps WHERE slug = $1", slug)
+
+    db.Inst().Get(
+      &m,
+      "SELECT * FROM maps WHERE slug = $1 ADND user_id = $2",
+      slug,
+      u.Id,
+    )
+
     r.JSON(200, map[string]Map{ "map": m })
 
   }

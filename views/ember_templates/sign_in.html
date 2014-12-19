@@ -12,6 +12,12 @@
       </div>
 
       <button class="btn" type="submit">Sign in</button>
+
+      {{#if sign_in_error}}
+        <p style="color:red;">
+          {{sign_in_error}}
+        </p>
+      {{/if}}
     </form>
 
     <p>

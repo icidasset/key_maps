@@ -7,5 +7,7 @@ CREATE TABLE users (
   updated_at timestamp NOT NULL
 );
 
+CREATE INDEX users_email_index ON users(email)
+
 -- +migrate Down
 DROP TABLE users;

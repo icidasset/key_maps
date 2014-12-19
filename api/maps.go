@@ -17,12 +17,12 @@ type Map struct {
   Structure string        `json:"structure" form:"structure" binding:"required"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
-  UserId int              `json:"user_id" from:"user_id" binding:"required"`
+  UserId int              `json:"user_id" db:"user_id"`
 }
 
 
 type MapFormData struct {
-  Map Map `form:"map" binding:"required"`
+  Map Map                 `form:"map" binding:"required"`
 }
 
 
@@ -30,11 +30,11 @@ type MapFormData struct {
 //
 //  Routes
 //
-func Maps__Index(r render.Render) {
+func Maps__Index(r render.Render, u User) {
   m := []Map{}
 
   // execute query
-  err := db.Inst().Select(&m, "SELECT * FROM maps")
+  err := db.Inst().Select(&m, "SELECT * FROM maps WHERE user_id = $1", u.Id)
 
   // render
   if err != nil {
@@ -45,11 +45,16 @@ func Maps__Index(r render.Render) {
 }
 
 
-func Maps__Show(params martini.Params, r render.Render) {
+func Maps__Show(params martini.Params, r render.Render, u User) {
   m := Map{}
 
   // execute query
-  err := db.Inst().Get(&m, "SELECT * FROM maps WHERE id = $1", params["id"])
+  err := db.Inst().Get(
+    &m,
+    "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
+    params["id"],
+    u.Id,
+  )
 
   // render
   if err != nil {
@@ -62,15 +67,14 @@ func Maps__Show(params martini.Params, r render.Render) {
 }
 
 
-func Maps__Create(mfd MapFormData, r render.Render) {
-  query := "INSERT INTO maps (name, slug, structure, created_at, updated_at)" +
-           " VALUES (:name, :slug, :structure, :created_at, :updated_at)"
+func Maps__Create(mfd MapFormData, r render.Render, u User) {
+  query := "INSERT INTO maps (name, slug, structure, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :created_at, :updated_at, :user_id)"
 
   // make new map
   slug := slug.Slug(mfd.Map.Name)
   now := time.Now()
 
-  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, CreatedAt: now, UpdatedAt: now}
+  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, CreatedAt: now, UpdatedAt: now, UserId: u.Id}
 
   // execute query
   _, err := db.Inst().NamedExec(query, new_map)

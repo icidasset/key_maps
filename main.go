@@ -6,10 +6,10 @@ import (
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/binding"
   "github.com/martini-contrib/render"
-  "strings"
-  "text/template"
   "io/ioutil"
   "net/http"
+  "strings"
+  "text/template"
 )
 
 
@@ -39,11 +39,17 @@ func ScanTemplatesDir(path string) string {
 }
 
 
-func MustBeAuthenticatedMiddleware(res http.ResponseWriter, req *http.Request) {
-  // x := req.Header.Get("Authorization")
-  //
-  // res.Header().Set("TEST", x)
-  // http.Error(res, x, http.StatusUnauthorized)
+func MustBeAuthenticatedMiddleware(c martini.Context, w http.ResponseWriter, r *http.Request) {
+  auth_header := r.Header.Get("Authorization")
+  t := strings.Split(auth_header, "Bearer ")[1]
+  token := api.ParseToken(t)
+
+  if !token.Valid {
+    http.Error(w, "Forbidden", http.StatusUnauthorized)
+  } else {
+    id := int(token.Claims["user_id"].(float64))
+    c.Map(api.User{ Id: id })
+  }
 }
 
 

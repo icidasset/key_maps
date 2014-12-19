@@ -14,6 +14,8 @@
 
 1. install dependencies listed above
 2. `npm install`
+3. make postgres database `keymaps_development`
+4. `script/migrate`
 
 ```bash
 # start/watch server

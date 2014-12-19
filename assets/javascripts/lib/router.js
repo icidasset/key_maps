@@ -9,7 +9,21 @@ K.Router.map(function() {
 
 K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
   model: function() {
-    return this.store.find("map");
+    return this.get_model();
+  },
+
+  get_model: function() {
+    if (!this.get("session.isAuthenticated")) {
+      return { maps: [] };
+    } else {
+      return this.store.find("map");
+    }
+  },
+
+  actions: {
+    reset_model: function() {
+      this.set("model", this.get_model());
+    }
   }
 });
 

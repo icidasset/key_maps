@@ -1,6 +1,6 @@
 .form {
   @include clearfix;
-  margin: 35px 0;
+  margin: 37px 0;
 
   .field {
     float: left;
@@ -28,13 +28,13 @@
     }
 
     &:focus {
-      border-color: lighten($blue, 50);
-      color: $blue;
+      border-color: lighten($the_color, 37.5);
+      color: $the_color;
       outline: none;
       z-index: 9;
 
       @include placeholder {
-        color: rgba(lighten($blue, 42.5), .75);
+        color: rgba(lighten($the_color, 30), .75);
       }
     }
   }

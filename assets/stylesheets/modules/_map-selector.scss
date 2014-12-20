@@ -65,7 +65,7 @@
   .map-selector__message {
     @include transform(translateY(-50%));
     @include transition(opacity $default_transition_duration);
-    background-color: $fuchsia;
+    background-color: $the_color;
     border-radius: $general_border_radius;
     color: white;
     font-size: 0.65em;

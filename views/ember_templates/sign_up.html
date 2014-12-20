@@ -1,7 +1,11 @@
 <script type="text/x-handlebars" data-template-name="sign_up">
 
   <div class="content-wrapper">
-    <h1>Sign up</h1>
+    <h1>
+      {{#link-to "sign_in"}}Sign in{{/link-to}}
+      <span class="or"></span>
+      Sign up
+    </h1>
 
     <form class="form" {{action "submit" on="submit"}}>
       <div class="field full-width">

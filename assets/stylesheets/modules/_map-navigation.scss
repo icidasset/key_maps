@@ -3,22 +3,23 @@
   font-size: 0;
   line-height: 0;
   padding: 0 $general_padding;
+  text-align: center;
 
   a {
-    border-right: 1px solid rgba(black, 0.05);
+    border-right: 2px solid rgba(black, 0.05);
     color: #555;
     display: inline-block;
     font-size: 0.75rem;
     height: 48px;
     letter-spacing: 0.04em;
     line-height: 48px;
-    padding: 0 5%;
     position: relative;
     text-transform: uppercase;
+    width: 16%;
   }
 
   a:first-child {
-    border-left: 1px solid rgba(black, 0.05);
+    border-left: 2px solid rgba(black, 0.05);
   }
 
   a.active:before {

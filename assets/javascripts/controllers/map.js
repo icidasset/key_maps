@@ -13,7 +13,7 @@ K.MapController = Ember.Controller.extend({
     if (!header_component) return;
 
     // continue
-    m = this.get("model").toArray()[0];
+    m = this.get("model");
 
     if (m) {
       header_component.set("map_selector_value", m.get("name"));

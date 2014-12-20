@@ -1,4 +1,5 @@
 .mod-map-toolbar {
+  @include clearfix;
 
   .map-toolbar__actions,
   .map-toolbar__url {
@@ -26,6 +27,10 @@
       height: 100%;
       padding: 0 $general_padding;
       text-align: center
+    }
+
+    a:first-child {
+      margin-left: 2.5%;
     }
 
     a:hover {

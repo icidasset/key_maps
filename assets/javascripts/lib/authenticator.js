@@ -60,7 +60,9 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
 
 
   authenticateToken: function(token) {
-    return { user: { token: token }};
+    return new Ember.RSVP.Promise(function(resolve, reject) {
+      resolve({ token: token });
+    });
   },
 
 

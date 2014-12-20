@@ -11,4 +11,22 @@
     <div class="map-toolbar__url"></div>
   </div>
 
+
+  <div class="content-wrapper">
+    <h1>Modify structure</h1>
+
+    <form class="form" {{action "save" on="submit"}}>
+      {{#each struct in structure}}
+        <div class="field">
+          {{input value=struct.key placeholder="key"}}
+        </div>
+        <div class="field secondary">
+          {{input value=struct.type placeholder="type"}}
+        </div>
+      {{/each}}
+
+      <button class="btn" type="submit">Save</button>
+    </form>
+  </div>
+
 </script>

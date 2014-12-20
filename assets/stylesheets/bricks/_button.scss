@@ -2,11 +2,13 @@
   background: $the_color;
   border: 0;
   border-radius: $general_border_radius;
-  color: white;
+  color: rgba(white, .925);
   height: 64px;
   padding: 0 21px;
 
-  &:focus {
+  &:focus,
+  &:active {
+    background-color: darken($the_color, 12.5);
     outline: none;
   }
 

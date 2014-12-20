@@ -1,0 +1,25 @@
+.message {
+  background: $vanilla;
+  border-radius: $general_border_radius;
+  color: desaturate(darken($vanilla, 52.5), 52.5);
+  display: inline-block;
+  font-size: 1.05rem;
+  margin: 0 8px 8px 0;
+  padding: 13px 27px 12px;
+
+  i[icon] {
+    font-size: 0.75em;
+    margin-right: 0.6em;
+  }
+
+  //
+  //  * Error
+  //
+  &.is-error {
+    background-color: transparent;
+    border: 2px solid $red;
+    color: $red;
+  }
+
+
+}

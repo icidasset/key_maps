@@ -31,7 +31,10 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
     },
 
     sessionInvalidationSucceeded: function() {
-      this.controller.set("model", null);
+      if (this.controller) {
+        this.controller.set("model", null);
+      }
+
       this._super();
     }
   }
@@ -45,6 +48,12 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 K.SignInRoute = Ember.Route.extend({
   setupController: function(controller, model) {
     controller.set("errors", null);
+  },
+
+  beforeModel: function(transition) {
+    if (this.get("session.isAuthenticated")) {
+      this.transitionTo("index");
+    }
   }
 });
 
@@ -52,14 +61,23 @@ K.SignInRoute = Ember.Route.extend({
 K.SignUpRoute = Ember.Route.extend(SimpleAuth.UnauthenticatedRouteMixin, {
   model: function() {
     return this.store.createRecord("user");
+  },
+
+  beforeModel: function(transition) {
+    if (this.get("session.isAuthenticated")) {
+      this.transitionTo("index");
+    }
   }
 });
 
 
 K.SignOutRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
   beforeModel: function(transition) {
-    transition.abort();
-    this.send("invalidateSession");
+    if (this.get("session.isAuthenticated")) {
+      transition.send("invalidateSession");
+    } else {
+      this.transitionTo("index");
+    }
   }
 });
 

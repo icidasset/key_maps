@@ -1,0 +1,12 @@
+i[icon] {
+  @include font-smoothing;
+  display: inline-block;
+  font-style: normal;
+  font-family: "feather-icons";
+
+  &:before {
+    content: attr(icon);
+  }
+
+
+}

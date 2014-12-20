@@ -3,7 +3,7 @@
   <div class="content-wrapper">
     <h1>
       Sign in
-      <span class="or"></span>
+      <i icon=""></i>
       {{#link-to "sign_up"}}Sign up{{/link-to}}
     </h1>
 
@@ -17,11 +17,7 @@
 
       <button class="btn" type="submit">Sign in</button>
 
-      {{#each error in errors}}
-        <p class="errors" style="color:red;">
-          {{error}}
-        </p>
-      {{/each}}
+      {{partial "errors"}}
     </form>
   </div>
 

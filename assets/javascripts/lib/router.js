@@ -21,9 +21,18 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 
   actions: {
     sessionAuthenticationSucceeded: function() {
+      var route = this;
+
+      this.getModel().then(function(model) {
+        route.controller.set("model", model);
+      });
+
       this._super();
-      console.log("RESET");
-      this.set("model", this.getModel());
+    },
+
+    sessionInvalidationSucceeded: function() {
+      this.controller.set("model", null);
+      this._super();
     }
   }
 });
@@ -34,10 +43,8 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 //  Sign in/up/out
 //
 K.SignInRoute = Ember.Route.extend({
-  actions: {
-    sessionAuthenticationFailed: function(error) {
-      this.set("signInError", error);
-    }
+  setupController: function(controller, model) {
+    controller.set("errors", null);
   }
 });
 

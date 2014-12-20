@@ -3,7 +3,7 @@
   <div class="content-wrapper">
     <h1>Sign in</h1>
 
-    <form class="form" {{action "authenticate" on="submit"}}>
+    <form class="form" {{action "sign_in" on="submit"}}>
       <div class="field">
         {{input value=identification placeholder="Email"}}
       </div>
@@ -13,15 +13,15 @@
 
       <button class="btn" type="submit">Sign in</button>
 
-      {{#if signInError}}
-        <p style="color:red;">
-          {{signInError}}
+      {{#each error in errors}}
+        <p class="errors" style="color:red;">
+          {{error}}
         </p>
-      {{/if}}
+      {{/each}}
     </form>
 
     <p>
-      Or {{#link-to "sign_up"}}sign up{{/link-to}} if you haven"t got an account yet.
+      Or {{#link-to "sign_up"}}sign up{{/link-to}} if you haven't got an account yet.
     </p>
   </div>
 

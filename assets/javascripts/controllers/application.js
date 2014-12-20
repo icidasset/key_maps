@@ -7,7 +7,6 @@ K.ApplicationController = Ember.Controller.extend({
     var model = this.get("model");
 
     if (!model) {
-      console.log("f - no model");
       return;
     }
 
@@ -29,8 +28,6 @@ K.ApplicationController = Ember.Controller.extend({
         slug: m.get("slug")
       };
     });
-
-    console.log(model);
   }.observes("model.@each.slug")
 
 });

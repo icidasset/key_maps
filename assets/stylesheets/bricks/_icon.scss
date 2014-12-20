@@ -1,12 +1,15 @@
-i[icon] {
+i {
   @include font-smoothing;
   display: inline-block;
+  font-size: 0.75em;
   font-style: normal;
   font-family: "feather-icons";
 
-  &:before {
+  &[icon]:before {
     content: attr(icon);
   }
+
+  &.plus:before { content: "\e114"; }
 
 
 }

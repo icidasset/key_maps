@@ -1,7 +1,7 @@
 import "./lib/environment";
 import "./lib/namespace";
 import "./lib/store";
-import "./lib/router";
+import "./lib/routes";
 import "./lib/authenticator";
 import "./lib/authorizer";
 

@@ -1,8 +1,10 @@
 <script type="text/x-handlebars" data-template-name="map">
 
   <div class="mod-map-navigation">
-    <a href="#">Data</a>
-    <a href="#">Keys</a>
+    {{#link-to "map.index"}}Data{{/link-to}}
+    {{#link-to "map.keys"}}Keys{{/link-to}}
   </div>
+
+  {{outlet}}
 
 </script>

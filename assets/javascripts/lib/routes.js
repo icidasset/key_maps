@@ -4,7 +4,9 @@ K.Router.map(function() {
   this.route("sign_out", { path: "/sign-out" });
 
   // authenticated routes
-  this.route("map", { path: "/:slug" });
+  this.route("map", { path: "/:slug" }, function() {
+    this.route("keys", { path: "/keys" });
+  });
 });
 
 

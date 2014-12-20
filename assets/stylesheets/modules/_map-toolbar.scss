@@ -1,0 +1,45 @@
+.mod-map-toolbar {
+
+  .map-toolbar__actions,
+  .map-toolbar__url {
+    border-bottom: 2px solid #f8f8f8;
+    height: 52px;
+    line-height: 55px;
+    overflow: hidden;
+    width: calc(50% - 1px);
+  }
+
+
+  //
+  //  Actions
+  //
+  .map-toolbar__actions {
+    border-right: 2px solid #f8f8f8;
+    float: left;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    a {
+      color: $black;
+      cursor: pointer;
+      display: inline-block;
+      height: 100%;
+      padding: 0 $general_padding;
+      text-align: center
+    }
+
+    a:hover {
+      background-color: $the_color;
+      color: white;
+    }
+  }
+
+  //
+  //  URL
+  //
+  .map-toolbar__url {
+    float: right;
+  }
+
+
+}

@@ -1,6 +1,9 @@
 .form {
-  @include clearfix;
   margin: 37px 0;
+
+  &, .row {
+    @include clearfix;
+  }
 
   .field {
     float: left;
@@ -47,7 +50,8 @@
     }
   }
 
-  .field.secondary input {
+  .field.secondary input,
+  .row .field:not(.full-width):nth-child(2) input {
     margin-left: -2px;
     width: calc(100% + 2px);
   }

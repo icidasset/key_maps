@@ -17,13 +17,22 @@
 
     <form class="form">
       {{#each map_item in model.map_items}}
-        <div class="field">
-          {{input value=map_item.id}}
-        </div>
-        <div class="field secondary">
-          {{input value=map_item.structure_data}}
-        </div>
+        {{#each sa_1 in structure_arrays}}
+          {{#each sa_2 in sa_1}}
+            <div class="row">
+              {{#each field in sa_2}}
+                <div class="field">
+                  {{field.key}}
+                </div>
+              {{/each}}
+            </div>
+          {{/each}}
+        {{/each}}
       {{/each}}
+
+      <p>
+        <br><br>
+      </p>
     </form>
   </div>
 

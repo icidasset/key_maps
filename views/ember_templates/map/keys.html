@@ -4,7 +4,7 @@
     <div class="map-toolbar__actions">
       <a {{action "add"}}>
         <i class="plus"></i>
-        Add
+        Add key
       </a>
     </div>
 
@@ -13,7 +13,7 @@
 
 
   <div class="content-wrapper">
-    <h1>Modify structure</h1>
+    <h1>Structure</h1>
 
     <form class="form" {{action "save" on="submit"}}>
       {{#each struct in structure}}
@@ -27,6 +27,11 @@
 
       <button class="btn" type="submit">Save</button>
     </form>
+
+    <div class="note">
+      On save, the keys will be sorted alphabetically
+      <br>and <strong>empty rows will be removed</strong>.
+    </div>
   </div>
 
 </script>

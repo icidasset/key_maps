@@ -10,6 +10,21 @@ K.MapKeysController = Ember.Controller.extend({
   }.observes("model"),
 
 
+  clean_structure: function(structure) {
+    var c = [];
+
+    structure.forEach(function(s) {
+      if (s.key && s.key.length > 0) {
+        c.push(s);
+      }
+    });
+
+    c = c.sortBy("key");
+
+    return c;
+  },
+
+
   actions: {
 
     add: function() {
@@ -24,9 +39,13 @@ K.MapKeysController = Ember.Controller.extend({
 
     save: function() {
       var m = this.get("model");
+      var s = this.clean_structure(this.get("structure"));
 
-      m.set("structure", JSON.stringify(this.get("structure")));
-      m.save();
+      this.set("structure", s);
+      m.set("structure", JSON.stringify(s));
+      m.save().then(function() {
+        $(document.activeElement).filter("button").blur();
+      });
     }
 
   }

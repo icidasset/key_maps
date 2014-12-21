@@ -110,6 +110,12 @@ func main() {
       binding.Bind(api.MapFormData{}),
       api.Maps__Create,
     )
+
+    r.Put(
+      "/:id",
+      binding.Bind(api.MapFormData{}),
+      api.Maps__Update,
+    )
   }, MustBeAuthenticatedMiddleware)
 
   r.Get("/", rootHandler)

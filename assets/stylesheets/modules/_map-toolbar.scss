@@ -34,8 +34,7 @@
     }
 
     a:hover {
-      background-color: $the_color;
-      color: white;
+      color: $the_color;
     }
   }
 
@@ -44,6 +43,7 @@
   //
   .map-toolbar__url {
     float: right;
+    font-family: monospace;
   }
 
 

@@ -36,7 +36,7 @@ type UserPublic struct {
 
 
 //
-//  -> CREATE
+//  {post} CREATE
 //
 func Users__Create(ufd UserAuthFormData, r render.Render) {
   query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at)"
@@ -83,7 +83,7 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
 
 
 //
-//  -> AUTHENTICATE
+//  {post} AUTHENTICATE
 //
 func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
   user := User{}
@@ -121,7 +121,7 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 
 
 //
-//  -> VERIFY TOKEN
+//  {get} VERIFY TOKEN
 //
 func Users__VerifyToken(req *http.Request, r render.Render) {
   qs := req.URL.Query()

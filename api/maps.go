@@ -13,8 +13,8 @@ import (
 type Map struct {
   Id int                  `json:"id"`
   Slug string             `json:"slug"`
-  Name string             `json:"name" form:"name" binding:"required"`
-  Structure string        `json:"structure" form:"structure" binding:"required"`
+  Name string             `json:"name" form:"name"`
+  Structure string        `json:"structure" form:"structure"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
   UserId int              `json:"-" db:"user_id"`
@@ -28,7 +28,7 @@ type MapFormData struct {
 
 
 //
-//  Routes
+//  {get} INDEX
 //
 func Maps__Index(r render.Render, u User) {
   m := []Map{}
@@ -45,6 +45,10 @@ func Maps__Index(r render.Render, u User) {
 }
 
 
+
+//
+//  {get} SHOW
+//
 func Maps__Show(params martini.Params, r render.Render, u User) {
   m := Map{}
 
@@ -67,6 +71,10 @@ func Maps__Show(params martini.Params, r render.Render, u User) {
 }
 
 
+
+//
+//  {post} CREATE
+//
 func Maps__Create(mfd MapFormData, r render.Render, u User) {
   query := "INSERT INTO maps (name, slug, structure, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :created_at, :updated_at, :user_id)"
 
@@ -96,5 +104,37 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
 
     r.JSON(200, map[string]Map{ "map": m })
 
+  }
+}
+
+
+
+//
+//  {put} UPDATE
+//
+func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u User) {
+  _, err := db.Inst().Exec(
+    "UPDATE maps SET structure = $1, updated_at = $2 WHERE id = $3 AND user_id = $4",
+    mfd.Map.Structure,
+    time.Now(),
+    params["id"],
+    u.Id,
+  )
+
+  // fetch
+  m := Map{}
+
+  db.Inst().Get(
+    &m,
+    "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
+    params["id"],
+    u.Id,
+  )
+
+  // render
+  if err != nil {
+    panic(err)
+  } else {
+    r.JSON(200, map[string]Map{ "map": m })
   }
 }

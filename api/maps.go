@@ -1,11 +1,13 @@
 package api
 
 import (
+  "net/http"
   "github.com/extemporalgenome/slug"
   "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
-  _ "github.com/lib/pq"
   "github.com/martini-contrib/render"
+  "strconv"
+  "strings"
   "time"
 )
 
@@ -17,6 +19,7 @@ type Map struct {
   Structure string        `json:"structure" form:"structure"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
+  MapItems IntSlice       `json:"map_items" db:"map_items"`
   UserId int              `json:"-" db:"user_id"`
 }
 
@@ -28,19 +31,60 @@ type MapFormData struct {
 
 
 //
+//  IntSlice
+//
+type IntSlice []int
+
+
+func (i *IntSlice) Scan(src interface{}) error {
+  as_bytes, _ := src.([]byte)
+  as_string := string(as_bytes)
+
+  a := strings.Split(as_string, ", ")
+  b := make([]int, 0)
+
+  for _, x := range a {
+    i, _ := strconv.Atoi(x)
+    b = append(b, i)
+  }
+
+  (*i) = IntSlice(b)
+
+  return nil
+}
+
+
+
+//
 //  {get} INDEX
 //
-func Maps__Index(r render.Render, u User) {
-  m := []Map{}
+func Maps__Index(w http.ResponseWriter, r render.Render, u User) {
+  maps := []Map{}
 
   // execute query
-  err := db.Inst().Select(&m, "SELECT * FROM maps WHERE user_id = $1", u.Id)
+  rows, err := db.Inst().Queryx(
+    `SELECT maps.* AS map_id,
+            array_to_string(array(
+              SELECT id FROM map_items
+              WHERE maps.id = map_items.map_id
+            ), ', ') AS map_items
+     FROM maps
+     WHERE maps.user_id = $1
+     ORDER BY maps.id;`,
+     u.Id,
+  )
+
+  for rows.Next() {
+    m := Map{}
+    err = rows.StructScan(&m)
+    maps = append(maps, m)
+  }
 
   // render
   if err != nil {
     panic(err)
   } else {
-    r.JSON(200, map[string][]Map{ "maps": m })
+    r.JSON(200, map[string][]Map{ "maps": maps })
   }
 }
 

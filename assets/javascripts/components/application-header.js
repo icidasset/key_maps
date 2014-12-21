@@ -33,7 +33,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
     var fuz = this.get("targetObject.fuzzy_search");
 
     val = this.get("map_selector_value");
-    match = fuz.search(val)[0];
+    if (val) match = fuz.search(val)[0];
 
     if (match) {
       name = match.item.name;
@@ -53,7 +53,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
       status = "select";
     } else if (match) {
       status = "select_or_create";
-    } else {
+    } else if (val && val.length > 0) {
       status = "create";
     }
 
@@ -92,6 +92,9 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
             if (e.shiftKey) this.create_map(val);
             else this.select_map(match.item.slug);
             break;
+
+          default:
+            this.get("targetObject").transitionToRoute("index");
         }
 
       }
@@ -122,14 +125,12 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
     var transition = this.get("targetObject").transitionToRoute("map", slug);
     var match;
 
-    if (!transition.intent) {
-      match = this.get("map_match");
+    match = this.get("map_match");
 
-      this.set("map_selector_value", match.item.name);
-      this.set("map_selector_show_message", false);
+    this.set("map_selector_value", match.item.name);
+    this.set("map_selector_show_message", false);
 
-      document.activeElement.blur();
-    }
+    document.activeElement.blur();
   }
 
 });

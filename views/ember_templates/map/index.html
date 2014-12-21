@@ -14,6 +14,17 @@
 
   <div class="content-wrapper">
     <h1>Collection</h1>
+
+    <form class="form">
+      {{#each map_item in model.map_items}}
+        <div class="field">
+          {{input value=map_item.id}}
+        </div>
+        <div class="field secondary">
+          {{input value=map_item.structure_data}}
+        </div>
+      {{/each}}
+    </form>
   </div>
 
 </script>

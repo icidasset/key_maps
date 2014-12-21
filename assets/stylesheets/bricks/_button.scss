@@ -1,14 +1,19 @@
 .btn {
-  background: $the_color;
+  background: transparent;
   border: 0;
   border-radius: $general_border_radius;
   color: rgba(white, .925);
   height: 64px;
   padding: 0 21px;
 
+  @include linear-gradient(
+    rgba($the_color, .55),
+    $the_color
+  );
+
   &:focus,
   &:active {
-    background-color: darken($the_color, 12.5);
+    background-color: $gray;
     outline: none;
   }
 

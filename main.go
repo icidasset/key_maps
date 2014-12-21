@@ -41,14 +41,21 @@ func ScanTemplatesDir(path string) string {
 
 func MustBeAuthenticatedMiddleware(c martini.Context, w http.ResponseWriter, r *http.Request) {
   auth_header := r.Header.Get("Authorization")
-  t := strings.Split(auth_header, "Bearer ")[1]
-  token := api.ParseToken(t)
 
-  if !token.Valid {
-    http.Error(w, "Forbidden", http.StatusUnauthorized)
+  if strings.Contains(auth_header, "Bearer") {
+    t := strings.Split(auth_header, "Bearer ")[1]
+    token := api.ParseToken(t)
+
+    if !token.Valid {
+      http.Error(w, "Forbidden", http.StatusUnauthorized)
+    } else {
+      id := int(token.Claims["user_id"].(float64))
+      c.Map(api.User{ Id: id })
+    }
+
   } else {
-    id := int(token.Claims["user_id"].(float64))
-    c.Map(api.User{ Id: id })
+    http.Error(w, "Forbidden", http.StatusUnauthorized)
+
   }
 }
 
@@ -84,7 +91,7 @@ func main() {
 
   defer db.Close()
 
-  // routes
+  // - users
   r.Group("/api/users", func(r martini.Router) {
     r.Get("/verify-token", api.Users__VerifyToken)
 
@@ -101,6 +108,7 @@ func main() {
     )
   })
 
+  // - maps
   r.Group("/api/maps", func(r martini.Router) {
     r.Get("", api.Maps__Index)
     r.Get("/:id", api.Maps__Show)
@@ -118,6 +126,18 @@ func main() {
     )
   }, MustBeAuthenticatedMiddleware)
 
+  // - map items
+  r.Group("/api/map_items", func(r martini.Router) {
+    r.Get("/:id", api.MapItems__Show)
+
+    r.Post(
+      "",
+      binding.Bind(api.MapItemFormData{}),
+      api.MapItems__Create,
+    )
+  }, MustBeAuthenticatedMiddleware)
+
+  // - root
   r.Get("/", rootHandler)
 
   // setup server

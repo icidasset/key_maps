@@ -1,5 +1,6 @@
 K.MapIndexController = Ember.Controller.extend({
   fullWidthTypes: ["text"],
+  values: {},
 
 
   structure_arrays: function() {
@@ -23,7 +24,9 @@ K.MapIndexController = Ember.Controller.extend({
       }
     });
 
-    return [all, [full]];
+    all.push(full);
+
+    return all;
   }.property("model.structure"),
 
 

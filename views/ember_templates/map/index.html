@@ -17,17 +17,17 @@
 
     <form class="form">
       {{#each map_item in model.map_items}}
-        {{#each sa_1 in structure_arrays}}
-          {{#each sa_2 in sa_1}}
+        <div class="map-item">
+          {{#each s in structure_arrays}}
             <div class="row">
-              {{#each field in sa_2}}
+              {{#each field in s}}
                 <div class="field">
                   {{field.key}}
                 </div>
               {{/each}}
             </div>
           {{/each}}
-        {{/each}}
+        </div>
       {{/each}}
 
       <p>

@@ -1,0 +1,11 @@
+<script type="text/x-handlebars" data-template-name="components/map-item-data">
+
+  {{#each s in struct}}
+    <div class="row">
+      {{#each field in s}}
+        {{map-item-data-field key=field.key type=field.type}}
+      {{/each}}
+    </div>
+  {{/each}}
+
+</script>

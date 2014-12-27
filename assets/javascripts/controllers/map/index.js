@@ -1,10 +1,9 @@
 K.MapIndexController = Ember.Controller.extend({
   fullWidthTypes: ["text"],
-  values: {},
 
 
-  structure_arrays: function() {
-    var structure = JSON.parse(this.get("model.structure"));
+  struct: function() {
+    var structure = this.get("keys");
     var fwt = this.get("fullWidthTypes");
     var full = [];
     var all = [];
@@ -30,6 +29,11 @@ K.MapIndexController = Ember.Controller.extend({
   }.property("model.structure"),
 
 
+  keys: function() {
+    return JSON.parse(this.get("model.structure"));
+  }.property("model.structure"),
+
+
   actions: {
 
     add: function() {
@@ -38,7 +42,9 @@ K.MapIndexController = Ember.Controller.extend({
 
 
     save: function() {
-      //
+      this.get("model.map_items").forEach(function(mi) {
+        if (mi.get("isDirty")) mi.save();
+      });
     }
 
   }

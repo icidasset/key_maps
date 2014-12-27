@@ -1,4 +1,5 @@
 import "./lib/environment";
+import "./lib/ember-helpers";
 import "./lib/namespace";
 import "./lib/store";
 import "./lib/routes";
@@ -19,3 +20,5 @@ import "./models/map";
 import "./models/user";
 
 import "./components/application-header";
+import "./components/map-item-data";
+import "./components/map-item-data-field";

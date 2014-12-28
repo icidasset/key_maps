@@ -1,28 +1,21 @@
 K.ApplicationController = Ember.Controller.extend({
-  fuzzy_search: null,
+  searcher: null,
 
 
-  setup_fuzzy_search: function() {
-    var f = this.get("fuzzy_search");
+  setup_searcher: function() {
+    var s = this.get("searcher");
     var model = this.get("model");
 
     if (!model) {
       return;
     }
 
-    if (!f) {
-      f = new Fuse(null, {
-        keys: ["name"],
-        includeScore: true,
-        maxPatternLength: 64,
-        distance: 0,
-        threshold: 0
-      });
-
-      this.set("fuzzy_search", f);
+    if (!s) {
+      s = new Sifter();
+      this.set("searcher", s);
     }
 
-    f.list = model.map(function(m) {
+    s.items = model.map(function(m) {
       return {
         name: m.get("name"),
         slug: m.get("slug")

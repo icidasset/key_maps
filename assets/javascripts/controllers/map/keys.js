@@ -1,5 +1,11 @@
 K.MapKeysController = Ember.Controller.extend({
   structure: [{}],
+  types: [
+    { val: "string", name: "String" },
+    { val: "text", name: "Text" },
+    { val: "number", name: "Number" },
+    { val: "boolean", name: "Boolean" }
+  ],
 
 
   copy_structure: function() {

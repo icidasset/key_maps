@@ -29,14 +29,30 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
 
   // observations
   map_selector_value_changed: function() {
-    var val, match, match_mask, name, is_absolute_match, status;
-    var fuz = this.get("targetObject.fuzzy_search");
+    var val, match, result, partial, match_mask, name, is_absolute_match, status;
+    var searcher = this.get("targetObject.searcher");
 
     val = this.get("map_selector_value");
-    if (val) match = fuz.search(val)[0];
+
+    if (val) {
+      result = searcher.search(val, {
+        fields: ["name"],
+        sort: [{ field: "name", direction: "asc" }],
+        limit: 1
+      });
+    }
+
+    if (result && result.items[0]) {
+      match = searcher.items[result.items[0].id];
+      partial = match.name.substr(0, result.query.length);
+
+      if (result.query.toLowerCase() != partial.toLowerCase()) {
+        match = null;
+      }
+    }
 
     if (match) {
-      name = match.item.name;
+      name = match.name;
 
       is_absolute_match = (
         (name.toLowerCase() == val.toLowerCase()) &&
@@ -85,12 +101,12 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
             break;
 
           case "select":
-            this.select_map(match.item.slug);
+            this.select_map(match.slug);
             break;
 
           case "select_or_create":
             if (e.shiftKey) this.create_map(val);
-            else this.select_map(match.item.slug);
+            else this.select_map(match.slug);
             break;
 
           default:
@@ -123,11 +139,9 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
 
   select_map: function(slug) {
     var transition = this.get("targetObject").transitionToRoute("map", slug);
-    var match;
+    var match = this.get("map_match");
 
-    match = this.get("map_match");
-
-    if (match) this.set("map_selector_value", match.item.name);
+    if (match) this.set("map_selector_value", match.name);
     this.set("map_selector_show_message", false);
 
     document.activeElement.blur();

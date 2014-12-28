@@ -21,7 +21,14 @@
           {{input value=struct.key placeholder="key"}}
         </div>
         <div class="field secondary">
-          {{input value=struct.type placeholder="type"}}
+          <div class="form__selectize">
+            {{ember-selectize
+              content=types
+              selection=struct.type
+              optionValuePath="content.val"
+              optionLabelPath="content.name"
+              placeholder="type"}}
+          </div>
         </div>
       {{/each}}
 

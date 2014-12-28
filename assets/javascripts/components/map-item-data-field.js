@@ -18,6 +18,11 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
 
     }
 
-  }.property("key", "type")
+  }.property("key", "type"),
+
+
+  observe_item: function() {
+    this.notifyPropertyChange("field_value");
+  }.observes("targetObject.item.structure_data")
 
 });

@@ -124,6 +124,8 @@ func main() {
       binding.Bind(api.MapFormData{}),
       api.Maps__Update,
     )
+
+    // TODO: Delete
   }, MustBeAuthenticatedMiddleware)
 
   // - map items
@@ -134,6 +136,17 @@ func main() {
       "",
       binding.Bind(api.MapItemFormData{}),
       api.MapItems__Create,
+    )
+
+    r.Put(
+      "/:id",
+      binding.Bind(api.MapItemFormData{}),
+      api.MapItems__Update,
+    )
+
+    r.Delete(
+      "/:id",
+      api.MapItems__Destroy,
     )
   }, MustBeAuthenticatedMiddleware)
 

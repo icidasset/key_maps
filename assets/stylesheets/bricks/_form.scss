@@ -15,11 +15,12 @@
     width: 100%;
   }
 
+  // input
   input,
   textarea {
     @include appearance(none);
     background: none;
-    border: 2px solid #ECECEC;
+    border: 2px solid #ececec;
     box-sizing: border-box;
     padding: 20px 18px;
     position: relative;
@@ -56,6 +57,7 @@
     width: calc(100% + 2px);
   }
 
+  // buttons
   button {
     margin-top: 21px;
   }
@@ -64,8 +66,52 @@
   //
   //  Map item
   //
-  .form__map-item {
+  .form__map-item-data {
+    @include clearfix;
     margin-bottom: 15px;
+    position: relative;
+
+    .row {
+      float: right;
+      width: 90%;
+    }
+
+    .row-prefix {
+      border: 2px dashed #F7F7F7;
+      border-right: 0;
+      cursor: pointer;
+      height: calc(100% - 2px);
+      left: 0;
+      position: absolute;
+      text-align: center;
+      top: -2px;
+      width: calc(10% - 2px);
+    }
+
+    .row-prefix__center {
+      @include transform(translateY(-50%));
+      position: relative;
+      top: 50%;
+    }
+
+    .row-prefix__title {
+      color: #ddd;
+      display: inline-block;
+    }
+
+    .row-prefix:hover .row-prefix__title {
+      display: none;
+    }
+
+    .row-prefix__destroy {
+      color: $red;
+      display: none;
+      font-size: 1.4em;
+    }
+
+    .row-prefix:hover .row-prefix__destroy {
+      display: inline-block;
+    }
   }
 
 

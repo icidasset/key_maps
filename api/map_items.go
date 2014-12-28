@@ -12,15 +12,15 @@ import (
 
 type MapItem struct {
   Id int                  `json:"id"`
-  StructureData string    `json:"structure_data" db:"structure_data" form:"structure_data"`
+  StructureData string    `json:"structure_data" db:"structure_data"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
-  MapId int               `json:"map_id" db:"map_id"`
+  MapId int               `json:"map_id,string" db:"map_id"`
 }
 
 
 type MapItemFormData struct {
-  MapItem MapItem         `form:"map_item" binding:"required"`
+  MapItem MapItem         `json:"map_item" binding:"required"`
 }
 
 
@@ -65,4 +65,53 @@ func MapItems__Create(mifd MapItemFormData, w http.ResponseWriter, r render.Rend
   result, _ := db.Inst().NamedExec(query, new_map_item)
 
   fmt.Fprintf(w, "%#v", result)
+}
+
+
+
+//
+//  {put} UPDATE
+//
+func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Render, u User) {
+  _, err := db.Inst().Exec(
+    "UPDATE map_items SET structure_data = $1, updated_at = $2 WHERE id = $3",
+    mifd.MapItem.StructureData,
+    time.Now(),
+    params["id"],
+  )
+
+  // fetch
+  mi := MapItem{}
+
+  db.Inst().Get(
+    &mi,
+    "SELECT * FROM map_items WHERE id = $1",
+    params["id"],
+  )
+
+  // render
+  if err != nil {
+    panic(err)
+  } else {
+    r.JSON(200, map[string]MapItem{ "map_item": mi })
+  }
+}
+
+
+
+//
+//  {delete} DESTROY
+//
+func MapItems__Destroy(params martini.Params, r render.Render, u User) {
+  _, err := db.Inst().Exec(
+    "DELETE FROM map_items WHERE id = $1",
+    params["id"],
+  )
+
+  // render
+  if err != nil {
+    panic(err)
+  } else {
+    r.JSON(200, nil)
+  }
 }

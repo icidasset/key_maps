@@ -1,5 +1,6 @@
 K.MapIndexController = Ember.Controller.extend({
   fullWidthTypes: ["text"],
+  destroyedMapItems: [],
 
 
   struct: function() {
@@ -23,7 +24,9 @@ K.MapIndexController = Ember.Controller.extend({
       }
     });
 
-    all.push(full);
+    if (full.length > 0) {
+      all.push(full);
+    }
 
     return all;
   }.property("model.structure"),
@@ -37,14 +40,28 @@ K.MapIndexController = Ember.Controller.extend({
   actions: {
 
     add: function() {
-      //
+      var controller = this;
+
+      this.get("model.map_items").then(function() {
+        controller.get("model.map_items").addObject(
+          controller.store.createRecord("map_item", {})
+        );
+      });
     },
 
 
     save: function() {
+      var destroyed_items = this.destroyedMapItems;
+
       this.get("model.map_items").forEach(function(mi) {
         if (mi.get("isDirty")) mi.save();
       });
+
+      destroyed_items.forEach(function(d) {
+        d.save();
+      });
+
+      destroyed_items.length = 0;
     }
 
   }

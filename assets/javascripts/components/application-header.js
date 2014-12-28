@@ -127,7 +127,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
 
     match = this.get("map_match");
 
-    this.set("map_selector_value", match.item.name);
+    if (match) this.set("map_selector_value", match.item.name);
     this.set("map_selector_show_message", false);
 
     document.activeElement.blur();

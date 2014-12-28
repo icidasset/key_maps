@@ -15,8 +15,8 @@ import (
 type Map struct {
   Id int                  `json:"id"`
   Slug string             `json:"slug"`
-  Name string             `json:"name" form:"name"`
-  Structure string        `json:"structure" form:"structure"`
+  Name string             `json:"name"`
+  Structure string        `json:"structure"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
   MapItems IntSlice       `json:"map_items" db:"map_items"`
@@ -25,7 +25,7 @@ type Map struct {
 
 
 type MapFormData struct {
-  Map Map                 `form:"map" binding:"required"`
+  Map Map                 `json:"map" binding:"required"`
 }
 
 

@@ -1,5 +1,5 @@
 K.MapItemDataComponent = Ember.Component.extend({
-  classNames: ["form__map-item"],
+  classNames: ["form__map-item-data"],
   values: {},
 
 
@@ -13,7 +13,7 @@ K.MapItemDataComponent = Ember.Component.extend({
     });
 
     this.set("values", s);
-  }.observes("keys").on("init"),
+  }.observes("item.structure_data").on("init"),
 
 
   values_changed: function() {
@@ -23,6 +23,28 @@ K.MapItemDataComponent = Ember.Component.extend({
         JSON.stringify(this.get("values"))
       );
     }
-  }.observes("values")
+  }.observes("values"),
+
+
+  number: function() {
+    return this.get("idx") + 1;
+  }.property("idx"),
+
+
+
+  //
+  //  Actions
+  //
+  actions: {
+
+    destroy: function() {
+      var parent_controller = this.get("targetObject");
+      var item = this.get("item");
+
+      parent_controller.destroyedMapItems.push(item);
+      item.deleteRecord();
+    }
+
+  }
 
 });

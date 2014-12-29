@@ -13,8 +13,6 @@
 
 
   <div class="content-wrapper">
-    <h1>Collection</h1>
-
     <form class="form" {{action "save" on="submit"}}>
       {{#each map_item in model.map_items}}
         {{map-item-data item=map_item struct=struct keys=keys idx=_view.contentIndex}}

@@ -22,6 +22,10 @@
     border-left: 2px solid rgba(black, 0.05);
   }
 
+  a.active {
+    color: $the_color;
+  }
+
   a.active:before {
     background-color: rgba($the_color, .5);
     bottom: 0;

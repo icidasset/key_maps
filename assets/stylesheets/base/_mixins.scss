@@ -9,3 +9,8 @@
   -webkit-font-smoothing: subpixel-antialised;
   -moz-font-smoothing: auto;
 }
+
+@mixin icon-font {
+  @include font-smoothing;
+  font-family: "feather-icons";
+}

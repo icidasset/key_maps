@@ -136,15 +136,73 @@
     line-height: 0;
   }
 
+  .selectize-input,
+  .selectize-dropdown {
+    color: $black;
+
+    -webkit-border-radius: none !important;
+    border-radius: none !important;
+
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+  }
+
   .selectize-input {
     border: 0;
     font-size: 1rem;
     height: 100%;
     line-height: 60px;
+    overflow: hidden;
     padding: 0 18px;
 
-    box-shadow: none;
-    -webkit-box-shadow: none;
+    &.dropdown-active {
+      overflow: auto;
+    }
+
+    &:before {
+      display: none !important;
+    }
+  }
+
+  .selectize-control.single .selectize-input:after {
+    @include transform(translateY(-50%));
+    @include icon-font;
+    border: none !important;
+    color: #bbb;
+    content: "\e097";
+    font-size: 0.85rem;
+    height: auto;
+    line-height: 1;
+    margin-top: 1px !important;
+    right: 18px;
+    width: auto;
+  }
+
+  .selectize-control.single .selectize-input.dropdown-active:after {
+    content: "\e096";
+  }
+
+  .selectize-input input {
+    color: $black;
+    font-size: 1rem;
+    height: 60px;
+  }
+
+  .selectize-dropdown {
+    border: 2px solid lighten($the_color, 37.5);
+    border-top: none;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    margin: 0 0 0 -2px;
+    width: calc(100% + 4px) !important;
+
+    .option {
+      padding: 12px 18px 11px;
+    }
+
+    .option.active {
+      background-color: lighten($the_color, 37.5);
+    }
   }
 
 

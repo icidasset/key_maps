@@ -26,7 +26,7 @@
     background: none;
     border: 2px solid #ececec;
     box-sizing: border-box;
-    padding: 20px 18px;
+    padding: 0 18px;
     position: relative;
     width: 100%;
     z-index: 1;
@@ -36,15 +36,24 @@
     }
 
     &:focus {
-      border-color: lighten($the_color, 37.5);
+      border-color: lighten($the_color, 35);
       color: $the_color;
       outline: none;
       z-index: 9;
 
       @include placeholder {
-        color: rgba(lighten($the_color, 30), .75);
+        color: rgba(lighten($the_color, 27.5), .75);
       }
     }
+  }
+
+  input {
+    height: 64px;
+  }
+
+  textarea {
+    padding-bottom: 20px;
+    padding-top: 20px;
   }
 
   input[type="password"] {
@@ -189,7 +198,7 @@
   }
 
   .selectize-dropdown {
-    border: 2px solid lighten($the_color, 37.5);
+    border: 2px solid lighten($the_color, 35);
     border-top: none;
     font-size: 0.9rem;
     line-height: 1.2;
@@ -201,7 +210,7 @@
     }
 
     .option.active {
-      background-color: lighten($the_color, 37.5);
+      background-color: lighten($the_color, 35);
     }
   }
 

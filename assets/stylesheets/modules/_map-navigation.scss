@@ -6,13 +6,16 @@
   text-align: center;
 
   a {
+    @include transition-duration($default_transition_duration);
+    background-color: rgba(white, 0);
     border-right: 2px solid rgba(black, 0.05);
     color: #555;
     display: inline-block;
     font-size: 0.75rem;
-    height: 48px;
-    letter-spacing: 0.04em;
-    line-height: 48px;
+    font-weight: bold;
+    height: 50px;
+    letter-spacing: 0.05em;
+    line-height: 50px;
     position: relative;
     text-transform: uppercase;
     width: 16%;
@@ -23,17 +26,8 @@
   }
 
   a.active {
-    color: $the_color;
-  }
-
-  a.active:before {
-    background-color: rgba($the_color, .5);
-    bottom: 0;
-    content: "";
-    height: 2px;
-    left: 0;
-    position: absolute;
-    right: 0;
+    background-color: rgba(white, 1);
+    color: black;
   }
 
 

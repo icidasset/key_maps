@@ -67,15 +67,14 @@
   .map-selector__message {
     @include transform(translateY(-50%));
     @include transition(opacity $default_transition_duration);
-    background-color: #555;
-    border-radius: $general_border_radius - 1px;
-    color: white;
+    border: 1px dashed $header_border_color;
+    color: rgba($the_color, .55);
     font-size: 0.65em;
-    font-weight: 600;
+    font-weight: bold;
     letter-spacing: -0.0125em;
-    line-height: .8;
+    line-height: 1.25;
     opacity: 0;
-    padding: 9px 9px 8px;
+    padding: 9px 10px 6px;
     pointer-events: none;
     position: absolute;
     right: $general_padding;
@@ -87,7 +86,7 @@
     }
 
     > span {
-      color: rgba(white, .625);
+      color: rgba(black, .3);
     }
   }
 

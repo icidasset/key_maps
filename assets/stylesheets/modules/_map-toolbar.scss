@@ -17,7 +17,7 @@
   .map-toolbar__actions {
     border-right: 2px solid #f8f8f8;
     float: left;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: bold;
 
     a {
@@ -27,10 +27,6 @@
       height: 100%;
       padding: 0 $general_padding;
       text-align: center
-    }
-
-    a:first-child {
-      margin-left: 2.5%;
     }
 
     a:hover {

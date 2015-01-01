@@ -9,10 +9,9 @@
   //  Input + Match
   //
   .map-selector__input {
-    color: rgba($black, .65);
-    font-family: "Alegreya";
-    font-size: 1.8rem;
-    font-style: italic;
+    color: $black;
+    font-family: "Pacifico", serif;
+    font-size: 1.6rem;
     height: 100%;
     line-height: $main_header_height;
     position: relative;
@@ -20,6 +19,7 @@
 
     input,
     .map-selector__match {
+      @include font-smoothing;
       height: 100%;
       padding: 0 $general_padding;
     }
@@ -35,7 +35,7 @@
       z-index: 2;
 
       @include placeholder {
-        color: rgba($black, .325);
+        color: #bbb;
         font-weight: 300;
       }
 
@@ -45,7 +45,7 @@
     }
 
     .map-selector__match {
-      color: rgba($black, .35);
+      color: #bbb;
       left: 0;
       position: absolute;
       text-indent: 1px;

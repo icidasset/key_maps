@@ -1,5 +1,9 @@
 <script type="text/x-handlebars" data-template-name="components/map-item-data-field">
 
-  {{input value=field_value placeholder=key}}
+  {{#if is_type_text}}
+    {{textarea value=field_value placeholder=key}}
+  {{else}}
+    {{input value=field_value placeholder=key}}
+  {{/if}}
 
 </script>

@@ -12,6 +12,6 @@ Ember.throttledObserver = function(func, key, time) {
 };
 
 
-Ember.Handlebars.registerBoundHelper("increment", function(integer) {
+Ember.Handlebars.helper("increment", function(integer) {
   return integer + 1;
 });

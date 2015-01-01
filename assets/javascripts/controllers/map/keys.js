@@ -1,10 +1,12 @@
 K.MapKeysController = Ember.Controller.extend({
   structure: [{}],
+  reformatted_structure: [{}],
+
   types: [
-    { val: "string", name: "String" },
-    { val: "text", name: "Text" },
-    { val: "number", name: "Number" },
-    { val: "boolean", name: "Boolean" }
+    { value: "string", name: "String" },
+    { value: "text", name: "Text" },
+    { value: "number", name: "Number" },
+    { value: "boolean", name: "Boolean" }
   ],
 
 
@@ -16,12 +18,32 @@ K.MapKeysController = Ember.Controller.extend({
   }.observes("model"),
 
 
+  reformat_structure: function() {
+    var structure = this.get("structure");
+    var types = this.types;
+
+    var reformatted = structure.map(function(s) {
+      var type;
+
+      types.forEach(function(t) {
+        if (s.type == t.value) {
+          type = t;
+        }
+      });
+
+      return { key: s.key, type: type };
+    });
+
+    this.set("reformatted_structure", reformatted);
+  }.observes("structure"),
+
+
   clean_structure: function(structure) {
     var c = [];
 
     structure.forEach(function(s) {
-      if (s.key && s.key.length > 0) {
-        c.push(s);
+      if (s.key && s.key.length > 0 && s.type && s.type.value) {
+        c.push({ key: s.key, type: s.type.value });
       }
     });
 
@@ -45,7 +67,7 @@ K.MapKeysController = Ember.Controller.extend({
 
     save: function() {
       var m = this.get("model");
-      var s = this.clean_structure(this.get("structure"));
+      var s = this.clean_structure(this.get("reformatted_structure"));
 
       this.set("structure", s);
       m.set("structure", JSON.stringify(s));

@@ -8,7 +8,7 @@
   </div>
 
   {{#each s in struct}}
-    <div class="row">
+    <div {{bind-attr class=":row s.has_one_item:row__with-one-item"}}>
       {{#each field in s}}
         {{map-item-data-field key=field.key type=field.type}}
       {{/each}}

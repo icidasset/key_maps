@@ -14,7 +14,7 @@
 
   <div class="content-wrapper">
     <form class="form" {{action "save" on="submit"}}>
-      {{#each struct in structure}}
+      {{#each struct in reformatted_structure}}
         <div class="field">
           {{input value=struct.key placeholder="key"}}
         </div>
@@ -23,7 +23,7 @@
             {{ember-selectize
               content=types
               selection=struct.type
-              optionValuePath="content.val"
+              optionValuePath="content.value"
               optionLabelPath="content.name"
               placeholder="type"}}
           </div>

@@ -28,6 +28,10 @@ K.MapIndexController = Ember.Controller.extend({
       all.push(full);
     }
 
+    all.forEach(function(a) {
+      a.has_one_item = (a.length === 1);
+    });
+
     return all;
   }.property("model.structure"),
 

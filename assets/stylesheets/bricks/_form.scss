@@ -19,6 +19,10 @@
     clear: both;
   }
 
+  .row__with-one-item .field {
+    width: 100%;
+  }
+
   .errors {
     clear: both;
     float: left;
@@ -58,8 +62,10 @@
   }
 
   textarea {
+    height: 68px * 2.5;
     padding-bottom: 20px;
     padding-top: 20px;
+    resize: none;
   }
 
   input[type="password"] {

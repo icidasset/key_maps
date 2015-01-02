@@ -122,7 +122,7 @@ K.MapIndexRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
   actions: {
     resetModel: function() {
       var m = this.getModel();
-      this.set("model", m);
+      this.set("controller.model", m);
     }
   }
 });

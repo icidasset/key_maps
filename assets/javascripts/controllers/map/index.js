@@ -4,7 +4,8 @@ K.MapIndexController = Ember.ArrayController.extend({
   fullWidthTypes: ["text"],
   deletedMapItems: [],
 
-  sortedModel: Ember.computed.sort("model", function(a, b) {
+
+  sortedModel: Ember.computed.sort("filteredModel", function(a, b) {
     var a_struct = a.get("structure_data");
     var b_struct = b.get("structure_data");
 
@@ -15,6 +16,11 @@ K.MapIndexController = Ember.ArrayController.extend({
     b_struct = b_struct ? b_struct.author || "" : "";
 
     return a_struct.localeCompare(b_struct);
+  }),
+
+
+  filteredModel: Ember.computed.filter("model", function(m) {
+    return !m.get("isDeleted");
   }),
 
 
@@ -80,16 +86,22 @@ K.MapIndexController = Ember.ArrayController.extend({
 
     save: function() {
       var deleted_items = this.deletedMapItems;
-
-      this.get("model").forEach(function(mi) {
-        if (mi.get("isDirty")) mi.save();
-      });
+      var controller = this;
+      var promises = [];
 
       deleted_items.forEach(function(d) {
-        d.save();
+        controller.get("model").removeObject(d);
+        promises.push(d.save());
       });
 
-      deleted_items.length = 0;
+      this.get("model").forEach(function(mi) {
+        if (mi.get("isDirty")) promises.push(mi.save());
+      });
+
+      Ember.RSVP.all(promises).then(function() {
+        deleted_items.length = 0;
+        controller.send("resetModel");
+      });
     }
 
   }

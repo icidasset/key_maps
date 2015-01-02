@@ -9,8 +9,10 @@ import "./lib/authorizer";
 import "./initializers/authentication";
 
 import "./controllers/application";
+import "./controllers/index";
 import "./controllers/map/index";
 import "./controllers/map/keys";
+import "./controllers/map/manage";
 import "./controllers/map";
 import "./controllers/sign-in";
 import "./controllers/sign-up";

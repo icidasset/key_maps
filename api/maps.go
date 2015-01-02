@@ -48,7 +48,13 @@ func (i *IntSlice) Scan(src interface{}) error {
     b = append(b, i)
   }
 
-  (*i) = IntSlice(b)
+  int_slice := IntSlice(b)
+
+  if int_slice[0] == 0 {
+    (*i) = nil
+  } else {
+    (*i) = int_slice
+  }
 
   return nil
 }
@@ -180,5 +186,25 @@ func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u Use
     panic(err)
   } else {
     r.JSON(200, map[string]Map{ "map": m })
+  }
+}
+
+
+
+//
+//  {delete} DESTROY
+//
+func Maps__Destroy(params martini.Params, r render.Render, u User) {
+  _, err := db.Inst().Exec(
+    "DELETE FROM maps WHERE id = $1 AND user_id = $2",
+    params["id"],
+    u.Id,
+  )
+
+  // render
+  if err != nil {
+    panic(err)
+  } else {
+    r.JSON(200, nil)
   }
 }

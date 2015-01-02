@@ -42,6 +42,9 @@
       &:focus {
         outline: none;
       }
+
+      &::selection { background: rgba($the_color, .55); }
+      &::-moz-selection { background: rgba($the_color, .55); }
     }
 
     .map-selector__match {

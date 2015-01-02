@@ -1,0 +1,28 @@
+<script type="text/x-handlebars" data-template-name="map/manage">
+
+  <div class="mod-map-toolbar">
+    <div class="map-toolbar__actions"></div>
+    <div class="map-toolbar__url"></div>
+  </div>
+
+
+  <div class="content-wrapper">
+    <div class="form">
+      <p>
+        To remove this key-map, click this button.
+      </p>
+      <p>
+        {{#if selfDestructConfirmation}}
+          <a class="btn" {{action "self_destruct_confirmation"}}>
+            Confirm self destruction
+          </a>
+        {{else}}
+          <a class="btn" {{action "self_destruct"}}>
+            Self destruct
+          </a>
+        {{/if}}
+      </p>
+    </div>
+  </div>
+
+</script>

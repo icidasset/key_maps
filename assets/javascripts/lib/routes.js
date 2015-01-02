@@ -6,6 +6,8 @@ K.Router.map(function() {
   // authenticated routes
   this.route("map", { path: "/:slug" }, function() {
     this.route("keys", { path: "/keys" });
+    this.route("settings", { path: "/settings" });
+    this.route("manage", { path: "/manage" });
   });
 });
 

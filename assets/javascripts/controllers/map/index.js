@@ -3,6 +3,19 @@ K.MapIndexController = Ember.Controller.extend({
   destroyedMapItems: [],
 
 
+  make_new_item_on_init: function() {
+    var controller = this;
+
+    if (this.get("model.map_items.length") === 0) {
+      this.get("model.map_items").then(function() {
+        controller.get("model.map_items").addObject(
+          controller.store.createRecord("map_item", {})
+        );
+      });
+    }
+  }.observes("model"),
+
+
   struct: function() {
     var structure = this.get("keys");
     var fwt = this.get("fullWidthTypes");
@@ -41,6 +54,10 @@ K.MapIndexController = Ember.Controller.extend({
   }.property("model.structure"),
 
 
+
+  //
+  //  Actions
+  //
   actions: {
 
     add: function() {
@@ -51,6 +68,10 @@ K.MapIndexController = Ember.Controller.extend({
           controller.store.createRecord("map_item", {})
         );
       });
+
+      $(document.body).animate({
+        scrollTop: document.body.clientHeight
+      }, 500);
     },
 
 

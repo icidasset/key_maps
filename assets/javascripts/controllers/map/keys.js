@@ -53,6 +53,10 @@ K.MapKeysController = Ember.Controller.extend({
   },
 
 
+
+  //
+  //  Actions
+  //
   actions: {
 
     add: function() {

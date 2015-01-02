@@ -125,7 +125,10 @@ func main() {
       api.Maps__Update,
     )
 
-    // TODO: Delete
+    r.Delete(
+      "/:id",
+      api.Maps__Destroy,
+    )
   }, MustBeAuthenticatedMiddleware)
 
   // - map items

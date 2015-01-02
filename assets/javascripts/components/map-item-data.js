@@ -41,7 +41,7 @@ K.MapItemDataComponent = Ember.Component.extend({
       var parent_controller = this.get("targetObject");
       var item = this.get("item");
 
-      parent_controller.destroyedMapItems.push(item);
+      parent_controller.deletedMapItems.push(item);
       item.deleteRecord();
     }
 

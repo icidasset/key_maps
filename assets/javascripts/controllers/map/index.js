@@ -2,7 +2,7 @@ K.MapIndexController = Ember.ArrayController.extend({
   needs: ["map"],
 
   fullWidthTypes: ["text"],
-  destroyedMapItems: [],
+  deletedMapItems: [],
 
   sortedModel: Ember.computed.sort("model", function(a, b) {
     var a_struct = a.get("structure_data");
@@ -79,17 +79,17 @@ K.MapIndexController = Ember.ArrayController.extend({
 
 
     save: function() {
-      var destroyed_items = this.destroyedMapItems;
+      var deleted_items = this.deletedMapItems;
 
       this.get("model").forEach(function(mi) {
         if (mi.get("isDirty")) mi.save();
       });
 
-      destroyed_items.forEach(function(d) {
+      deleted_items.forEach(function(d) {
         d.save();
       });
 
-      destroyed_items.length = 0;
+      deleted_items.length = 0;
     }
 
   }

@@ -126,8 +126,6 @@ func Maps__Show(params martini.Params, r render.Render, u User) {
 //  {post} CREATE
 //
 func Maps__Create(mfd MapFormData, r render.Render, u User) {
-  var id int
-
   query := "INSERT INTO maps (name, slug, structure, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :created_at, :updated_at, :user_id) RETURNING id"
 
   // make new map
@@ -137,10 +135,11 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
   new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, CreatedAt: now, UpdatedAt: now, UserId: u.Id}
 
   // execute query
-  result, err := db.Inst().NamedQuery(query, new_map)
-  result.Scan(&id)
+  rows, err := db.Inst().NamedQuery(query, new_map)
 
-  new_map.Id = id
+  for rows.Next() {
+    rows.StructScan(&new_map)
+  }
 
   // render
   if err != nil {

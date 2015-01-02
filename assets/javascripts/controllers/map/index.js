@@ -8,8 +8,11 @@ K.MapIndexController = Ember.ArrayController.extend({
     var a_struct = a.get("structure_data");
     var b_struct = b.get("structure_data");
 
-    a_struct = a_struct ? JSON.parse(a_struct).author : "";
-    b_struct = b_struct ? JSON.parse(b_struct).author : "";
+    a_struct = a_struct ? JSON.parse(a_struct) : null;
+    b_struct = b_struct ? JSON.parse(b_struct) : null;
+
+    a_struct = a_struct ? a_struct.author || "" : "";
+    b_struct = b_struct ? b_struct.author || "" : "";
 
     return a_struct.localeCompare(b_struct);
   }),

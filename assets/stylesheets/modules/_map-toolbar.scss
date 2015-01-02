@@ -4,8 +4,8 @@
   .map-toolbar__actions,
   .map-toolbar__url {
     border-bottom: 2px solid #f8f8f8;
-    height: 52px;
-    line-height: 55px;
+    height: calc(3.5rem - 3px);
+    line-height: 3.5rem;
     overflow: hidden;
     width: calc(50% - 1px);
   }

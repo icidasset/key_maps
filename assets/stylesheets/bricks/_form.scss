@@ -1,4 +1,5 @@
 .form {
+  @include serif-font;
   margin: 37px 0;
 
   &, .row {
@@ -7,6 +8,8 @@
 
   .field {
     float: left;
+    font-size: 0;
+    line-height: 0;
     margin-top: -2px;
     width: 50%;
   }
@@ -33,8 +36,11 @@
   textarea {
     @include appearance(none);
     background: none;
-    border: 2px solid #ececec;
+    border: 2px solid #e4e4e4; // #ececec
     box-sizing: border-box;
+    color: $black;
+    font-size: 1.1rem;
+    line-height: 1.6;
     padding: 0 18px;
     position: relative;
     width: 100%;
@@ -57,12 +63,12 @@
   }
 
   input {
-    height: 68px;
+    height: $input_height;
     padding-top: 2px;
   }
 
   textarea {
-    height: 68px * 2.5;
+    height: $input_height * 2.5;
     padding-bottom: 20px;
     padding-top: 20px;
     resize: none;
@@ -97,7 +103,7 @@
   //
   .form__map-item-data {
     @include clearfix;
-    margin-bottom: 10px;
+    margin-bottom: 11px;
     position: relative;
 
     .row {
@@ -106,7 +112,7 @@
     }
 
     .row-prefix {
-      border: 2px dashed #F7F7F7;
+      border: 2px dashed #e4e4e4;
       border-right: 0;
       cursor: pointer;
       height: calc(100% - 2px);
@@ -124,7 +130,7 @@
     }
 
     .row-prefix__title {
-      color: #ddd;
+      color: rgba(black, .225);
       display: inline-block;
     }
 
@@ -135,7 +141,7 @@
     .row-prefix__destroy {
       color: $red;
       display: none;
-      font-size: 1.4em;
+      font-size: 1.6em;
     }
 
     .row-prefix:hover .row-prefix__destroy {
@@ -148,8 +154,8 @@
   //  Selectize
   //
   .form__selectize {
-    border: 2px solid #ececec;
-    height: 68px - (2 * 2px);
+    border: 2px solid #e4e4e4; // #ececec
+    height: calc(#{$input_height} - 4px);
   }
 
   .selectize-control {
@@ -169,15 +175,15 @@
   }
 
   .selectize-input {
+    background: transparent;
     border: 0;
-    font-size: 1rem;
+    font-size: 1.1rem;
     height: 100%;
-    line-height: 68px - (2 * 2px);
-    overflow: hidden;
+    line-height: $input_height;
     padding: 0 18px;
 
     &.dropdown-active {
-      overflow: auto;
+      background: white;
     }
 
     &:before {
@@ -194,7 +200,7 @@
     font-size: 0.85rem;
     height: auto;
     line-height: 1;
-    margin-top: 1px !important;
+    margin-top: 0 !important;
     right: 18px;
     width: auto;
   }
@@ -205,16 +211,16 @@
 
   .selectize-input input {
     color: $black;
-    font-size: 1rem;
-    height: 60px;
+    font-size: 1.1rem;
+    height: calc($input_height - 8px);
   }
 
   .selectize-dropdown {
     border: 2px solid lighten($the_color, 35);
     border-top: none;
-    font-size: 0.9rem;
+    font-size: .95rem;
     line-height: 1.2;
-    margin: 0 0 0 -2px;
+    margin: -4px 0 0 -2px;
     width: calc(100% + 4px) !important;
 
     .option {
@@ -223,6 +229,11 @@
 
     .option.active {
       background-color: lighten($the_color, 35);
+      color: $black;
+    }
+
+    .option .highlight {
+      background: lighten($the_color, 27.5);
     }
   }
 

@@ -88,7 +88,7 @@ func Maps__Index(w http.ResponseWriter, r render.Render, u User) {
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else {
     r.JSON(200, map[string][]Map{ "maps": maps })
   }
@@ -112,7 +112,7 @@ func Maps__Show(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else if m.Id == 0 {
     r.JSON(404, nil)
   } else {
@@ -126,7 +126,9 @@ func Maps__Show(params martini.Params, r render.Render, u User) {
 //  {post} CREATE
 //
 func Maps__Create(mfd MapFormData, r render.Render, u User) {
-  query := "INSERT INTO maps (name, slug, structure, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :created_at, :updated_at, :user_id)"
+  var id int
+
+  query := "INSERT INTO maps (name, slug, structure, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :created_at, :updated_at, :user_id) RETURNING id"
 
   // make new map
   slug := slug.Slug(mfd.Map.Name)
@@ -135,25 +137,16 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
   new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, CreatedAt: now, UpdatedAt: now, UserId: u.Id}
 
   // execute query
-  _, err := db.Inst().NamedExec(query, new_map)
+  result, err := db.Inst().NamedQuery(query, new_map)
+  result.Scan(&id)
 
-  // if error
+  new_map.Id = id
+
+  // render
   if err != nil {
     r.JSON(500, err.Error())
-
-  // render map as json
   } else {
-    m := Map{}
-
-    db.Inst().Get(
-      &m,
-      "SELECT * FROM maps WHERE slug = $1 AND user_id = $2",
-      slug,
-      u.Id,
-    )
-
-    r.JSON(200, map[string]Map{ "map": m })
-
+    r.JSON(200, map[string]Map{ "map": new_map })
   }
 }
 
@@ -183,7 +176,7 @@ func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u Use
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else {
     r.JSON(200, map[string]Map{ "map": m })
   }
@@ -203,7 +196,7 @@ func Maps__Destroy(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else {
     r.JSON(200, nil)
   }

@@ -60,12 +60,12 @@ K.MapKeysController = Ember.Controller.extend({
   actions: {
 
     add: function() {
-      var s = this.get("structure");
+      var s = this.get("reformatted_structure");
       var c = s.slice(0, s.length);
 
       c.push({});
 
-      this.set("structure", c);
+      this.set("reformatted_structure", c);
     },
 
 

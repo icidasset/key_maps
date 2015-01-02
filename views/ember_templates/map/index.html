@@ -14,8 +14,19 @@
 
   <div class="content-wrapper">
     <form class="form" {{action "save" on="submit"}}>
-      {{#each map_item in model.map_items}}
+      {{#each map_item in sortedModel}}
         {{map-item-data item=map_item struct=struct keys=keys idx=_view.contentIndex}}
+
+        {{#if map_item.isNew}}
+          <div class="form__map-item-ruler"></div>
+        {{/if}}
+
+      {{else}}
+        <div class="message">
+          <i icon=""></i>
+          Add some keys first
+        </div>
+
       {{/each}}
 
       <button class="btn" type="submit">Save</button>

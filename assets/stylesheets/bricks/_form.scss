@@ -26,7 +26,7 @@
     width: 100%;
   }
 
-  .errors {
+  .errors, .message {
     clear: both;
     float: left;
   }
@@ -147,6 +147,12 @@
     .row-prefix:hover .row-prefix__destroy {
       display: inline-block;
     }
+  }
+
+  .form__map-item-ruler {
+    background: rgba($the_color, .275);
+    height: 2px;
+    margin-bottom: 13px;
   }
 
 

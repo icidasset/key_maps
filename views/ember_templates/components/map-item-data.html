@@ -1,7 +1,13 @@
 <script type="text/x-handlebars" data-template-name="components/map-item-data">
 
   <div class="row-prefix" {{action "destroy"}}>
-    <span class="row-prefix__title row-prefix__center">{{number}}</span>
+    <span class="row-prefix__title row-prefix__center">
+      {{#if item.isNew}}
+        NEW
+      {{else}}
+        {{number}}
+      {{/if}}
+    </span>
     <span class="row-prefix__destroy row-prefix__center">
       <i class="cross"></i>
     </span>

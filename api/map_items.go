@@ -1,7 +1,6 @@
 package api
 
 import (
-  "fmt"
   "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/render"
@@ -40,7 +39,7 @@ func MapItems__Show(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else if mi.Id == 0 {
     r.JSON(404, nil)
   } else {
@@ -54,7 +53,7 @@ func MapItems__Show(params martini.Params, r render.Render, u User) {
 //  {post} CREATE
 //
 func MapItems__Create(mifd MapItemFormData, w http.ResponseWriter, r render.Render, u User) {
-  query := "INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id)"
+  query := "INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id) RETURNING *"
 
   // make new map item
   now := time.Now()
@@ -62,9 +61,18 @@ func MapItems__Create(mifd MapItemFormData, w http.ResponseWriter, r render.Rend
   new_map_item := MapItem{StructureData: mifd.MapItem.StructureData, CreatedAt: now, UpdatedAt: now, MapId: mifd.MapItem.MapId}
 
   // execute query
-  result, _ := db.Inst().NamedExec(query, new_map_item)
+  rows, err := db.Inst().NamedQuery(query, new_map_item)
 
-  fmt.Fprintf(w, "%#v", result)
+  for rows.Next() {
+    rows.StructScan(&new_map_item)
+  }
+
+  // render
+  if err != nil {
+    r.JSON(500, err.Error())
+  } else {
+    r.JSON(200, map[string]MapItem{ "map_item": new_map_item })
+  }
 }
 
 
@@ -91,7 +99,7 @@ func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Rend
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else {
     r.JSON(200, map[string]MapItem{ "map_item": mi })
   }
@@ -110,7 +118,7 @@ func MapItems__Destroy(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    panic(err)
+    r.JSON(500, err.Error())
   } else {
     r.JSON(200, nil)
   }

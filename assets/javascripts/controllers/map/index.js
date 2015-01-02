@@ -1,17 +1,25 @@
-K.MapIndexController = Ember.Controller.extend({
+K.MapIndexController = Ember.ArrayController.extend({
+  needs: ["map"],
+
   fullWidthTypes: ["text"],
   destroyedMapItems: [],
 
+  sortedModel: Ember.computed.sort("model", function(a, b) {
+    var a_struct = a.get("structure_data");
+    var b_struct = b.get("structure_data");
+
+    a_struct = a_struct ? JSON.parse(a_struct).author : "";
+    b_struct = b_struct ? JSON.parse(b_struct).author : "";
+
+    return a_struct.localeCompare(b_struct);
+  }),
+
 
   make_new_item_on_init: function() {
-    var controller = this;
-
-    if (this.get("model.map_items.length") === 0) {
-      this.get("model.map_items").then(function() {
-        controller.get("model.map_items").addObject(
-          controller.store.createRecord("map_item", {})
-        );
-      });
+    if (this.get("model.length") === 0 && this.get("keys")[0].key) {
+      this.get("model").addObject(
+        this.store.createRecord("map_item", {})
+      );
     }
   }.observes("model"),
 
@@ -46,12 +54,12 @@ K.MapIndexController = Ember.Controller.extend({
     });
 
     return all;
-  }.property("model.structure"),
+  }.property("keys"),
 
 
   keys: function() {
-    return JSON.parse(this.get("model.structure"));
-  }.property("model.structure"),
+    return JSON.parse(this.get("controllers.map.model.structure"));
+  }.property("controllers.map.model.structure"),
 
 
 
@@ -61,24 +69,16 @@ K.MapIndexController = Ember.Controller.extend({
   actions: {
 
     add: function() {
-      var controller = this;
-
-      this.get("model.map_items").then(function() {
-        controller.get("model.map_items").addObject(
-          controller.store.createRecord("map_item", {})
-        );
-      });
-
-      $(document.body).animate({
-        scrollTop: document.body.clientHeight
-      }, 500);
+      this.get("model").addObject(
+        this.store.createRecord("map_item", {})
+      );
     },
 
 
     save: function() {
       var destroyed_items = this.destroyedMapItems;
 
-      this.get("model.map_items").forEach(function(mi) {
+      this.get("model").forEach(function(mi) {
         if (mi.get("isDirty")) mi.save();
       });
 

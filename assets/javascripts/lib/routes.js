@@ -106,3 +106,12 @@ K.MapRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
     })[0];
   }
 });
+
+
+K.MapIndexRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
+  model: function(params) {
+    var m = this.modelFor("map");
+    if (m) return m.get("map_items");
+    else return null;
+  }
+});

@@ -5,6 +5,7 @@ K.Map = DS.Model.extend({
   name: attr("string"),
   slug: attr("string"),
   structure: attr(),
+  sort_by: attr(),
   created_at: attr(),
   updated_at: attr(),
 

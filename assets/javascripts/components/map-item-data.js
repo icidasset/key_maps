@@ -3,9 +3,22 @@ K.MapItemDataComponent = Ember.Component.extend({
   values: {},
 
 
+  on_did_insert_element: function() {
+    this.addObserver("item.structure_data", this, "setup_model");
+    this.notifyPropertyChange("item.structure_data");
+  }.on("didInsertElement"),
+
+
   setup_model: function() {
     var s = JSON.parse(this.get("item.structure_data") || "{}");
     var keys = this.get("keys");
+
+    if (Object.keys(s).length === 0 &&
+        Object.keys(this.get("values")).length === 0) {
+      return;
+    } else {
+      this.removeObserver("item.structure_data", this, "setup_model");
+    }
 
     keys.forEach(function(k) {
       k = k.key;
@@ -13,7 +26,7 @@ K.MapItemDataComponent = Ember.Component.extend({
     });
 
     this.set("values", s);
-  }.observes("item.structure_data").on("init"),
+  },
 
 
   values_changed: function() {
@@ -27,8 +40,8 @@ K.MapItemDataComponent = Ember.Component.extend({
 
 
   number: function() {
-    return this.get("idx") + 1;
-  }.property("idx"),
+    return this.get("item.row_number");
+  }.property("item.row_number"),
 
 
 
@@ -42,6 +55,8 @@ K.MapItemDataComponent = Ember.Component.extend({
       var item = this.get("item");
 
       parent_controller.deletedMapItems.push(item);
+      parent_controller.get("model").removeObject(item);
+
       item.deleteRecord();
     }
 

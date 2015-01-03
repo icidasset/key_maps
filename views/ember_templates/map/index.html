@@ -14,8 +14,8 @@
 
   <div class="content-wrapper">
     <form class="form" {{action "save" on="submit"}}>
-      {{#each map_item in sortedModel}}
-        {{map-item-data item=map_item struct=struct keys=keys idx=_view.contentIndex}}
+      {{#each map_item in sortedModelWithNumbers}}
+        {{map-item-data item=map_item struct=struct keys=keys}}
 
         {{#if map_item.isNew}}
           <div class="form__map-item-ruler"></div>

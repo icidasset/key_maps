@@ -4,7 +4,6 @@ import (
   "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/render"
-  "net/http"
   "time"
 )
 
@@ -52,7 +51,7 @@ func MapItems__Show(params martini.Params, r render.Render, u User) {
 //
 //  {post} CREATE
 //
-func MapItems__Create(mifd MapItemFormData, w http.ResponseWriter, r render.Render, u User) {
+func MapItems__Create(mifd MapItemFormData, r render.Render, u User) {
   query := "INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id) RETURNING *"
 
   // make new map item

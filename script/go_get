@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+repos=(
+  'github.com/rubenv/sql-migrate'
+  'github.com/go-martini/martini'
+  'github.com/martini-contrib/binding'
+  'github.com/martini-contrib/render'
+  'github.com/lib/pq'
+  'github.com/jmoiron/sqlx'
+  'github.com/extemporalgenome/slug'
+  'github.com/dgrijalva/jwt-go'
+  'golang.org/x/crypto/bcrypt'
+);
+
+for repo in "${repos[@]}"; do
+  echo 'go get -u' $repo
+  `go get -u $repo`
+done

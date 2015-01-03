@@ -29,6 +29,12 @@ type MapFormData struct {
 }
 
 
+type MapIndex struct {
+  Maps []Map              `json:"maps"`
+  MapItems []MapItem      `json:"map_items" db:"map_items"`
+}
+
+
 
 //
 //  IntSlice
@@ -65,7 +71,10 @@ func (i *IntSlice) Scan(src interface{}) error {
 //  {get} INDEX
 //
 func Maps__Index(w http.ResponseWriter, r render.Render, u User) {
-  maps := []Map{}
+  var maps []Map
+  var map_items []MapItem
+  var map_item_ids_i []int
+  var map_item_ids_s []string
 
   // execute query
   rows, err := db.Inst().Queryx(
@@ -86,11 +95,27 @@ func Maps__Index(w http.ResponseWriter, r render.Render, u User) {
     maps = append(maps, m)
   }
 
+  // gather map item ids
+  for _, m := range maps {
+    map_item_ids_i = append(map_item_ids_i, m.MapItems...)
+  }
+
+  for _, mii := range map_item_ids_i {
+    map_item_ids_s = append(map_item_ids_s, strconv.Itoa(mii))
+  }
+
+  // map items
+  _ = db.Inst().Select(
+    &map_items,
+    `SELECT * FROM map_items WHERE id IN (?)`,
+    strings.Join(map_item_ids_s, ", "),
+  )
+
   // render
   if err != nil {
     r.JSON(500, err.Error())
   } else {
-    r.JSON(200, map[string][]Map{ "maps": maps })
+    r.JSON(200, MapIndex{ Maps: maps, MapItems: []MapItem{} })
   }
 }
 

@@ -1,7 +1,6 @@
 package api
 
 import (
-  "net/http"
   "github.com/extemporalgenome/slug"
   "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
@@ -70,11 +69,11 @@ func (i *IntSlice) Scan(src interface{}) error {
 //
 //  {get} INDEX
 //
-func Maps__Index(w http.ResponseWriter, r render.Render, u User) {
+func Maps__Index(r render.Render, u User) {
   var maps []Map
   var map_items []MapItem
   var map_item_ids_i []int
-  var map_item_ids_s []string
+  var map_item_ids_s []interface{}
 
   // execute query
   rows, err := db.Inst().Queryx(
@@ -105,17 +104,28 @@ func Maps__Index(w http.ResponseWriter, r render.Render, u User) {
   }
 
   // map items
-  _ = db.Inst().Select(
+  items_query := "SELECT id, * FROM map_items WHERE id IN ("
+
+  for i := 1; i <= len(map_item_ids_s); i++ {
+    items_query += "$" + strconv.Itoa(i)
+    if i < len(map_item_ids_s) {
+      items_query += ", "
+    }
+  }
+
+  items_query += ")"
+
+  err = db.Inst().Select(
     &map_items,
-    `SELECT * FROM map_items WHERE id IN (?)`,
-    strings.Join(map_item_ids_s, ", "),
+    items_query,
+    map_item_ids_s...,
   )
 
   // render
   if err != nil {
     r.JSON(500, err.Error())
   } else {
-    r.JSON(200, MapIndex{ Maps: maps, MapItems: []MapItem{} })
+    r.JSON(200, MapIndex{ Maps: maps, MapItems: map_items })
   }
 }
 

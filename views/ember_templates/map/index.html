@@ -14,20 +14,36 @@
 
   <div class="content-wrapper">
     <form class="form" {{action "save" on="submit"}}>
-      {{#each map_item in sortedModelWithNumbers}}
-        {{map-item-data item=map_item struct=struct keys=keys}}
-
-        {{#if map_item.isNew}}
-          <div class="form__map-item-ruler"></div>
-        {{/if}}
-
-      {{else}}
-        <div class="message">
-          <i icon=""></i>
-          Add some keys first
+      {{#unless hasData}}
+        <div class="message alt">
+          <i icon=""></i>
+          Loading
         </div>
 
-      {{/each}}
+      {{else}}
+        {{#each map_item in sortedModelWithNumbers}}
+          {{map-item-data item=map_item struct=struct keys=keys}}
+
+          {{#if map_item.isNew}}
+            <div class="form__map-item-ruler"></div>
+          {{/if}}
+
+        {{else}}
+          {{#if hasKeys}}
+            <div class="message">
+              <i icon=""></i>
+              Nothing here
+            </div>
+          {{else}}
+            <div class="message">
+              <i icon=""></i>
+              Add some keys first
+            </div>
+          {{/if}}
+
+        {{/each}}
+
+      {{/unless}}
 
       <button class="btn" type="submit">Save</button>
     </form>

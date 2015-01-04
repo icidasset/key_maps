@@ -3,11 +3,22 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
   fullWidthTypes: ["text"],
   deletedMapItems: [],
-  sortedModelWithNumbers: [],
+  sortedModelWithNumbers: null,
 
   eachStructureProperty: null,
-  eachStructurePropertyDelay: 400,
+  eachStructurePropertyDelay: 250,
   debouncedProperties: ["eachStructureProperty"],
+
+
+  hasData: function() {
+    return this.get("sortedModelWithNumbers") !== null;
+  }.property("sortedModelWithNumbers"),
+
+
+  hasKeys: function() {
+    var k = this.get("keys");
+    return k && k.length && Object.keys(k[0]).length;
+  }.property("keys"),
 
 
   modelObserver: function() {

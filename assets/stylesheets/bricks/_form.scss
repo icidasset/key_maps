@@ -97,6 +97,24 @@
     margin-top: 21px;
   }
 
+  // label
+  label {
+    background-color: #aaa;
+    border-radius: $general_border_radius - 1px;
+    clear: both;
+    color: white;
+    float: left;
+    font-size: 0.85em;
+    margin-bottom: 14px;
+    margin-top: 21px;
+    padding: 4px 8px 1px;
+    text-transform: uppercase;
+  }
+
+  label + .field {
+    clear: both;
+  }
+
 
   //
   //  Map item

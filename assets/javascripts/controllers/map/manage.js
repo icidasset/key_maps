@@ -35,5 +35,4 @@ K.MapManageController = Ember.Controller.extend({
 
   }
 
-
 });

@@ -1,0 +1,27 @@
+<script type="text/x-handlebars" data-template-name="map/settings">
+
+  <div class="mod-map-toolbar">
+    <div class="map-toolbar__actions"></div>
+    <div class="map-toolbar__url"></div>
+  </div>
+
+
+  <div class="content-wrapper">
+    <form class="form" {{action "save" on="submit"}}>
+      <label for="sort_by">Sort by</label>
+      <div class="field">
+        <div class="form__selectize">
+          {{ember-selectize
+            content=keys
+            selection=sort_by_select_value
+            optionValuePath="content.key"
+            optionLabelPath="content.name"
+            placeholder="type"}}
+        </div>
+      </div>
+
+      <button class="btn" type="submit">Save</button>
+    </form>
+  </div>
+
+</script>

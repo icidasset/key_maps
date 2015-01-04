@@ -21,7 +21,7 @@
         <div class="field secondary">
           <div class="form__selectize">
             {{ember-selectize
-              content=types
+              content=controllers.map.types
               selection=struct.type
               optionValuePath="content.value"
               optionLabelPath="content.name"

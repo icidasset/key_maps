@@ -1,6 +1,13 @@
 K.MapController = Ember.Controller.extend({
   needs: "application",
 
+  types: [
+    { value: "string", name: "String" },
+    { value: "text", name: "Text" },
+    { value: "number", name: "Number" },
+    { value: "boolean", name: "Boolean" }
+  ],
+
 
   // observers
   pass_map_name_to_header: function() {

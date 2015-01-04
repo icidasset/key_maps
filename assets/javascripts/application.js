@@ -12,6 +12,7 @@ import "./controllers/application";
 import "./controllers/map/index";
 import "./controllers/map/keys";
 import "./controllers/map/manage";
+import "./controllers/map/settings";
 import "./controllers/map";
 import "./controllers/sign-in";
 import "./controllers/sign-up";

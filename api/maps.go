@@ -16,6 +16,7 @@ type Map struct {
   Slug string             `json:"slug"`
   Name string             `json:"name"`
   Structure string        `json:"structure"`
+  SortBy string           `json:"sort_by" db:"sort_by"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
   MapItems IntSlice       `json:"map_items" db:"map_items"`
@@ -84,7 +85,7 @@ func Maps__Index(r render.Render, u User) {
             ), ', ') AS map_items
      FROM maps
      WHERE maps.user_id = $1
-     ORDER BY maps.id;`,
+     ORDER BY maps.id`,
      u.Id,
   )
 
@@ -167,7 +168,7 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
   slug := slug.Slug(mfd.Map.Name)
   now := time.Now()
 
-  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, CreatedAt: now, UpdatedAt: now, UserId: u.Id}
+  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, SortBy: mfd.Map.SortBy, CreatedAt: now, UpdatedAt: now, UserId: u.Id}
 
   // execute query
   rows, err := db.Inst().NamedQuery(query, new_map)
@@ -191,8 +192,9 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
 //
 func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u User) {
   _, err := db.Inst().Exec(
-    "UPDATE maps SET structure = $1, updated_at = $2 WHERE id = $3 AND user_id = $4",
+    "UPDATE maps SET structure = $1, sort_by = $2, updated_at = $3 WHERE id = $4 AND user_id = $5",
     mfd.Map.Structure,
+    mfd.Map.SortBy,
     time.Now(),
     params["id"],
     u.Id,

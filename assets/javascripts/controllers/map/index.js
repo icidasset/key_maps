@@ -34,7 +34,11 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
   setSortedModelWithNumbers: function() {
     var s = this.get("model");
-    var sort_by = this.get("keys")[0].key;
+
+    var sort_by = (
+      this.get("controllers.map.model.sort_by") ||
+      this.get("keys")[0].key
+    );
 
     s = s.filter(function(m) {
       return !m.get("isDeleted");

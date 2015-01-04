@@ -1,13 +1,8 @@
 K.MapKeysController = Ember.Controller.extend({
+  needs: ["map"],
+
   structure: [{}],
   reformatted_structure: [{}],
-
-  types: [
-    { value: "string", name: "String" },
-    { value: "text", name: "Text" },
-    { value: "number", name: "Number" },
-    { value: "boolean", name: "Boolean" }
-  ],
 
 
   copy_structure: function() {
@@ -20,7 +15,7 @@ K.MapKeysController = Ember.Controller.extend({
 
   reformat_structure: function() {
     var structure = this.get("structure");
-    var types = this.types;
+    var types = this.get("controllers.map.types");
 
     var reformatted = structure.map(function(s) {
       var type;
@@ -81,4 +76,5 @@ K.MapKeysController = Ember.Controller.extend({
     }
 
   }
+
 });

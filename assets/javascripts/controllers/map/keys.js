@@ -1,8 +1,8 @@
 K.MapKeysController = Ember.Controller.extend({
   needs: ["map"],
 
-  structure: [{}],
-  reformatted_structure: [{}],
+  structure: [],
+  reformatted_structure: [],
 
 
   copy_structure: function() {

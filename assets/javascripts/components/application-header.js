@@ -126,7 +126,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
 
     new_map = controller.store.createRecord("map", {
       name: name,
-      structure: "[{}]"
+      structure: "[]"
     });
 
     new_map.save().then(function() {

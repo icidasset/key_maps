@@ -116,11 +116,17 @@ func Maps__Index(r render.Render, u User) {
 
   items_query += ")"
 
-  err = db.Inst().Select(
-    &map_items,
-    items_query,
-    map_item_ids_s...,
-  )
+  if len(map_item_ids_s) > 0 {
+    err = db.Inst().Select(
+      &map_items,
+      items_query,
+      map_item_ids_s...,
+    )
+  }
+
+  // fallback
+  if maps == nil { maps = []Map{} }
+  if map_items == nil { map_items = []MapItem{} }
 
   // render
   if err != nil {

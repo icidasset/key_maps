@@ -1,11 +1,6 @@
 -- +migrate Up
 ALTER TABLE maps
-  ADD sort_by varchar(256);
-
-UPDATE maps
-  SET sort_by = ''
-  WHERE sort_by IS NULL;
-
+  ADD sort_by varchar(256) NOT NULL DEFAULT '';
 
 -- +migrate Down
 ALTER TABLE maps

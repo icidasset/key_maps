@@ -4,6 +4,7 @@ K.MapSettingsController = Ember.Controller.extend({
 
   keys: function() {
     var keys = JSON.parse(this.get("controllers.map.model.structure"));
+
     return keys.map(function(k) {
       return {
         key: k.key,
@@ -13,7 +14,7 @@ K.MapSettingsController = Ember.Controller.extend({
   }.property("controllers.map.model.structure"),
 
 
-  sort_by_observer: function() {
+  on_init: function() {
     var k = this.get("controllers.map.model.sort_by");
 
     this.set(

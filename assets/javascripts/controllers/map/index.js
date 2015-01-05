@@ -37,7 +37,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
     var sort_by = (
       this.get("controllers.map.model.sort_by") ||
-      this.get("keys")[0].key
+      (this.get("keys")[0] ? this.get("keys")[0].key : null)
     );
 
     s = s.filter(function(m) {
@@ -51,8 +51,8 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
       a_struct = a_struct ? JSON.parse(a_struct) : null;
       b_struct = b_struct ? JSON.parse(b_struct) : null;
 
-      a_struct = a_struct ? a_struct[sort_by] || "" : "";
-      b_struct = b_struct ? b_struct[sort_by] || "" : "";
+      a_struct = a_struct && sort_by ? a_struct[sort_by] || "" : "";
+      b_struct = b_struct && sort_by ? b_struct[sort_by] || "" : "";
 
       return a_struct.localeCompare(b_struct);
     });
@@ -67,8 +67,9 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
   make_new_item_on_init: function() {
     var controller = this;
+    var keys = this.get("keys");
 
-    if (this.get("model.length") === 0 && this.get("keys")[0].key) {
+    if (this.get("model.length") === 0 && keys[0] && keys[0].key) {
       controller.get("controllers.map.model.map_items").then(function() {
         controller.get("controllers.map.model.map_items").addObject(
           controller.store.createRecord("map_item", {})

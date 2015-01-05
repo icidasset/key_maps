@@ -14,7 +14,7 @@ K.MapKeysController = Ember.Controller.extend({
 
 
   reformat_structure: function() {
-    var structure = this.get("structure");
+    var structure = this.get("structure") || [];
     var types = this.get("controllers.map.types");
 
     var reformatted = structure.map(function(s) {
@@ -28,6 +28,10 @@ K.MapKeysController = Ember.Controller.extend({
 
       return { key: s.key, type: type };
     });
+
+    if (reformatted.length === 0) {
+      reformatted.push({});
+    }
 
     this.set("reformatted_structure", reformatted);
   }.observes("structure"),

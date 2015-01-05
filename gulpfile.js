@@ -34,6 +34,7 @@ var paths = {
     "./assets/javascripts/vendor/sifter.js",
     "./assets/javascripts/vendor/microplugin.js",
     "./assets/javascripts/vendor/selectize.js",
+    "./assets/javascripts/vendor/base64.js",
 
     "./assets/javascripts/vendor/ember.js",
     "./assets/javascripts/vendor/ember-data.js",

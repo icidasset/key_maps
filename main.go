@@ -153,6 +153,11 @@ func main() {
     )
   }, MustBeAuthenticatedMiddleware)
 
+  // - public
+  r.Group("/api/public", func(r martini.Router) {
+    r.Get("/:hash", api.Public__Show)
+  })
+
   // - root
   r.Get("/", rootHandler)
 

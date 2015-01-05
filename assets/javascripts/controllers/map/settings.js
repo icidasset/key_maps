@@ -15,11 +15,16 @@ K.MapSettingsController = Ember.Controller.extend({
 
 
   on_init: function() {
-    var k = this.get("controllers.map.model.sort_by");
+    var s = this.get("controllers.map.model.sort_by");
+    var keys = this.get("keys");
+
+    if (!s && keys.length) {
+      s = keys[0].key;
+    }
 
     this.set(
       "sort_by_select_value",
-      { key: k, name: k }
+      { key: s, name: s }
     );
   }.on("init"),
 

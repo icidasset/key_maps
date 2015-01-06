@@ -140,6 +140,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
     save: function() {
       var controller = this;
+      var keys = this.get("keys").map(function(k) { return k.key; });
 
       Ember.run(function() {
         var deleted_items = controller.deletedMapItems;
@@ -152,6 +153,19 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
         deleted_items.length = 0;
 
         controller.get("model").forEach(function(mi) {
+          var sd = JSON.parse(mi.get("structure_data"));
+          var sd_keys = Object.keys(sd);
+          var changed_structure = false;
+
+          for (var i=0, j=sd_keys.length; i<j; ++i) {
+            var k = sd_keys[i];
+            if (keys.indexOf(k) === -1) {
+              delete sd[k];
+              changed_structure = true;
+            }
+          }
+
+          if (changed_structure) mi.set("structure_data", JSON.stringify(sd));
           if (mi.get("isDirty")) promises.push(mi.save());
         });
 

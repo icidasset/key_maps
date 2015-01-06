@@ -1,5 +1,5 @@
 K.MapManageController = Ember.Controller.extend({
-  needs: ["application"],
+  needs: ["application", "map"],
   self_destruct_confirmation: false,
 
 

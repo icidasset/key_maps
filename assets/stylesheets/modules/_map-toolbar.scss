@@ -40,6 +40,15 @@
   .map-toolbar__url {
     float: right;
     font-family: monospace;
+    font-size: 0.85rem;
+
+    a {
+      color: $gray;
+    }
+  }
+
+  .map-toolbar__url-wrapper {
+    padding: 0 $general_padding;
   }
 
 

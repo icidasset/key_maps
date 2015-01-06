@@ -6,17 +6,17 @@ import (
   "github.com/go-martini/martini"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/render"
-  "net/http"
   "strconv"
+  "strings"
 )
 
 
-func Public__Show(params martini.Params, r render.Render, w http.ResponseWriter) {
+func Public__Show(params martini.Params, r render.Render) {
   data, err := base64.StdEncoding.DecodeString(params["hash"])
-  str := string(data[:])
+  s := strings.Split(string(data[:]), "/")
 
   // params
-  map_id, _ := strconv.ParseInt(str, 10, 0)
+  map_id, _ := strconv.ParseInt(s[0], 10, 0)
 
   // map items
   map_items := []MapItem{}

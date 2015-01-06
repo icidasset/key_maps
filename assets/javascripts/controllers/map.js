@@ -9,7 +9,9 @@ K.MapController = Ember.Controller.extend({
   ],
 
 
-  // observers
+  //
+  //  Observers
+  //
   pass_map_name_to_header: function() {
     var m;
     var header_component = this.get(
@@ -30,6 +32,20 @@ K.MapController = Ember.Controller.extend({
   }.observes(
     "model",
     "controllers.application.header_component"
-  )
+  ),
+
+
+  //
+  //  Properties
+  //
+  has_keys: function() {
+    var k = this.get("keys");
+    return k && k.length && Object.keys(k[0]).length;
+  }.property("keys"),
+
+
+  keys: function() {
+    return JSON.parse(this.get("model.structure"));
+  }.property("model.structure")
 
 });

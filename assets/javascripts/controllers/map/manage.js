@@ -1,10 +1,10 @@
 K.MapManageController = Ember.Controller.extend({
   needs: ["application"],
-  selfDestructConfirmation: false,
+  self_destruct_confirmation: false,
 
 
   set_default_self_destruct: function() {
-    this.set("selfDestructConfirmation", false);
+    this.set("self_destruct_confirmation", false);
   }.on("didInsertElement").observes("model"),
 
 
@@ -14,7 +14,7 @@ K.MapManageController = Ember.Controller.extend({
   actions: {
 
     self_destruct: function() {
-      this.set("selfDestructConfirmation", true);
+      this.set("self_destruct_confirmation", true);
     },
 
     self_destruct_confirmation: function() {

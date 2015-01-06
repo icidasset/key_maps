@@ -9,17 +9,25 @@
   <div class="content-wrapper">
     <form class="form" {{action "save" on="submit"}}>
       <label for="sort_by">Sort by</label>
-      <div class="field">
-        <div class="form__selectize">
-          {{ember-selectize
-            content=keys
-            selection=sort_by_select_value
-            optionValuePath="content.key"
-            optionLabelPath="content.name"
-            placeholder="key"
-            multiple=false}}
+
+      {{#if has_keys}}
+        <div class="field">
+          <div class="form__selectize">
+            {{ember-selectize
+              content=select_keys
+              selection=sort_by_select_value
+              optionValuePath="content.key"
+              optionLabelPath="content.name"
+              placeholder="key"
+              multiple=false}}
+          </div>
         </div>
-      </div>
+      {{else}}
+        <div class="message">
+          <i icon=""></i>
+          Add some keys first
+        </div>
+      {{/if}}
 
       <button class="btn" type="submit">Save</button>
     </form>

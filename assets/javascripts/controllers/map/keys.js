@@ -5,6 +5,9 @@ K.MapKeysController = Ember.Controller.extend({
   reformatted_structure: [],
 
 
+  //
+  //  Observers
+  //
   copy_structure: function() {
     this.set(
       "structure",
@@ -37,6 +40,9 @@ K.MapKeysController = Ember.Controller.extend({
   }.observes("structure"),
 
 
+  //
+  //  Other
+  //
   clean_structure: function(structure) {
     var c = [];
 

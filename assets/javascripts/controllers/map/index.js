@@ -1,50 +1,70 @@
 K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   needs: ["map"],
 
-  fullWidthTypes: ["text"],
-  deletedMapItems: [],
-  sortedModelWithNumbers: null,
+  full_width_types: ["text"],
+  deleted_map_items: [],
+  sorted_model_with_numbers: null,
 
   eachStructureProperty: null,
   eachStructurePropertyDelay: 250,
   debouncedProperties: ["eachStructureProperty"],
 
-
-  hasData: function() {
-    return this.get("sortedModelWithNumbers") !== null;
-  }.property("sortedModelWithNumbers"),
-
-
-  hasKeys: function() {
-    var k = this.get("keys");
-    return k && k.length && Object.keys(k[0]).length;
-  }.property("keys"),
+  // aliases
+  keys: Ember.computed.alias("controllers.map.keys"),
+  has_keys: Ember.computed.alias("controllers.map.has_keys"),
 
 
-  modelObserver: function() {
+  //
+  //  Observers
+  //
+  model_observer: function() {
     var timestamp = (new Date()).getTime();
     this.set("eachStructureProperty", timestamp);
-  }.observes("keys", "model.@each.structure_data"),
+  }.observes("keys", "model.[]"),
 
 
-  eachStructurePropertyObserver: function() {
-    Ember.run.once(this, "setSortedModelWithNumbers");
+  each_structure_property_observer: function() {
+    Ember.run.once(this, "set_sorted_model_with_numbers");
   }.observes("debouncedEachStructureProperty"),
 
 
-  setSortedModelWithNumbers: function() {
-    var s = this.get("model");
+  makeNewItemWhenThereIsNone: function() {
+    var controller = this;
+
+    if (this.get("model.length") === 0 && this.get("hasKeys")) {
+      controller.get("controllers.map.model.map_items").then(function() {
+        controller.get("controllers.map.model.map_items").addObject(
+          controller.store.createRecord("map_item", {})
+        );
+
+        controller.send("resetModel");
+      });
+    }
+  }.observes("setSortedModelWithNumbers"),
+
+
+  //
+  //  Properties
+  //
+  has_data: function() {
+    return this.get("sorted_model_with_numbers") !== null;
+  }.property("sorted_model_with_numbers"),
+
+
+  set_sorted_model_with_numbers: function() {
+    var items = this.get("model");
+    var keys = this.get("keys");
 
     var sort_by = (
       this.get("controllers.map.model.sort_by") ||
-      (this.get("keys")[0] ? this.get("keys")[0].key : null)
+      (keys[0] ? keys[0].key : null)
     );
 
-    s = s.filter(function(m) {
+    items = items.filter(function(m) {
       return !m.get("isDeleted");
     });
 
-    s = s.sort(function(a, b) {
+    items = items.sort(function(a, b) {
       var a_struct = a.get("structure_data");
       var b_struct = b.get("structure_data");
 
@@ -57,48 +77,32 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
       return a_struct.localeCompare(b_struct);
     });
 
-    s.forEach(function(m, idx) {
+    items.forEach(function(m, idx) {
       m.set("row_number", idx + 1);
     });
 
-    this.set("sortedModelWithNumbers", s);
+    this.set("sorted_model_with_numbers", items);
   },
 
 
-  make_new_item_on_init: function() {
-    var controller = this;
-    var keys = this.get("keys");
-
-    if (this.get("model.length") === 0 && keys[0] && keys[0].key) {
-      controller.get("controllers.map.model.map_items").then(function() {
-        controller.get("controllers.map.model.map_items").addObject(
-          controller.store.createRecord("map_item", {})
-        );
-
-        controller.send("resetModel");
-      });
-    }
-  }.observes("model"),
-
-
   struct: function() {
-    var structure = this.get("keys");
-    var fwt = this.get("fullWidthTypes");
+    var keys = this.get("keys");
+    var fwt = this.get("full_width_types");
     var full = [];
     var all = [];
 
-    structure.forEach(function(s) {
+    keys.forEach(function(k) {
       var l = all.length === 0 ? undefined : all[all.length - 1];
 
-      if (fwt.contains(s.type)) {
-        full.push(s);
+      if (fwt.contains(k.type)) {
+        full.push(k);
       } else {
         if (l === undefined || l.length >= 2) {
           l = [];
           all.push(l);
         }
 
-        l.push(s);
+        l.push(k);
       }
     });
 
@@ -114,10 +118,26 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   }.property("keys"),
 
 
-  keys: function() {
-    return JSON.parse(this.get("controllers.map.model.structure"));
-  }.property("controllers.map.model.structure"),
+  //
+  //  Other
+  //
+  clean_up_data: function(item, keys) {
+    var data = JSON.parse(item.get("structure_data"));
+    var data_keys = Object.keys(data);
+    var changed_structure = false;
 
+    for (var i=0, j=data_keys.length; i<j; ++i) {
+      var key = data_keys[i];
+      if (keys.indexOf(key) === -1) {
+        delete data[key];
+        changed_structure = true;
+      }
+    }
+
+    if (changed_structure) {
+      item.set("structure_data", JSON.stringify(data));
+    }
+  },
 
 
   //
@@ -140,35 +160,28 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
     save: function() {
       var controller = this;
-      var keys = this.get("keys").map(function(k) { return k.key; });
 
       Ember.run(function() {
-        var deleted_items = controller.deletedMapItems;
         var promises = [];
+        var deleted_items = controller.deleted_map_items;
+        var keys = controller.get("keys").map(function(k) {
+          return k.key;
+        });
 
+        // persist deleted items
         deleted_items.forEach(function(d) {
           promises.push(d.save());
         });
 
         deleted_items.length = 0;
 
-        controller.get("model").forEach(function(mi) {
-          var sd = JSON.parse(mi.get("structure_data"));
-          var sd_keys = Object.keys(sd);
-          var changed_structure = false;
-
-          for (var i=0, j=sd_keys.length; i<j; ++i) {
-            var k = sd_keys[i];
-            if (keys.indexOf(k) === -1) {
-              delete sd[k];
-              changed_structure = true;
-            }
-          }
-
-          if (changed_structure) mi.set("structure_data", JSON.stringify(sd));
-          if (mi.get("isDirty")) promises.push(mi.save());
+        // clean up data and save modified items
+        controller.get("model").forEach(function(item) {
+          controller.clean_up_data(item, keys);
+          if (item.get("isDirty")) promises.push(item.save());
         });
 
+        // reset model when all requests are done
         Ember.RSVP.all(promises).then(function() {
           controller.send("resetModel");
         });

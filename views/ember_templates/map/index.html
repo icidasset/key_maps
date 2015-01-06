@@ -2,10 +2,12 @@
 
   <div class="mod-map-toolbar">
     <div class="map-toolbar__actions">
-      <a {{action "add"}}>
-        <i class="plus"></i>
-        Add item
-      </a>
+      {{#if has_keys}}
+        <a {{action "add"}}>
+          <i class="plus"></i>
+          Add item
+        </a>
+      {{/if}}
     </div>
 
     <div class="map-toolbar__url"></div>
@@ -14,14 +16,14 @@
 
   <div class="content-wrapper">
     <form class="form" {{action "save" on="submit"}}>
-      {{#unless hasData}}
+      {{#unless has_data}}
         <div class="message alt">
           <i icon=""></i>
           Loading
         </div>
 
       {{else}}
-        {{#each map_item in sortedModelWithNumbers}}
+        {{#each map_item in sorted_model_with_numbers}}
           {{map-item-data item=map_item struct=struct keys=keys}}
 
           {{#if map_item.isNew}}
@@ -29,7 +31,7 @@
           {{/if}}
 
         {{else}}
-          {{#if hasKeys}}
+          {{#if has_keys}}
             <div class="message">
               <i icon=""></i>
               Nothing here

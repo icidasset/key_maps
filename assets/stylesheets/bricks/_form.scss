@@ -1,5 +1,4 @@
 .form {
-  @include serif-font;
   margin: 37px 0;
 
   &, .row {
@@ -39,7 +38,7 @@
     border: 2px solid #e4e4e4; // #ececec
     box-sizing: border-box;
     color: $black;
-    font-size: 1.1rem;
+    font-size: 1rem;
     line-height: 1.6;
     padding: 0 18px;
     position: relative;
@@ -104,10 +103,10 @@
     clear: both;
     color: white;
     float: left;
-    font-size: 0.85em;
+    font-size: 0.8em;
     margin-bottom: 14px;
     margin-top: 21px;
-    padding: 4px 8px 1px;
+    padding: 5px 9px 2px;
     text-transform: uppercase;
   }
 
@@ -201,7 +200,7 @@
   .selectize-input {
     background: transparent;
     border: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
     height: 100%;
     line-height: $input_height;
     padding: 0 18px;
@@ -235,7 +234,7 @@
 
   .selectize-input input {
     color: $black;
-    font-size: 1.1rem;
+    font-size: 1rem;
     height: calc($input_height - 8px);
   }
 

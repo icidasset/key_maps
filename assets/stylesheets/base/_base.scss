@@ -3,9 +3,9 @@ html {
 }
 
 body {
-  font-family: "Merriweather Sans", sans-serif;
+  font-family: "Roboto", sans-serif;
   color: $black;
-  line-height: 1.7;
+  line-height: 1.55;
   margin: 0;
   text-rendering: optimizeLegibility;
 }
@@ -13,4 +13,8 @@ body {
 a {
   color: $the_color;
   text-decoration: none;
+}
+
+p {
+  margin: 1.5em 0;
 }

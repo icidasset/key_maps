@@ -15,7 +15,8 @@
     }
   }
 
-  .mod-map-selector {
+  .mod-map-selector,
+  .mod-header-menu {
     @include flex(1);
     float: left;
     height: 100%;

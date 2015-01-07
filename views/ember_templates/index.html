@@ -1,10 +1,11 @@
 <script type="text/x-handlebars" data-template-name="index">
 
-  <div class="content-wrapper without-max">
-    <div class="message">
-      <i icon=""></i>
-      Use the navigation above to get started.
-    </div>
-  </div>
+  {{#if session.isAuthenticated}}
+    {{render "signed_in_index"}}
+
+  {{else}}
+    {{render "about"}}
+
+  {{/if}}
 
 </script>

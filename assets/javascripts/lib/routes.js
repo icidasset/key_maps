@@ -45,6 +45,9 @@ K.ApplicationRoute = Ember.Route.extend(SimpleAuth.ApplicationRouteMixin, {
 });
 
 
+K.IndexRoute = Ember.Route.extend({});
+
+
 
 //
 //  Sign in/up/out
@@ -90,9 +93,6 @@ K.SignOutRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
 //
 //  Authenticated Routes
 //
-K.IndexRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin);
-
-
 K.MapRoute = Ember.Route.extend(SimpleAuth.AuthenticatedRouteMixin, {
   model: function(params) {
     var m = this.getModel(params);

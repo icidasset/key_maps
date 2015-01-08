@@ -7,6 +7,7 @@ import "./lib/authenticator";
 import "./lib/authorizer";
 
 import "./initializers/authentication";
+import "./initializers/wuphf";
 
 import "./controllers/application";
 import "./controllers/map/index";

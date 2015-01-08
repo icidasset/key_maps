@@ -53,6 +53,9 @@ K.MapSettingsController = Ember.Controller.extend({
       m.save().then(function() {
         $(document.activeElement).filter("button").blur();
       });
+
+      // woof
+      this.wuphf.success("Success message", 2000);
     }
 
   }

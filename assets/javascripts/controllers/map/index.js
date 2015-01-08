@@ -186,6 +186,9 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
           controller.send("resetModel");
         });
       });
+
+      // woof
+      this.wuphf.success("<i class='check'></i> Saved");
     }
 
   }

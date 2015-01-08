@@ -55,7 +55,7 @@ K.MapSettingsController = Ember.Controller.extend({
       });
 
       // woof
-      this.wuphf.success("Success message", 2000);
+      this.wuphf.success("<i class='check'></i> Saved");
     }
 
   }

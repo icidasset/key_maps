@@ -2,6 +2,16 @@ K.XWuphfComponent = EmberWuphf.XWuphfComponent;
 K.XWuphfMessageComponent = EmberWuphf.XWuphfMessageComponent;
 
 
+K.XWuphfMessageComponent.reopen({
+  classNames: ["message", "with-margin"]
+});
+
+
+EmberWuphf.Service.reopen({
+  timeout: 2000
+});
+
+
 Ember.Application.initializer({
   name: "wuphf",
 

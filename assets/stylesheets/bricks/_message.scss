@@ -1,12 +1,12 @@
 .message {
-  background: $vanilla;
+  border: 2px solid rgba($black, .3);
   border-radius: $general_border_radius;
-  color: desaturate(darken($vanilla, 52.5), 52.5);
+  color: $black;
   display: inline-block;
   margin: 0 8px 8px 0;
-  padding: 16px 29px 15px;
+  padding: 15px 28px 14px;
 
-  i[icon] {
+  i[icon], i[class] {
     margin-right: 0.6em;
   }
 
@@ -14,9 +14,27 @@
   //  * Error
   //
   &.is-error {
-    background-color: transparent;
-    border: 2px solid $red;
+    border-color: rgba($red, .3);
+    border-style: dashed;
     color: $red;
+  }
+
+
+  //
+  //  * With margin
+  //
+  &.with-margin {
+    margin: 1.8em 0 0;
+  }
+
+
+  //
+  //  * Statuses
+  //
+  &.success {
+    border-color: rgba($green, .3);
+    border-style: dashed;
+    color: $green;
   }
 
 

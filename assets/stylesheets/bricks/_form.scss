@@ -96,6 +96,12 @@
     margin-top: 21px;
   }
 
+  button + .message,
+  button + .wuphf-message-container .message {
+    clear: none;
+    margin: 21px 0 0 13px;
+  }
+
   // label
   label {
     background-color: #aaa;
@@ -106,7 +112,7 @@
     font-size: 0.8em;
     margin-bottom: 14px;
     margin-top: 21px;
-    padding: 5px 9px 2px;
+    padding: 5px 9px 3px;
     text-transform: uppercase;
   }
 

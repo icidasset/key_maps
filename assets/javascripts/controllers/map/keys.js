@@ -79,10 +79,16 @@ K.MapKeysController = Ember.Controller.extend({
       var s = this.clean_structure(this.get("reformatted_structure"));
 
       this.set("structure", s);
+
       m.set("structure", JSON.stringify(s));
+
+      // save
       m.save().then(function() {
         $(document.activeElement).filter("button").blur();
       });
+
+      // woof
+      this.wuphf.success("<i class='check'></i> Saved");
     }
 
   }

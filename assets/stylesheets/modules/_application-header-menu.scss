@@ -1,0 +1,19 @@
+.mod-application-header-menu {
+  line-height: $main_header_height;
+  overflow: hidden;
+
+  .application-header-menu__wrapper {
+    padding: 0 $general_padding;
+  }
+
+  a {
+    display: inline-block;
+    margin-right: 21px;
+  }
+
+  a.active {
+    color: $black;
+  }
+
+
+}

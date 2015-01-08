@@ -11,12 +11,19 @@
         </div>
       </div>
 
-      <div {{bind-attr class=":map-selector__message map_selector_show_message:is-visible"}}>{{{map_selector_message}}}</div>
+      <div {{bind-attr class=":map-selector__message map_selector_show_message:is-visible"}}>
+        <span>{{{map_selector_message}}}</span>
+      </div>
     </div>
 
   {{else}}
 
-    <div class="mod-header-menu">
+    <div class="mod-application-header-menu">
+      <div class="application-header-menu__wrapper">
+        {{#link-to "index"}}About{{/link-to}}
+        {{#link-to "sign_in"}}Sign In{{/link-to}}
+        {{#link-to "sign_up"}}Sign Up{{/link-to}}
+      </div>
     </div>
 
   {{/if}}

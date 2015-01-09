@@ -59,6 +59,10 @@
         visibility: hidden;
       }
     }
+
+    &.is-not-valid input {
+      color: $red;
+    }
   }
 
 

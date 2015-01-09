@@ -7,7 +7,7 @@ const MESSAGES = {
 };
 
 
-K.ApplicationHeaderComponent = Ember.Component.extend({
+K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
   tagName: "header",
   classNames: ["mod-application-header"],
 
@@ -19,6 +19,23 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
   map_match: false,
   map_match_mask: null,
   map_status: null,
+
+
+  // status
+  has_alert_shown: false,
+
+
+  // validations
+  validations: {
+    map_selector_value: {
+      length: {
+        minimum: 3,
+        tokenizer: function(val) {
+          return val.replace(/[\W_]+/g, "");
+        }
+      }
+    }
+  },
 
 
   // handlers
@@ -94,7 +111,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
     input_key_up: function(val, e) {
       var match = this.get("map_match");
 
-      if (e.which == 13) {
+      if (e.which == 13 && !this.get("has_alert_shown")) {
         switch (this.get("map_status")) {
           case "create":
             this.create_map(val);
@@ -123,6 +140,21 @@ K.ApplicationHeaderComponent = Ember.Component.extend({
   create_map: function(name) {
     var controller = this.get("targetObject");
     var comp = this, new_map;
+
+    if (!comp.get("isValid")) {
+      comp.set("has_alert_shown", true);
+
+      alert(
+        "You must give a valid map name. " +
+        "It must contain at least 3 alphanumeric characters."
+      );
+
+      setTimeout(function() {
+        comp.set("has_alert_shown", false);
+      }, 250);
+
+      return;
+    }
 
     new_map = controller.store.createRecord("map", {
       name: name,

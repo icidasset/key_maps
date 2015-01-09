@@ -41,6 +41,7 @@ var paths = {
     "./assets/javascripts/vendor/ember-simple-auth.js",
     "./assets/javascripts/vendor/ember-cli-selectize.js",
     "./assets/javascripts/vendor/ember-debounced-properties.js",
+    "./assets/javascripts/vendor/ember-validations.js",
     "./assets/javascripts/vendor/ember-wuphf.js"
   ],
 };

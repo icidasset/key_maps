@@ -42,13 +42,15 @@
     font-family: monospace;
     font-size: 0.85rem;
 
-    a {
+    &, a {
       color: $gray;
     }
   }
 
   .map-toolbar__url-wrapper {
+    overflow: hidden;
     padding: 0 $general_padding;
+    text-overflow: ellipsis;
   }
 
 

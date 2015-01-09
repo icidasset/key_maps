@@ -18,7 +18,11 @@
     line-height: 3.35rem;
     position: relative;
     text-transform: uppercase;
-    width: 21%;
+    width: 24%;
+
+    @media (min-width: $_small) {
+      width: 21%;
+    }
   }
 
   a:first-child {

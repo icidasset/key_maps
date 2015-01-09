@@ -1,5 +1,9 @@
 .form {
-  margin: 37px 0;
+  margin: 14px 0;
+
+  @media (min-width: $_small) {
+    margin: 35px 0;
+  }
 
   &, .row {
     @include clearfix;
@@ -35,8 +39,9 @@
   input,
   textarea {
     @include appearance(none);
+    @include transition(border-color $default_transition_duration);
     background: none;
-    border: 2px solid #e4e4e4; // #ececec
+    border: 2px solid #e4e4e4;
     box-sizing: border-box;
     color: $black;
     font-size: 1rem;
@@ -64,12 +69,14 @@
 
   input {
     height: $input_height;
+    padding-right: 96px;
     padding-top: 2px;
   }
 
   textarea {
     height: $input_height * 2.5;
     padding-bottom: 20px;
+    padding-right: 82px;
     padding-top: 20px;
     resize: none;
   }
@@ -93,13 +100,16 @@
   // field type
   .field__type {
     @include transform(translateY(-50%));
-    background-color: #D5D5D5;
+    @include transition(opacity $default_transition_duration);
+    /* background-color: #D5D5D5; */
+    background-color: lighten($the_color, 15);
     border-radius: $general_border_radius - 1px;
     color: white;
     font-size: 0.795rem;
     letter-spacing: 0.025em;
     line-height: 1;
     margin-top: 1px;
+    opacity: 0;
     padding: 7px 9px;
     pointer-events: none;
     position: absolute;
@@ -117,7 +127,7 @@
 
   input:focus + .field__type,
   textarea:focus + .field__type {
-    background-color: lighten($the_color, 15);
+    opacity: 1;
   }
 
   // buttons
@@ -147,6 +157,10 @@
     text-transform: uppercase;
   }
 
+  label:first-child {
+    margin-top: 0;
+  }
+
   label + .field {
     clear: both;
   }
@@ -162,19 +176,28 @@
 
     .row {
       float: right;
-      width: 90%;
+      width: 100%;
+
+      @media (min-width: $_small) {
+        width: 90%;
+      }
     }
 
     .row-prefix {
-      border: 2px dashed #e4e4e4;
-      border-right: 0;
-      cursor: pointer;
-      height: calc(100% - 2px);
-      left: 0;
-      position: absolute;
-      text-align: center;
-      top: -2px;
-      width: calc(10% - 2px);
+      display: none;
+
+      @media (min-width: $_small) {
+        border: 2px dashed #e4e4e4;
+        border-right: 0;
+        cursor: pointer;
+        display: block;
+        height: calc(100% - 2px);
+        left: 0;
+        position: absolute;
+        text-align: center;
+        top: -2px;
+        width: calc(10% - 2px);
+      }
     }
 
     .row-prefix__center {
@@ -195,7 +218,7 @@
     .row-prefix__destroy {
       color: $red;
       display: none;
-      font-size: 1.6em;
+      font-size: 1.7em;
     }
 
     .row-prefix:hover .row-prefix__destroy {
@@ -213,11 +236,6 @@
   //
   //  Selectize
   //
-  .form__selectize {
-    border: 2px solid #e4e4e4; // #ececec
-    height: calc(#{$input_height} - 4px);
-  }
-
   .selectize-control {
     font-size: 0;
     line-height: 0;
@@ -236,14 +254,19 @@
 
   .selectize-input {
     background: transparent;
-    border: 0;
+    border: 2px solid #e4e4e4;
+    border-radius: 0;
     font-size: 1rem;
-    height: 100%;
-    line-height: $input_height;
+    height: $input_height;
+    line-height: calc(#{$input_height} - 2px);
     padding: 0 18px;
 
-    &.dropdown-active {
+    &.dropdown-active,
+    &.focus {
       background: white;
+      border-color: lighten($the_color, 35);
+      color: $the_color;
+      z-index: 9;
     }
 
     &:before {
@@ -272,7 +295,7 @@
   .selectize-input input {
     color: $black;
     font-size: 1rem;
-    height: calc($input_height - 8px);
+    height: calc(#{$input_height} - 4px);
   }
 
   .selectize-dropdown {
@@ -280,8 +303,7 @@
     border-top: none;
     font-size: .95rem;
     line-height: 1.2;
-    margin: -4px 0 0 -2px;
-    width: calc(100% + 4px) !important;
+    margin: -4px 0 0;
 
     .option {
       padding: 12px 18px 11px;

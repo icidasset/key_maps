@@ -14,10 +14,12 @@
     $the_color
   );
 
-  &:focus,
+  &:focus {
+    outline: none;
+  }
+
   &:active {
     background-color: $gray;
-    outline: none;
   }
 
 

@@ -20,7 +20,7 @@
     text-transform: uppercase;
     width: 24%;
 
-    @media (min-width: $_small) {
+    @include min-small {
       width: 21%;
     }
   }

@@ -10,6 +10,7 @@ import "./initializers/authentication";
 import "./initializers/wuphf";
 
 import "./controllers/application";
+import "./controllers/index";
 import "./controllers/map/index";
 import "./controllers/map/keys";
 import "./controllers/map/manage";

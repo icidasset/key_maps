@@ -1,6 +1,11 @@
 .mod-application-header-menu {
   line-height: $main_header_height;
   overflow: hidden;
+  text-align: center;
+
+  @include min-small {
+    text-align: left;
+  }
 
   .application-header-menu__wrapper {
     padding: 0 $general_padding;
@@ -13,6 +18,10 @@
 
   a.active {
     color: $black;
+  }
+
+  a:last-child {
+    margin-right: 0;
   }
 
 

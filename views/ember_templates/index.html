@@ -1,7 +1,7 @@
 <script type="text/x-handlebars" data-template-name="index">
 
   {{#if session.isAuthenticated}}
-    {{render "signed_in_index"}}
+    {{partial "signed_in_index"}}
 
   {{else}}
     {{render "about"}}

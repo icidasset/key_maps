@@ -14,3 +14,22 @@
   @include font-smoothing;
   font-family: "feather-icons";
 }
+
+
+
+/*
+
+  Space properties
+
+*/
+@mixin min-small {
+  @media screen and (min-width: $_small) {
+    @content
+  }
+}
+
+@mixin max-small {
+  @media screen and (max-width: $_small - 1px) {
+    @content
+  }
+}

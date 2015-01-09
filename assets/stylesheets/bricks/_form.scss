@@ -1,7 +1,7 @@
 .form {
-  margin: 14px 0;
+  margin: 19px 0;
 
-  @media (min-width: $_small) {
+  @include min-small {
     margin: 35px 0;
   }
 
@@ -15,7 +15,11 @@
     line-height: 0;
     margin-top: -2px;
     position: relative;
-    width: 50%;
+    width: 100%;
+
+    @include min-small {
+      width: 50%;
+    }
   }
 
   .field.full-width {
@@ -33,6 +37,12 @@
   .errors, .message {
     clear: both;
     float: left;
+  }
+
+  @include max-small {
+    .field.secondary {
+      clear: both;
+    }
   }
 
   // input
@@ -69,16 +79,22 @@
 
   input {
     height: $input_height;
-    padding-right: 96px;
     padding-top: 2px;
+
+    @include min-small {
+      padding-right: 96px;
+    }
   }
 
   textarea {
     height: $input_height * 2.5;
     padding-bottom: 20px;
-    padding-right: 82px;
     padding-top: 20px;
     resize: none;
+
+    @include min-small {
+      padding-right: 82px;
+    }
   }
 
   input[type="password"] {
@@ -89,11 +105,14 @@
     }
   }
 
-  .field.secondary,
-  .row .field:not(.full-width):nth-child(2) {
-    input, .form__selectize {
-      margin-left: -2px;
-      width: calc(100% + 2px);
+  // borders
+  @include min-small {
+    .field.secondary,
+    .row .field:not(.full-width):nth-child(2) {
+      input, .form__selectize {
+        margin-left: -2px;
+        width: calc(100% + 2px);
+      }
     }
   }
 
@@ -101,8 +120,7 @@
   .field__type {
     @include transform(translateY(-50%));
     @include transition(opacity $default_transition_duration);
-    /* background-color: #D5D5D5; */
-    background-color: lighten($the_color, 15);
+    background-color: lighten($the_color, 15); // #D5D5D5;
     border-radius: $general_border_radius - 1px;
     color: white;
     font-size: 0.795rem;
@@ -125,9 +143,11 @@
     }
   }
 
-  input:focus + .field__type,
-  textarea:focus + .field__type {
-    opacity: 1;
+  @include min-small {
+    input:focus + .field__type,
+    textarea:focus + .field__type {
+      opacity: 1;
+    }
   }
 
   // buttons
@@ -178,7 +198,7 @@
       float: right;
       width: 100%;
 
-      @media (min-width: $_small) {
+      @include min-small {
         width: 90%;
       }
     }
@@ -186,7 +206,7 @@
     .row-prefix {
       display: none;
 
-      @media (min-width: $_small) {
+      @include min-small {
         border: 2px dashed #e4e4e4;
         border-right: 0;
         cursor: pointer;

@@ -4,7 +4,7 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     sass = require("gulp-sass"),
     replace = require("gulp-replace"),
-    es6ify = require("es6ify"),
+    to5ify = require("6to5ify"),
     browserify = require("browserify"),
     transform = require("vinyl-transform"),
     bourbon = require("node-bourbon");
@@ -27,8 +27,6 @@ var paths = {
     "./assets/javascripts/application.js"
   ],
   javascripts_vendor: [
-    es6ify.runtime,
-
     "./assets/javascripts/vendor/jquery.js",
     "./assets/javascripts/vendor/handlebars.js",
     "./assets/javascripts/vendor/sifter.js",
@@ -72,7 +70,7 @@ gulp.task("stylesheets", function() {
 gulp.task("javascripts_application", function() {
   var browserified = transform(function(filename) {
     var b = browserify(filename);
-    b.transform(es6ify);
+    b.transform(to5ify);
     return b.bundle();
   });
 
@@ -80,7 +78,6 @@ gulp.task("javascripts_application", function() {
     .pipe(browserified)
     .on("error", swallow_error)
     .pipe(concat("application.js"))
-    .pipe(replace("\n\n//# sourceMappingURL=<compileOutput>\n\n", ""))
     .pipe(gulp.dest("./public/javascripts"));
 });
 

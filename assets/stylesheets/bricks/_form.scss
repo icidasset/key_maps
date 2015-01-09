@@ -10,6 +10,7 @@
     font-size: 0;
     line-height: 0;
     margin-top: -2px;
+    position: relative;
     width: 50%;
   }
 
@@ -87,6 +88,23 @@
       margin-left: -2px;
       width: calc(100% + 2px);
     }
+  }
+
+  // field type
+  .field__type {
+    @include transform(translateY(-50%));
+    background-color: $gray;
+    border-radius: $general_border_radius - 1px;
+    color: white;
+    font-size: 0.9rem;
+    line-height: 1;
+    margin-top: 1px;
+    padding: 7px 9px;
+    pointer-events: none;
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    z-index: 2;
   }
 
   // buttons

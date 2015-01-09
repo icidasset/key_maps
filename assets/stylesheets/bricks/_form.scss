@@ -93,18 +93,31 @@
   // field type
   .field__type {
     @include transform(translateY(-50%));
-    background-color: $gray;
+    background-color: #D5D5D5;
     border-radius: $general_border_radius - 1px;
     color: white;
-    font-size: 0.9rem;
+    font-size: 0.795rem;
+    letter-spacing: 0.025em;
     line-height: 1;
     margin-top: 1px;
     padding: 7px 9px;
     pointer-events: none;
     position: absolute;
     right: 18px;
+    text-transform: uppercase;
     top: 50%;
     z-index: 2;
+
+    > span {
+      display: inline-block;
+      position: relative;
+      top: 1px;
+    }
+  }
+
+  input:focus + .field__type,
+  textarea:focus + .field__type {
+    background-color: lighten($the_color, 15);
   }
 
   // buttons

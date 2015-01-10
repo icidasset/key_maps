@@ -23,8 +23,8 @@
         </div>
 
       {{else}}
-        {{#each map_item in sorted_model_with_numbers}}
-          {{map-item-data item=map_item struct=struct keys=keys}}
+        {{#each sorted_model as |map_item index|}}
+          {{map-item-data item=map_item struct=struct keys=keys idx=index}}
 
           {{#if map_item.isNew}}
             <div class="form__map-item-ruler"></div>

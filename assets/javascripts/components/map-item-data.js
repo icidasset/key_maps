@@ -3,12 +3,38 @@ K.MapItemDataComponent = Ember.Component.extend({
   values: {},
 
 
+  //
+  //  Observers
+  //
   on_did_insert_element: function() {
     this.addObserver("item.structure_data", this, "setup_model");
     this.notifyPropertyChange("item.structure_data");
   }.on("didInsertElement"),
 
 
+  values_changed: function() {
+    if (this._state.toLowerCase() == "indom") {
+      this.set(
+        "item.structure_data",
+        JSON.stringify(this.get("values"))
+      );
+    }
+  }.observes("values"),
+
+
+
+  //
+  //  Properties
+  //
+  number: function() {
+    return this.get("idx") + 1;
+  }.property("idx"),
+
+
+
+  //
+  //  Other
+  //
   setup_model: function() {
     var s = JSON.parse(this.get("item.structure_data") || "{}");
     var keys = this.get("keys");
@@ -27,21 +53,6 @@ K.MapItemDataComponent = Ember.Component.extend({
 
     this.set("values", s);
   },
-
-
-  values_changed: function() {
-    if (this._state.toLowerCase() == "indom") {
-      this.set(
-        "item.structure_data",
-        JSON.stringify(this.get("values"))
-      );
-    }
-  }.observes("values"),
-
-
-  number: function() {
-    return this.get("item.row_number");
-  }.property("item.row_number"),
 
 
 

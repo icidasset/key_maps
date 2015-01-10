@@ -20,7 +20,7 @@ K.MapSettingsController = Ember.Controller.extend({
       "sort_by_select_value",
       { key: s, name: s }
     );
-  }.on("init"),
+  }.on("init").observes("model"),
 
 
   //

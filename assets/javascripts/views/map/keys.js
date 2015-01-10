@@ -22,6 +22,8 @@ K.MapKeysView = Ember.View.extend({
 
 
   event_drag_start: function(e) {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.dropEffect = "move";
     e.dataTransfer.setData("text/data", e.currentTarget.getAttribute("index"));
   },
 

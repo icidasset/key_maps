@@ -4,11 +4,6 @@
   line-height: $input_height;
   padding: 0 18px;
 
-  /* & + .field__type {
-    opacity: 1;
-  } */
-
-
   .input-boolean__value,
   .input-boolean__seperator {
     @include transition(opacity $default_transition_duration);
@@ -29,6 +24,7 @@
     }
   }
 
+  // value
   .input-boolean__value {
     background-color: #bdbdbd;
     color: white;
@@ -39,10 +35,27 @@
     background-color: lighten($the_color, 15);
   }
 
+  // seperator
   .input-boolean__seperator {
     color: #ddd;
     margin-left: 6px;
     margin-right: 6px;
+  }
+
+  // key
+  .input-boolean__key {
+    @include transform(translateY(-50%));
+    color: rgba($black, .325);
+    display: none;
+    font-size: 1rem;
+    line-height: 1.6;
+    position: absolute;
+    right: 18px;
+    top: 50%;
+
+    @include min-xsmall {
+      display: block;
+    }
   }
 
 

@@ -4,6 +4,7 @@ var gulp = require("gulp"),
     concat = require("gulp-concat"),
     sass = require("gulp-sass"),
     replace = require("gulp-replace"),
+    flatten = require("gulp-flatten"),
     to5ify = require("6to5ify"),
     browserify = require("browserify"),
     transform = require("vinyl-transform"),
@@ -25,6 +26,9 @@ var paths = {
   ],
   javascripts_application: [
     "./assets/javascripts/application.js"
+  ],
+  javascripts_maps: [
+    "./assets/javascripts/**/*.map"
   ],
   javascripts_vendor: [
     "./assets/javascripts/vendor/jquery.js",
@@ -89,6 +93,13 @@ gulp.task("javascripts_vendor", function() {
 });
 
 
+gulp.task("javascripts_maps", function() {
+  return gulp.src(paths.javascripts_maps)
+    .pipe(flatten())
+    .pipe(gulp.dest("./public/javascripts"));
+});
+
+
 gulp.task("watch", function() {
   gulp.watch(paths.stylesheets_all, ["stylesheets"]);
   gulp.watch(paths.javascripts_all, ["javascripts_application"]);
@@ -101,5 +112,6 @@ gulp.task("default", [
   "stylesheets",
   "javascripts_application",
   "javascripts_vendor",
+  "javascripts_maps",
   "watch"
 ]);

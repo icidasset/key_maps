@@ -39,7 +39,7 @@ type UserPublic struct {
 //  {post} CREATE
 //
 func Users__Create(ufd UserAuthFormData, r render.Render) {
-  query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at)"
+  query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at) RETURNING id"
 
   // make new user
   encryped_password, _ := bcrypt.GenerateFromPassword(
@@ -57,27 +57,29 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
   }
 
   // execute query
-  _, err := db.Inst().NamedExec(query, new_user)
+  rows, err := db.Inst().NamedQuery(query, new_user)
 
-  // if error
+  // return if error
   if err != nil {
-    r.JSON(500, map[string]string{ "error": err.Error() })
+    r.JSON(500, FormatError(err));
     return
   }
 
-  // render user as json
-  user := User{}
+  // scan rows
+  for rows.Next() {
+    err = rows.StructScan(&new_user)
+  }
 
-  db.Inst().Get(
-    &user,
-    "SELECT * FROM users WHERE email = $1 LIMIT 1",
-    new_user.Email,
-  )
-
-  token := GenerateToken(&user)
+  // generate token for user
+  token := GenerateToken(&new_user)
   user_public := UserPublic{ Token: token }
 
-  r.JSON(200, map[string]UserPublic{ "user": user_public })
+  // render
+  if err != nil {
+    r.JSON(500, FormatError(err));
+  } else {
+    r.JSON(201, map[string]UserPublic{ "user": user_public })
+  }
 }
 
 
@@ -90,7 +92,7 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 
   db.Inst().Get(
     &user,
-    "SELECT * FROM users WHERE email = $1 LIMIT 1",
+    "SELECT * FROM users WHERE email = $1",
     ufd.User.Email,
   )
 
@@ -125,7 +127,32 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 //
 func Users__VerifyToken(req *http.Request, r render.Render) {
   qs := req.URL.Query()
-  is_valid := VerifyToken(qs.Get("token"))
+  token := ParseToken(qs.Get("token"))
+  is_valid := token.Valid
 
-  r.JSON(200, map[string]bool{ "is_valid": is_valid })
+  // invalid token
+  if !is_valid {
+    r.JSON(200, map[string]bool{ "is_valid": false })
+
+  // valid token, but check if the user exists
+  } else {
+    user := User{}
+
+    db.Inst().Get(
+      &user,
+      "SELECT id FROM users WHERE id = $1",
+      int(token.Claims["user_id"].(float64)),
+    )
+
+    // user exists
+    if user.Id != 0 {
+      r.JSON(200, map[string]bool{ "is_valid": true })
+
+    // user does not exist
+    } else {
+      r.JSON(200, map[string]bool{ "is_valid": false })
+
+    }
+
+  }
 }

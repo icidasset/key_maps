@@ -4,7 +4,8 @@ K.SignUpController = Ember.Controller.extend({
 
   ERROR_MESSAGES: {
     "email_presence" : "Given email is not valid",
-    "password_presence" : "Given password is not valid",
+    "password_presence" : "Given password is not valid" +
+                          ", it must be at least 5 characters long",
     "password_not_confirmed" : "Password confirmation is invalid"
   },
 

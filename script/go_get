@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 repos=(
-  'github.com/rubenv/sql-migrate'
+  'github.com/rubenv/sql-migrate/...'
   'github.com/go-martini/martini'
   'github.com/martini-contrib/binding'
   'github.com/martini-contrib/render'

@@ -89,10 +89,23 @@ func Maps__Index(r render.Render, u User) {
      u.Id,
   )
 
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err))
+    return
+  }
+
+  // scan rows
   for rows.Next() {
     m := Map{}
     err = rows.StructScan(&m)
     maps = append(maps, m)
+  }
+
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err));
+    return
   }
 
   // gather map item ids
@@ -130,7 +143,7 @@ func Maps__Index(r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
     r.JSON(200, MapIndex{ Maps: maps, MapItems: map_items })
   }
@@ -154,7 +167,7 @@ func Maps__Show(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else if m.Id == 0 {
     r.JSON(404, nil)
   } else {
@@ -179,15 +192,22 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
   // execute query
   rows, err := db.Inst().NamedQuery(query, new_map)
 
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err));
+    return
+  }
+
+  // scan rows
   for rows.Next() {
-    rows.StructScan(&new_map)
+    err = rows.StructScan(&new_map)
   }
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
-    r.JSON(200, map[string]Map{ "map": new_map })
+    r.JSON(201, map[string]Map{ "map": new_map })
   }
 }
 
@@ -206,10 +226,16 @@ func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u Use
     u.Id,
   )
 
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err));
+    return
+  }
+
   // fetch
   m := Map{}
 
-  db.Inst().Get(
+  err = db.Inst().Get(
     &m,
     "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
     params["id"],
@@ -218,7 +244,7 @@ func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u Use
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
     r.JSON(200, map[string]Map{ "map": m })
   }
@@ -238,8 +264,8 @@ func Maps__Destroy(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
-    r.JSON(200, nil)
+    r.JSON(204, nil)
   }
 }

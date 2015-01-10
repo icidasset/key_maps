@@ -38,7 +38,7 @@ func MapItems__Show(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else if mi.Id == 0 {
     r.JSON(404, nil)
   } else {
@@ -62,15 +62,22 @@ func MapItems__Create(mifd MapItemFormData, r render.Render, u User) {
   // execute query
   rows, err := db.Inst().NamedQuery(query, new_map_item)
 
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err))
+    return
+  }
+
+  // scan rows
   for rows.Next() {
-    rows.StructScan(&new_map_item)
+    err = rows.StructScan(&new_map_item)
   }
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
-    r.JSON(200, map[string]MapItem{ "map_item": new_map_item })
+    r.JSON(201, map[string]MapItem{ "map_item": new_map_item })
   }
 }
 
@@ -87,10 +94,16 @@ func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Rend
     params["id"],
   )
 
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err))
+    return
+  }
+
   // fetch
   mi := MapItem{}
 
-  db.Inst().Get(
+  err = db.Inst().Get(
     &mi,
     "SELECT * FROM map_items WHERE id = $1",
     params["id"],
@@ -98,7 +111,7 @@ func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Rend
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
     r.JSON(200, map[string]MapItem{ "map_item": mi })
   }
@@ -117,8 +130,8 @@ func MapItems__Destroy(params martini.Params, r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
-    r.JSON(200, nil)
+    r.JSON(204, nil)
   }
 }

@@ -21,11 +21,17 @@ func Public__Show(params martini.Params, r render.Render) {
   // map items
   map_items := []MapItem{}
 
-  db.Inst().Select(
+  err = db.Inst().Select(
     &map_items,
     "SELECT structure_data FROM map_items WHERE map_id = $1",
     map_id,
   )
+
+  // return if error
+  if err != nil {
+    r.JSON(500, FormatError(err));
+    return
+  }
 
   // collection
   collection := make([]map[string]interface{}, 0)
@@ -38,7 +44,7 @@ func Public__Show(params martini.Params, r render.Render) {
 
   // render
   if err != nil {
-    r.JSON(500, err.Error())
+    r.JSON(500, FormatError(err))
   } else {
     r.JSON(200, collection)
   }

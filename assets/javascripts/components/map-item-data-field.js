@@ -1,6 +1,11 @@
 K.MapItemDataFieldComponent = Ember.Component.extend({
   classNames: ["field"],
-  classNameBindings: ["is_type_text:full-width"],
+  classNameBindings: [
+    "is_type_text:is-full-width",
+    "is_type_text:has-textarea-height",
+    "is_type_boolean:has-normal-height",
+    "is_other_type:has-normal-height"
+  ],
 
 
   is_type_text: function() {

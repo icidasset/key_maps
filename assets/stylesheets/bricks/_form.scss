@@ -22,16 +22,21 @@
     }
   }
 
-  .field.full-width {
+  .field.is-full-width,
+  .row__with-one-item .field {
     width: 100%;
+  }
+
+  .field.has-normal-height {
+    height: $input_height;
+  }
+
+  .field.has-textarea-height {
+    height: $textarea_height;
   }
 
   .field.secondary + .field {
     clear: both;
-  }
-
-  .row__with-one-item .field {
-    width: 100%;
   }
 
   .errors, .message {
@@ -87,7 +92,7 @@
   }
 
   textarea {
-    height: $input_height * 2.5;
+    height: $textarea_height;
     padding-bottom: 20px;
     padding-top: 20px;
     resize: none;
@@ -108,7 +113,7 @@
   // borders
   @include min-small {
     .field.secondary,
-    .row .field:not(.full-width):nth-child(2) {
+    .row .field:not(.is-full-width):nth-child(2) {
       input, .form__selectize {
         margin-left: -2px;
         width: calc(100% + 2px);

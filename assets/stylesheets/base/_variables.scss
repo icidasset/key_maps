@@ -7,7 +7,9 @@
 $general_padding: 24px;
 $general_border_radius: 5px;
 $main_header_height: 5.2rem;
-$input_height: 4.5rem;
+
+$input_height: 4.4rem;
+$textarea_height: $input_height * 2.5;
 
 $_small: 768px;
 $_medium: 1024px;

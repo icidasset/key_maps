@@ -48,7 +48,7 @@ K.MapItemDataComponent = Ember.Component.extend({
 
     keys.forEach(function(k) {
       k = k.key;
-      s[k] = s[k] || null;
+      if (s[k] === undefined) s[k] = null;
     });
 
     this.set("values", s);

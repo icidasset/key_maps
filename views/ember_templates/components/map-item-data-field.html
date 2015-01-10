@@ -2,7 +2,13 @@
 
   {{#if is_type_text}}
     {{textarea value=fieldValue placeholder=key}}
-  {{else}}
+  {{/if}}
+
+  {{#if is_type_boolean}}
+    {{input-boolean value=fieldValue}}
+  {{/if}}
+
+  {{#if is_other_type}}
     {{input value=fieldValue placeholder=key}}
   {{/if}}
 

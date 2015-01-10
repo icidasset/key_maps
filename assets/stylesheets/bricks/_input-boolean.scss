@@ -1,0 +1,49 @@
+.input-boolean {
+  border: 2px solid #e4e4e4;
+  height: calc(#{$input_height} - 4px);
+  line-height: $input_height;
+  padding: 0 18px;
+
+  /* & + .field__type {
+    opacity: 1;
+  } */
+
+
+  .input-boolean__value,
+  .input-boolean__seperator {
+    @include transition(opacity $default_transition_duration);
+    border-radius: $general_border_radius - 1px;
+    display: inline-block;
+    font-size: 0.795rem;
+    letter-spacing: 0.025em;
+    line-height: 1;
+    margin-top: 4px;
+    padding: 7px 9px;
+    text-transform: uppercase;
+    vertical-align: middle;
+
+    > span {
+      display: inline-block;
+      position: relative;
+      top: 1px;
+    }
+  }
+
+  .input-boolean__value {
+    background-color: #bdbdbd;
+    color: white;
+    cursor: pointer;
+  }
+
+  .input-boolean__value.is-active {
+    background-color: lighten($the_color, 15);
+  }
+
+  .input-boolean__seperator {
+    color: #ddd;
+    margin-left: 6px;
+    margin-right: 6px;
+  }
+
+
+}

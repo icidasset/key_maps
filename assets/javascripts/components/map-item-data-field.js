@@ -8,6 +8,17 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
   }.property("type"),
 
 
+  is_type_boolean: function() {
+    return this.get("type") == "boolean";
+  }.property("type"),
+
+
+  is_other_type: function() {
+    var t = this.get("type");
+    return t != "text" && t != "boolean";
+  }.property("type"),
+
+
   fieldValue: function(k, val, old_val) {
     var values = this.get("targetObject.values");
     var key = this.get("key");

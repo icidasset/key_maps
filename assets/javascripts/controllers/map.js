@@ -49,6 +49,17 @@ K.MapController = Ember.Controller.extend({
   }.property("model.structure"),
 
 
+  keys_object: function() {
+    var o = {};
+
+    this.get("keys").forEach(function(k) {
+      o[k.key] = k.type;
+    });
+
+    return o;
+  }.property("keys"),
+
+
   public_url: function() {
     var id = this.get("model.id");
     var slug = this.get("model.slug");

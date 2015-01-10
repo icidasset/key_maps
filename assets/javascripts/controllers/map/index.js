@@ -6,6 +6,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
 
   // aliases
   keys: Ember.computed.alias("controllers.map.keys"),
+  keys_object: Ember.computed.alias("controllers.map.keys_object"),
   has_keys: Ember.computed.alias("controllers.map.has_keys"),
 
 
@@ -93,7 +94,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
       a_struct = a_struct && sort_by ? a_struct[sort_by] || "" : "";
       b_struct = b_struct && sort_by ? b_struct[sort_by] || "" : "";
 
-      return a_struct.localeCompare(b_struct);
+      return a_struct.toString().localeCompare(b_struct.toString());
     });
 
     this.set("sorted_model", items);
@@ -104,14 +105,30 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   //  Other
   //
   clean_up_data: function(item, keys) {
-    var data = JSON.parse(item.get("structure_data") || "{}");
+    var keys_object = this.get("keys_object");
+    var was_not_set = !item.get("structure_data");
+    var data;
+
+    if (was_not_set) {
+      data = {};
+
+      keys.forEach(function(k) {
+        data[k] = null;
+      });
+    } else {
+      data = JSON.parse(item.get("structure_data"));
+    }
+
     var data_keys = Object.keys(data);
-    var changed_structure = false;
+    var changed_structure = was_not_set;
 
     for (var i=0, j=data_keys.length; i<j; ++i) {
       var key = data_keys[i];
       if (keys.indexOf(key) === -1) {
         delete data[key];
+        changed_structure = true;
+      } else if (keys_object[key] == "number") {
+        data[key] = parseFloat(data[key]);
         changed_structure = true;
       }
     }

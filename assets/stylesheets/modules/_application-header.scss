@@ -3,6 +3,7 @@
   border-bottom: 2px solid $header_border_color;
   color: $black;
   font-size: 1.05rem;
+  overflow: hidden;
   position: relative;
 
   @include min-small {

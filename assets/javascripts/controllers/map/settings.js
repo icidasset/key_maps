@@ -49,10 +49,8 @@ K.MapSettingsController = Ember.Controller.extend({
       // sort by
       m.set("sort_by", this.get("sort_by_select_value").key);
 
-      // save & unselect save button
-      m.save().then(function() {
-        $(document.activeElement).filter("button").blur();
-      });
+      // save
+      m.save();
 
       // woof
       this.wuphf.success("<i class='check'></i> Saved");

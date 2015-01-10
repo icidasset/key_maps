@@ -46,14 +46,14 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   struct: function() {
     var keys = this.get("keys");
     var fwt = this.get("full_width_types");
-    var full = [];
     var all = [];
 
     keys.forEach(function(k) {
       var l = all.length === 0 ? undefined : all[all.length - 1];
 
       if (fwt.contains(k.type)) {
-        full.push(k);
+        all.push([k]);
+        all.push([]);
       } else {
         if (l === undefined || l.length >= 2) {
           l = [];
@@ -63,10 +63,6 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
         l.push(k);
       }
     });
-
-    if (full.length > 0) {
-      all.push(full);
-    }
 
     all.forEach(function(a) {
       a.has_one_item = (a.length === 1);

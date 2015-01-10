@@ -87,8 +87,10 @@
     text-transform: uppercase;
     top: 50%;
 
-    &.is-visible {
-      opacity: 1;
+    @include min-xsmall {
+      &.is-visible {
+        opacity: 1;
+      }
     }
 
     > span {

@@ -22,14 +22,19 @@
   Space properties
 
 */
+@mixin min-xsmall {
+  @media screen and (min-width: $_xsmall) { @content; }
+}
+
+@mixin max-xsmall {
+  @media screen and (max-width: $_xsmall - 1px) { @content; }
+}
+
+// small
 @mixin min-small {
-  @media screen and (min-width: $_small) {
-    @content
-  }
+  @media screen and (min-width: $_small) { @content; }
 }
 
 @mixin max-small {
-  @media screen and (max-width: $_small - 1px) {
-    @content
-  }
+  @media screen and (max-width: $_small - 1px) { @content; }
 }

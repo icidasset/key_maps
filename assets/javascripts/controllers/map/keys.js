@@ -52,8 +52,6 @@ K.MapKeysController = Ember.Controller.extend({
       }
     });
 
-    c = c.sortBy("key");
-
     return c;
   },
 
@@ -83,12 +81,22 @@ K.MapKeysController = Ember.Controller.extend({
       m.set("structure", JSON.stringify(s));
 
       // save
-      m.save().then(function() {
-        $(document.activeElement).filter("button").blur();
-      });
+      m.save();
 
       // woof
       this.wuphf.success("<i class='check'></i> Saved");
+    },
+
+
+    reorder_structure: function(start_idx, end_idx) {
+      var clone = this.get("structure").slice(0);
+      var extract = clone.splice(start_idx, 1)[0];
+
+      // move it
+      clone.splice(end_idx, 0, extract);
+
+      // set new
+      this.set("structure", clone);
     }
 
   }

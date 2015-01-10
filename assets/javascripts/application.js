@@ -27,3 +27,5 @@ import "./components/application-header";
 import "./components/input-boolean";
 import "./components/map-item-data";
 import "./components/map-item-data-field";
+
+import "./views/map/keys";

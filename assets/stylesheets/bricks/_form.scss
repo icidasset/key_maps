@@ -71,7 +71,7 @@
     }
 
     &:focus {
-      border-color: lighten($the_color, 35);
+      border-color: $focus_color;
       color: $the_color;
       outline: none;
       z-index: 9;
@@ -114,7 +114,7 @@
   @include min-small {
     .field.secondary,
     .row .field:not(.is-full-width):nth-child(2) {
-      input, .form__selectize {
+      input, .form__selectize, .input-boolean {
         margin-left: -2px;
         width: calc(100% + 2px);
       }
@@ -192,48 +192,77 @@
 
 
   //
+  //  Rows
+  //
+  .row-prefix {
+    border: 2px dashed #e4e4e4;
+    border-right: 0;
+    cursor: pointer;
+    display: block;
+    height: calc(100% - 2px);
+    left: 0;
+    position: absolute;
+    text-align: center;
+    top: -2px;
+    width: calc(20% - 2px);
+
+    @include min-small {
+      width: calc(10% - 2px);
+    }
+
+    &.is-highlighted {
+      border-color: $the_color;
+      z-index: 10;
+    }
+  }
+
+  .row-prefix__center {
+    @include transform(translateY(-50%));
+    position: relative;
+    top: 50%;
+  }
+
+  .row-prefix__title {
+    color: rgba(black, .225);
+    display: inline-block;
+    pointer-events: none;
+  }
+
+  .row-prefix.is-highlighted .row-prefix__title {
+    color: $the_color;
+  }
+
+  // row class
+  .row {
+    float: right;
+    width: 100%;
+  }
+
+  .row-prefix + .row {
+    width: 80%;
+    @include min-small {
+      width: 90%;
+    }
+  }
+
+  // row wrapper
+  .row-wrapper {
+    @include clearfix;
+    position: relative;
+  }
+
+
+  //
   //  Map item
   //
   .form__map-item-data {
-    @include clearfix;
     margin-bottom: 11px;
-    position: relative;
 
     .row {
-      float: right;
-      width: 100%;
-
+      width: 80%;
       @include min-small {
         width: 90%;
       }
-    }
-
-    .row-prefix {
-      display: none;
-
-      @include min-small {
-        border: 2px dashed #e4e4e4;
-        border-right: 0;
-        cursor: pointer;
-        display: block;
-        height: calc(100% - 2px);
-        left: 0;
-        position: absolute;
-        text-align: center;
-        top: -2px;
-        width: calc(10% - 2px);
-      }
-    }
-
-    .row-prefix__center {
-      @include transform(translateY(-50%));
-      position: relative;
-      top: 50%;
-    }
-
-    .row-prefix__title {
-      color: rgba(black, .225);
-      display: inline-block;
     }
 
     .row-prefix:hover .row-prefix__title {
@@ -289,7 +318,7 @@
     &.dropdown-active,
     &.focus {
       background: white;
-      border-color: lighten($the_color, 35);
+      border-color: $focus_color;
       color: $the_color;
       z-index: 9;
     }
@@ -324,7 +353,7 @@
   }
 
   .selectize-dropdown {
-    border: 2px solid lighten($the_color, 35);
+    border: 2px solid $focus_color;
     border-top: none;
     font-size: .95rem;
     line-height: 1.2;
@@ -335,7 +364,7 @@
     }
 
     .option.active {
-      background-color: lighten($the_color, 35);
+      background-color: $focus_color;
       color: $black;
     }
 

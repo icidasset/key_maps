@@ -5,6 +5,7 @@ import (
   "github.com/icidasset/key-maps/api"
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/binding"
+  "github.com/martini-contrib/cors"
   "github.com/martini-contrib/render"
   "io/ioutil"
   "net/http"
@@ -91,6 +92,13 @@ func main() {
 
   defer db.Close()
 
+  // cors
+  allowCORSHandler := cors.Allow(&cors.Options{
+    AllowAllOrigins:  true,
+    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
+    ExposeHeaders:    []string{"Content-Length"},
+  })
+
   // - users
   r.Group("/api/users", func(r martini.Router) {
     r.Get("/verify-token", api.Users__VerifyToken)
@@ -156,7 +164,7 @@ func main() {
   // - public
   r.Group("/api/public", func(r martini.Router) {
     r.Get("/:hash", api.Public__Show)
-  })
+  }, allowCORSHandler)
 
   // - root
   r.Get("/", rootHandler)

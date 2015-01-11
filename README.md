@@ -12,8 +12,8 @@
 
 ### Setting up
 
-1. install dependencies listed above
-2. `npm install`
+1. `script/go_get`
+2. `npm install -g gulp` and `npm install`
 3. make postgres database `keymaps_development`
 4. `script/migrate`
 

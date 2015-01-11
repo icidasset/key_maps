@@ -6,6 +6,6 @@ development:
 
 production:
   dialect: postgres
-  datasource: sslmode=disable
+  datasource: HEROKU
   dir: db/migrations
   table: migrations

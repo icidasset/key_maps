@@ -1,21 +1,22 @@
 package db
 
 import (
-  _ "database/sql"
+  "database/sql"
   "github.com/jmoiron/sqlx"
   "github.com/lib/pq"
+  "github.com/rubenv/sql-migrate"
   "gopkg.in/yaml.v2"
   "io/ioutil"
   "os"
 )
 
-
-var db *sqlx.DB
+var db *sql.DB
+var dbSqlx *sqlx.DB
 var env string
 
 
 func Inst() *sqlx.DB {
-  return db;
+  return dbSqlx;
 }
 
 
@@ -42,14 +43,21 @@ func Open() error {
 
   // set datasource
   env_config := config[env].(map[interface{}]interface{})
-  env_datasource := env_config["datasource"].(string)
+  env_ds := env_config["datasource"].(string)
+  env_datasource := env_ds
 
-  switch env_datasource {
+  switch env_ds {
     case "HEROKU": env_datasource = getHerokuDataSource()
   }
 
   // open db
-  db, err = sqlx.Open("postgres", env_datasource)
+  db, err = sql.Open("postgres", env_datasource)
+  dbSqlx = sqlx.NewDb(db, "postgres")
+
+  // run migrations if on heroku
+  if env_ds == "HEROKU" {
+    runMigrations()
+  }
 
   // return db error
   return err
@@ -71,4 +79,21 @@ func getHerokuDataSource() string {
   connection += " sslmode=require"
 
   return connection
+}
+
+
+
+//
+//  Migrations
+//
+func runMigrations() {
+  migrations := &migrate.FileMigrationSource{
+    Dir: "db/migrations",
+  }
+
+  _, err := migrate.Exec(db, "postgres", migrations, migrate.Up)
+
+  if err != nil {
+    panic(err)
+  }
 }

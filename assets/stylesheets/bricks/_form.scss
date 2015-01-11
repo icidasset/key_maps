@@ -57,6 +57,7 @@
     @include transition(border-color $default_transition_duration);
     background: none;
     border: 2px solid #e4e4e4;
+    border-radius: 0;
     box-sizing: border-box;
     color: $black;
     font-size: 1rem;
@@ -217,8 +218,9 @@
   }
 
   .row-prefix__center {
-    @include transform(translateY(-50%));
-    position: relative;
+    @include transform(translate(-50%, -50%));
+    left: 50%;
+    position: absolute;
     top: 50%;
   }
 
@@ -226,6 +228,7 @@
     color: rgba(black, .225);
     display: inline-block;
     pointer-events: none;
+    z-index: 1;
   }
 
   .row-prefix.is-highlighted .row-prefix__title {
@@ -273,6 +276,7 @@
       color: $red;
       display: none;
       font-size: 1.7em;
+      z-index: 2;
     }
 
     .row-prefix:hover .row-prefix__destroy {

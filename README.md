@@ -21,6 +21,9 @@
 # start/watch server
 script/server
 
-# build/watch assets
+# build & watch assets
 gulp
+
+# build assets for production
+gulp build --production
 ```

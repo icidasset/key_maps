@@ -15,6 +15,9 @@ import (
 )
 
 
+//
+//  [Templates]
+//
 type TemplateData struct {
   EmberTemplates string
 }
@@ -41,6 +44,9 @@ func ScanTemplatesDir(path string) string {
 }
 
 
+//
+//  [Authentication]
+//
 func MustBeAuthenticatedMiddleware(c martini.Context, w http.ResponseWriter, r *http.Request) {
   auth_header := r.Header.Get("Authorization")
 
@@ -59,6 +65,22 @@ func MustBeAuthenticatedMiddleware(c martini.Context, w http.ResponseWriter, r *
     http.Error(w, "Forbidden", http.StatusUnauthorized)
 
   }
+}
+
+
+//
+//  [GZIP Martini]
+//
+func MartiniClassicGzipped() *martini.ClassicMartini {
+  r := martini.NewRouter()
+  m := martini.New()
+  m.Use(martini.Logger())
+  m.Use(martini.Recovery())
+  m.Use(gzip.All())
+  m.Use(martini.Static("public"))
+  m.MapTo(r, (*martini.Routes)(nil))
+  m.Action(r.Handle)
+  return &martini.ClassicMartini{ Martini: m, Router:r }
 }
 
 
@@ -83,8 +105,7 @@ func rootHandler(w http.ResponseWriter) {
 //  [Main]
 //
 func main() {
-  r := martini.Classic()
-  r.Use(gzip.All())
+  r := MartiniClassicGzipped()
   r.Use(render.Renderer())
 
   // prepare database

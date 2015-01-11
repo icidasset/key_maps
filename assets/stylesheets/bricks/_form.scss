@@ -50,6 +50,15 @@
     }
   }
 
+  // spacer
+  .form__spacer {
+    background-color: #f3f3f3;
+    display: block;
+    height: 2px;
+    margin: 2.25rem 0;
+    width: 70%;
+  }
+
   // input
   input,
   textarea {

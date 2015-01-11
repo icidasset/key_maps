@@ -135,12 +135,16 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   },
 
 
-  add_new: function() {
+  add_new: function(data) {
     var controller = this;
+    var keys_array = Object.keys(this.get("keys_object"));
+
+    data = data || {};
+    data = { structure_data: JSON.stringify(data) };
 
     controller.get("controllers.map.model.map_items").then(function() {
       controller.get("controllers.map.model.map_items").addObject(
-        controller.store.createRecord("map_item", {})
+        controller.store.createRecord("map_item", data)
       );
     });
   },

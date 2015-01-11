@@ -8,9 +8,49 @@
 
   <div class="content-wrapper">
     <div class="form">
-      <p>
-        To remove this key-map, click this button.
+
+      <div class="row-wrapper">
+        <label>
+          Import data
+        </label>
+
+        <div class="row">
+          <div class="field">
+            {{textarea
+              value=import_data_text
+              placeholder='[{ key: "example", other_key: 1 }]'
+            }}
+          </div>
+        </div>
+
+        <button class="btn" {{action "import_data"}}>
+          Import data
+        </button>
+
+        {{x-wuphf}}
+      </div>
+
+      <p class="note">
+        <i class="bell"></i> Only adds data for existing keys
+        and you must save the data yourself, on the data page.
       </p>
+
+
+
+      <div class="form__spacer"></div>
+
+
+
+      <div class="row-wrapper">
+        <label>
+          Remove map
+        </label>
+      </div>
+
+      <p class="note">
+        <i class="bell"></i> Yes, it's permanent.
+      </p>
+
       <p>
         {{#if self_destruct_confirmation}}
           <a class="btn" {{action "self_destruct_confirmation"}}>
@@ -22,6 +62,8 @@
           </a>
         {{/if}}
       </p>
+
+
     </div>
   </div>
 

@@ -8,9 +8,11 @@ i {
     content: attr(icon);
   }
 
+  &.bell:before { content: "\e006"; }
   &.plus:before { content: "\e114"; }
   &.check:before { content: "\e116"; }
   &.cross:before { content: "\e117"; }
+  &.help:before { content: "\e127"; }
 
 
 }

@@ -31,10 +31,18 @@
   //
   //  * Statuses
   //
+  &.wuphf-message {
+    border-style: dashed;
+  }
+
   &.success {
     border-color: rgba($green, .3);
-    border-style: dashed;
     color: $green;
+  }
+
+  &.warning {
+    border-color: rgba($red, .3);
+    color: $red;
   }
 
 

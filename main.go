@@ -6,6 +6,7 @@ import (
   "github.com/icidasset/key-maps/db"
   "github.com/martini-contrib/binding"
   "github.com/martini-contrib/cors"
+  "github.com/martini-contrib/gzip"
   "github.com/martini-contrib/render"
   "io/ioutil"
   "net/http"
@@ -83,6 +84,7 @@ func rootHandler(w http.ResponseWriter) {
 //
 func main() {
   r := martini.Classic()
+  r.Use(gzip.All())
   r.Use(render.Renderer())
 
   // prepare database

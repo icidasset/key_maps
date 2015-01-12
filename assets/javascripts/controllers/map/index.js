@@ -1,4 +1,4 @@
-K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
+K.MapIndexController = Ember.ArrayController.extend({
   needs: ["map"],
 
   full_width_types: ["text"],
@@ -9,28 +9,39 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   keys_object: Ember.computed.alias("controllers.map.keys_object"),
   has_keys: Ember.computed.alias("controllers.map.has_keys"),
 
+  // sorted
+  sortedSortProperties: [],
+  sortedModel: Em.computed.sort("model", "sortedSortProperties"),
+
 
   //
   //  Observers
   //
-  model_observer: function() {
-    Ember.run.once(Ember.run.bind(this, this.set_sorted_model));
-  }.observes("keys", "model.[]"),
+  // model_observer: function() {
+  //   Ember.run.once(Ember.run.bind(this, this.set_sorted_model));
+  // }.observes("keys", "model.[]"),
+  //
+  //
+  // make_new_item_when_there_is_none: function() {
+  //   if (this.get("model.length") === 0 && this.get("hasKeys")) {
+  //     this.add_new();
+  //   }
+  // }.observes("sorted_model"),
 
-
-  make_new_item_when_there_is_none: function() {
-    if (this.get("model.length") === 0 && this.get("hasKeys")) {
-      this.add_new();
-    }
-  }.observes("sorted_model"),
+  sort_by_observer: function() {
+    this.set(
+      "sortedSortProperties",
+      ["structure_data." + this.get("sort_by") + ":asc"]
+    );
+  }.observes("sort_by").on("init"),
 
 
   //
   //  Properties
   //
   has_data: function() {
-    return this.get("sorted_model") !== null;
-  }.property("sorted_model"),
+    return this.get("model") !== null;
+  }.property("model"),
 
 
   sort_by: function() {
@@ -72,29 +83,26 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
   }.property("keys"),
 
 
-  set_sorted_model: function() {
-    var items = this.get("model").toArray();
-    var sort_by = this.get("sort_by");
-
-    items = items.filter(function(m) {
-      return !m.get("isDeleted");
-    });
-
-    items = items.sort(function(a, b) {
-      var a_struct = a.get("structure_data");
-      var b_struct = b.get("structure_data");
-
-      a_struct = a_struct ? JSON.parse(a_struct) : null;
-      b_struct = b_struct ? JSON.parse(b_struct) : null;
-
-      a_struct = a_struct && sort_by ? a_struct[sort_by] || "" : "";
-      b_struct = b_struct && sort_by ? b_struct[sort_by] || "" : "";
-
-      return a_struct.toString().localeCompare(b_struct.toString());
-    });
-
-    this.set("sorted_model", items);
-  },
+  // set_sorted_model: function() {
+  //   var items = this.get("model").toArray();
+  //   var sort_by = this.get("sort_by");
+  //
+  //   items = items.filter(function(m) {
+  //     return !m.get("isDeleted");
+  //   });
+  //
+  //   items = items.sort(function(a, b) {
+  //     var a_struct = a.get("structure_data");
+  //     var b_struct = b.get("structure_data");
+  //
+  //     a_struct = a_struct && sort_by ? a_struct[sort_by] || "" : "";
+  //     b_struct = b_struct && sort_by ? b_struct[sort_by] || "" : "";
+  //
+  //     return a_struct.toString().localeCompare(b_struct.toString());
+  //   });
+  //
+  //   this.set("sorted_model", items);
+  // },
 
 
   //
@@ -112,7 +120,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
         data[k] = null;
       });
     } else {
-      data = JSON.parse(item.get("structure_data"));
+      data = item.get("structure_data");
     }
 
     var data_keys = Object.keys(data);
@@ -130,7 +138,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
     }
 
     if (changed_structure) {
-      item.set("structure_data", JSON.stringify(data));
+      item.set("structure_data", data);
     }
   },
 
@@ -140,7 +148,7 @@ K.MapIndexController = Ember.ArrayController.extend(DebouncedPropertiesMixin, {
     var keys_array = Object.keys(this.get("keys_object"));
 
     data = data || {};
-    data = { structure_data: JSON.stringify(data) };
+    data = { structure_data: data };
 
     controller.get("controllers.map.model.map_items").then(function() {
       controller.get("controllers.map.model.map_items").addObject(

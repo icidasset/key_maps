@@ -1,6 +1,7 @@
 import "./lib/environment";
-import "./lib/ember-helpers";
 import "./lib/namespace";
+import "./lib/ember-helpers";
+import "./lib/ember-data-transforms";
 import "./lib/store";
 import "./lib/routes";
 import "./lib/authenticator";

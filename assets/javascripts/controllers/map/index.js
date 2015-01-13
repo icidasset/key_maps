@@ -3,35 +3,32 @@ K.MapIndexController = Ember.Controller.extend({
 
   full_width_types: ["text"],
   deleted_map_items: [],
+  halt_model_changes: false,
 
   // aliases
   keys: Ember.computed.alias("controllers.map.keys"),
   keys_object: Ember.computed.alias("controllers.map.keys_object"),
   has_keys: Ember.computed.alias("controllers.map.has_keys"),
 
-  // TODO: arrayComputed
-  // http://emberjs.com/api/#method_arrayComputed
-  //
-  // flaggedModel: Ember.arrayComputed("model", {
-  //   addedItem: function(array, item, changeMeta, instanceMeta) {
-  //     console.log(changeMeta.item.id, this.get("halt_model_changes"));
-  //     if (!this.get("halt_model_changes")) {
-  //       array.insertAt(changeMeta.index, item);
-  //     }
-  //     return array;
-  //   },
-  //
-  //   removedItem: function(array, item, changeMeta, instanceMeta) {
-  //     console.log("removed yo", this.get("halt_model_changes"));
-  //     if (!this.get("halt_model_changes")) {
-  //       array.removeAt(changeMeta.index, 1);
-  //     }
-  //     return array;
-  //   }
-  // }),
+  // check for halt-model-changes flag
+  flaggedModel: Ember.arrayComputed("model", {
+    addedItem: function(array, item, changeMeta, instanceMeta) {
+      if (!this.get("halt_model_changes")) {
+        array.insertAt(changeMeta.index, item);
+      }
+      return array;
+    },
+
+    removedItem: function(array, item, changeMeta, instanceMeta) {
+      if (!this.get("halt_model_changes")) {
+        array.removeAt(changeMeta.index, 1);
+      }
+      return array;
+    }
+  }),
 
   // filtered
-  filteredModel: Ember.computed.filterBy("model", "isDeleted", false),
+  filteredModel: Ember.computed.filterBy("flaggedModel", "isDeleted", false),
 
   // sorted
   sortedSortProperties: [],
@@ -41,11 +38,11 @@ K.MapIndexController = Ember.Controller.extend({
   //
   //  Observers
   //
-  // make_new_item_when_there_is_none: function() {
-  //   if (this.get("model.length") === 0 && this.get("hasKeys")) {
-  //     this.add_new();
-  //   }
-  // }.observes("sortedModel"),
+  make_new_item_when_there_is_none: function() {
+    if (this.get("model.length") === 0 && this.get("has_keys")) {
+      this.add_new();
+    }
+  }.observes("model"),
 
 
   sort_by_observer: function() {
@@ -59,11 +56,6 @@ K.MapIndexController = Ember.Controller.extend({
   //
   //  Properties
   //
-  has_data: function() {
-    return this.get("model") !== null;
-  }.property("model"),
-
-
   sort_by: function() {
     var keys = this.get("keys");
 
@@ -108,24 +100,25 @@ K.MapIndexController = Ember.Controller.extend({
   //
   clean_up_data: function(item, keys) {
     var keys_object = this.get("keys_object");
-    var data = $.extend({}, item.get("structure_data_clone"));
-
-    var data_keys = Object.keys(data);
-    var changed_structure = true; // TODO, check for object equality
+    var structure_data = item.get("structure_data");
+    var structure_changed_data = item.get("structure_changed_data");
+    var changed_structure = (Object.keys(structure_changed_data).length > 0);
+    var new_data_obj = $.extend({}, structure_data, structure_changed_data);
+    var data_keys = Object.keys(new_data_obj);
 
     for (var i=0, j=data_keys.length; i<j; ++i) {
       var key = data_keys[i];
       if (keys.indexOf(key) === -1) {
-        delete data[key];
+        delete new_data_obj[key];
         changed_structure = true;
       } else if (keys_object[key] == "number") {
-        data[key] = parseFloat(data[key]);
+        new_data_obj[key] = parseFloat(new_data_obj[key]);
         changed_structure = true;
       }
     }
 
     if (changed_structure) {
-      item.set("structure_data", data);
+      item.set("structure_data", new_data_obj);
     }
   },
 
@@ -156,6 +149,8 @@ K.MapIndexController = Ember.Controller.extend({
     save: function() {
       var controller = this;
 
+      this.set("halt_model_changes", true);
+
       Ember.run(function() {
         var promises = [];
         var deleted_items = controller.deleted_map_items;
@@ -178,8 +173,7 @@ K.MapIndexController = Ember.Controller.extend({
 
         // after
         Ember.RSVP.all(promises).then(function() {
-          console.log("<save>");
-          // TODO: refresh model?
+          controller.set("halt_model_changes", false);
         });
       });
 

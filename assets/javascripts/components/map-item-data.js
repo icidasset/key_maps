@@ -3,12 +3,7 @@ K.MapItemDataComponent = Ember.Component.extend({
 
 
   on_init: function() {
-    console.log("<render map-item>");
-
-    this.set(
-      "item.structure_data_clone",
-      $.extend({}, this.get("item.structure_data"))
-    );
+    this.set("item.structure_changed_data", {});
   }.on("init"),
 
 

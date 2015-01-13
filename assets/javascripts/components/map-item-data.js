@@ -2,6 +2,16 @@ K.MapItemDataComponent = Ember.Component.extend({
   classNames: ["form__map-item-data", "row-wrapper"],
 
 
+  on_init: function() {
+    console.log("<render map-item>");
+
+    this.set(
+      "item.structure_data_clone",
+      $.extend({}, this.get("item.structure_data"))
+    );
+  }.on("init"),
+
+
   //
   //  Properties
   //

@@ -25,16 +25,16 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
 
 
   fieldValue: function(k, val, old_val) {
-    var values = this.get("targetObject.item.structure_data");
+    var structure_data_clone = this.get("targetObject.item.structure_data_clone");
     var key = this.get("key");
 
     // getter
     if (arguments.length === 1) {
-      return values[key];
+      return structure_data_clone[key];
 
     // setter
     } else {
-      values[key] = val;
+      structure_data_clone[key] = val;
       return val;
 
     }

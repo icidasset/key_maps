@@ -1,4 +1,4 @@
-K.MapIndexController = Ember.ArrayController.extend({
+K.MapIndexController = Ember.Controller.extend({
   needs: ["map"],
 
   full_width_types: ["text"],
@@ -9,24 +9,44 @@ K.MapIndexController = Ember.ArrayController.extend({
   keys_object: Ember.computed.alias("controllers.map.keys_object"),
   has_keys: Ember.computed.alias("controllers.map.has_keys"),
 
+  // TODO: arrayComputed
+  // http://emberjs.com/api/#method_arrayComputed
+  //
+  // flaggedModel: Ember.arrayComputed("model", {
+  //   addedItem: function(array, item, changeMeta, instanceMeta) {
+  //     console.log(changeMeta.item.id, this.get("halt_model_changes"));
+  //     if (!this.get("halt_model_changes")) {
+  //       array.insertAt(changeMeta.index, item);
+  //     }
+  //     return array;
+  //   },
+  //
+  //   removedItem: function(array, item, changeMeta, instanceMeta) {
+  //     console.log("removed yo", this.get("halt_model_changes"));
+  //     if (!this.get("halt_model_changes")) {
+  //       array.removeAt(changeMeta.index, 1);
+  //     }
+  //     return array;
+  //   }
+  // }),
+
+  // filtered
+  filteredModel: Ember.computed.filterBy("model", "isDeleted", false),
+
   // sorted
   sortedSortProperties: [],
-  sortedModel: Em.computed.sort("model", "sortedSortProperties"),
+  sortedModel: Ember.computed.sort("filteredModel", "sortedSortProperties"),
 
 
   //
   //  Observers
   //
-  // model_observer: function() {
-  //   Ember.run.once(Ember.run.bind(this, this.set_sorted_model));
-  // }.observes("keys", "model.[]"),
-  //
-  //
   // make_new_item_when_there_is_none: function() {
   //   if (this.get("model.length") === 0 && this.get("hasKeys")) {
   //     this.add_new();
   //   }
-  // }.observes("sorted_model"),
+  // }.observes("sortedModel"),
+
 
   sort_by_observer: function() {
     this.set(
@@ -83,48 +103,15 @@ K.MapIndexController = Ember.ArrayController.extend({
   }.property("keys"),
 
 
-  // set_sorted_model: function() {
-  //   var items = this.get("model").toArray();
-  //   var sort_by = this.get("sort_by");
-  //
-  //   items = items.filter(function(m) {
-  //     return !m.get("isDeleted");
-  //   });
-  //
-  //   items = items.sort(function(a, b) {
-  //     var a_struct = a.get("structure_data");
-  //     var b_struct = b.get("structure_data");
-  //
-  //     a_struct = a_struct && sort_by ? a_struct[sort_by] || "" : "";
-  //     b_struct = b_struct && sort_by ? b_struct[sort_by] || "" : "";
-  //
-  //     return a_struct.toString().localeCompare(b_struct.toString());
-  //   });
-  //
-  //   this.set("sorted_model", items);
-  // },
-
-
   //
   //  Other
   //
   clean_up_data: function(item, keys) {
     var keys_object = this.get("keys_object");
-    var was_not_set = !item.get("structure_data");
-    var data;
-
-    if (was_not_set) {
-      data = {};
-
-      keys.forEach(function(k) {
-        data[k] = null;
-      });
-    } else {
-      data = item.get("structure_data");
-    }
+    var data = $.extend({}, item.get("structure_data_clone"));
 
     var data_keys = Object.keys(data);
-    var changed_structure = was_not_set;
+    var changed_structure = true; // TODO, check for object equality
 
     for (var i=0, j=data_keys.length; i<j; ++i) {
       var key = data_keys[i];
@@ -150,11 +137,9 @@ K.MapIndexController = Ember.ArrayController.extend({
     data = data || {};
     data = { structure_data: data };
 
-    controller.get("controllers.map.model.map_items").then(function() {
-      controller.get("controllers.map.model.map_items").addObject(
-        controller.store.createRecord("map_item", data)
-      );
-    });
+    controller.get("model").addObject(
+      controller.store.createRecord("map_item", data)
+    );
   },
 
 
@@ -191,7 +176,11 @@ K.MapIndexController = Ember.ArrayController.extend({
           if (item.get("isDirty")) promises.push(item.save());
         });
 
-        // Ember.RSVP.all(promises).then(function() {});
+        // after
+        Ember.RSVP.all(promises).then(function() {
+          console.log("<save>");
+          // TODO: refresh model?
+        });
       });
 
       // woof

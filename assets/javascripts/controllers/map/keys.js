@@ -1,23 +1,13 @@
 K.MapKeysController = Ember.Controller.extend({
   needs: ["map"],
-
-  structure: [],
   reformatted_structure: [],
 
 
   //
   //  Observers
   //
-  copy_structure: function() {
-    this.set(
-      "structure",
-      JSON.parse(this.get("model.structure"))
-    );
-  }.observes("model"),
-
-
   reformat_structure: function() {
-    var structure = this.get("structure") || [];
+    var structure = this.get("model.structure");
     var types = this.get("controllers.map.types");
 
     var reformatted = structure.map(function(s) {
@@ -37,7 +27,7 @@ K.MapKeysController = Ember.Controller.extend({
     }
 
     this.set("reformatted_structure", reformatted);
-  }.observes("structure"),
+  }.observes("model.structure"),
 
 
   //
@@ -76,11 +66,8 @@ K.MapKeysController = Ember.Controller.extend({
       var m = this.get("model");
       var s = this.clean_structure(this.get("reformatted_structure"));
 
-      this.set("structure", s);
-
-      m.set("structure", JSON.stringify(s));
-
-      // save
+      // set & save
+      m.set("structure", s);
       m.save();
 
       // woof
@@ -89,14 +76,14 @@ K.MapKeysController = Ember.Controller.extend({
 
 
     reorder_structure: function(start_idx, end_idx) {
-      var clone = this.get("structure").slice(0);
+      var clone = this.get("reformatted_structure").slice(0);
       var extract = clone.splice(start_idx, 1)[0];
 
       // move it
       clone.splice(end_idx, 0, extract);
 
       // set new
-      this.set("structure", clone);
+      this.set("reformatted_structure", clone);
     }
 
   }

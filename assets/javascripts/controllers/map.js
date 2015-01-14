@@ -40,24 +40,24 @@ K.MapController = Ember.Controller.extend({
   //
   has_keys: function() {
     var k = this.get("keys");
-    return k && k.length && Object.keys(k[0]).length;
+    return k.length > 0;
   }.property("keys"),
 
 
   keys: function() {
-    return JSON.parse(this.get("model.structure"));
+    return this.get("model.structure").mapBy("key");
   }.property("model.structure"),
 
 
   keys_object: function() {
     var o = {};
 
-    this.get("keys").forEach(function(k) {
+    this.get("model.structure").forEach(function(k) {
       o[k.key] = k.type;
     });
 
     return o;
-  }.property("keys"),
+  }.property("model.structure"),
 
 
   public_url: function() {

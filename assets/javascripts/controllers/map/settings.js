@@ -31,8 +31,8 @@ K.MapSettingsController = Ember.Controller.extend({
 
     return keys.map(function(k) {
       return {
-        key: k.key,
-        name: k.key
+        key: k,
+        name: k
       };
     });
   }.property("controllers.map.keys"),

@@ -57,21 +57,16 @@ K.MapIndexController = Ember.Controller.extend({
   //  Properties
   //
   sort_by: function() {
-    var keys = this.get("keys");
-
-    return (
-      this.get("controllers.map.model.sort_by") ||
-      (keys[0] ? keys[0].key : null)
-    );
+    return this.get("controllers.map.model.sort_by") || this.get("keys")[0];
   }.property("controllers.map.model.sort_by", "keys"),
 
 
   struct: function() {
-    var keys = this.get("keys");
+    var structure = this.get("controllers.map.model.structure");
     var fwt = this.get("full_width_types");
     var all = [];
 
-    keys.forEach(function(k) {
+    structure.forEach(function(k) {
       var l = all.length === 0 ? undefined : all[all.length - 1];
 
       if (fwt.contains(k.type)) {
@@ -92,13 +87,14 @@ K.MapIndexController = Ember.Controller.extend({
     });
 
     return all;
-  }.property("keys"),
+  }.property("controllers.map.model.structure"),
 
 
   //
   //  Other
   //
-  clean_up_data: function(item, keys) {
+  clean_up_data: function(item) {
+    var keys = this.get("keys");
     var keys_object = this.get("keys_object");
     var structure_data = item.get("structure_data");
     var structure_changed_data = item.get("structure_changed_data");
@@ -125,7 +121,7 @@ K.MapIndexController = Ember.Controller.extend({
 
   add_new: function(data) {
     var controller = this;
-    var keys_array = Object.keys(this.get("keys_object"));
+    var keys_array = this.get("keys");
 
     data = data || {};
     data = { structure_data: data };
@@ -154,9 +150,6 @@ K.MapIndexController = Ember.Controller.extend({
       Ember.run(function() {
         var promises = [];
         var deleted_items = controller.deleted_map_items;
-        var keys = controller.get("keys").map(function(k) {
-          return k.key;
-        });
 
         // persist deleted items
         deleted_items.forEach(function(d) {
@@ -167,7 +160,7 @@ K.MapIndexController = Ember.Controller.extend({
 
         // clean up data and save modified items
         controller.get("model").forEach(function(item) {
-          controller.clean_up_data(item, keys);
+          controller.clean_up_data(item);
           if (item.get("isDirty")) promises.push(item.save());
         });
 

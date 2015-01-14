@@ -4,7 +4,7 @@ var attr = DS.attr;
 K.Map = DS.Model.extend({
   name: attr("string"),
   slug: attr("string"),
-  structure: attr("string"), // TODO: attr("json")
+  structure: attr("json_array"),
   sort_by: attr(),
   created_at: attr(),
   updated_at: attr(),

@@ -126,6 +126,9 @@
     .row .field:not(.is-full-width):nth-child(2) {
       input, .form__selectize, .input-boolean {
         margin-left: -2px;
+      }
+
+      input, .form__selectize {
         width: calc(100% + 2px);
       }
     }

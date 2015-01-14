@@ -2,12 +2,10 @@
 
   {{#if is_type_text}}
     {{textarea value=fieldValue placeholder=key}}
+  {{else if is_type_boolean}}
+    {{input-boolean value=fieldValue key=key}}
   {{else}}
-    {{#if is_type_boolean}}
-      {{input-boolean value=fieldValue key=key}}
-    {{else}}
-      {{input value=fieldValue placeholder=key}}
-    {{/if}}
+    {{input value=fieldValue placeholder=key}}
   {{/if}}
 
   <div class="field__type">

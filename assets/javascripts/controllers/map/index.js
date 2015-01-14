@@ -103,7 +103,12 @@ K.MapIndexController = Ember.Controller.extend({
     var keys_object = this.get("keys_object");
     var structure_data = item.get("structure_data");
     var structure_changed_data = item.get("structure_changed_data");
-    var changed_structure = (Object.keys(structure_changed_data).length > 0);
+
+    var changed_structure = (
+      structure_changed_data &&
+      Object.keys(structure_changed_data).length > 0
+    );
+
     var new_data_obj = $.extend({}, structure_data, structure_changed_data);
     var data_keys = Object.keys(new_data_obj);
 

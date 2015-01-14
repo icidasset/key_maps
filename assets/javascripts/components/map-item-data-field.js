@@ -29,6 +29,12 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
     var structure_changed_data = this.get("targetObject.item.structure_changed_data");
     var key = this.get("key");
 
+    // check
+    if (!structure_changed_data) {
+      this.set("targetObject.item.structure_changed_data", {});
+      structure_changed_data = this.get("targetObject.item.structure_changed_data");
+    }
+
     // getter
     if (arguments.length === 1) {
       return structure_changed_data[key] || structure_data[key];
@@ -40,6 +46,6 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
 
     }
 
-  }.property("key", "type")
+  }.property("key")
 
 });

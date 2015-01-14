@@ -17,6 +17,9 @@ var gulp = require("gulp"),
 
 
 var paths = {
+  images: [
+    "./assets/images/**/*"
+  ],
   fonts: [
     "./assets/fonts/**/*"
   ],
@@ -58,6 +61,12 @@ function swallow_error(error) {
   console.log(error.toString());
   this.emit("end");
 }
+
+
+gulp.task("images", function() {
+  return gulp.src(paths.images, { base: "./assets/images/" })
+    .pipe(gulp.dest("./public/images"));
+});
 
 
 gulp.task("fonts", function() {
@@ -112,6 +121,7 @@ gulp.task("javascripts_maps", function() {
 //  Build
 //
 gulp.task("build", [
+  "images",
   "fonts",
   "stylesheets",
   "javascripts_application",

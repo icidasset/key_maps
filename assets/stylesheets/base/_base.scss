@@ -1,3 +1,7 @@
+html, body {
+  height: 100%;
+}
+
 html {
   font-size: 14px;
 
@@ -7,11 +11,17 @@ html {
 }
 
 body {
+  background: white;
   font-family: "Roboto", sans-serif;
   color: $black;
   line-height: 1.55;
   margin: 0;
   text-rendering: optimizeLegibility;
+}
+
+body.is-loading {
+  background: white url("../images/puff.svg") center no-repeat;
+  background-size: 50px;
 }
 
 a {

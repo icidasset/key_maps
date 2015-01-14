@@ -8,6 +8,7 @@ import "./lib/authenticator";
 import "./lib/authorizer";
 
 import "./initializers/authentication";
+import "./initializers/loading";
 import "./initializers/wuphf";
 
 import "./controllers/application";

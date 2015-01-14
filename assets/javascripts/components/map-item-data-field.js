@@ -1,27 +1,32 @@
 K.MapItemDataFieldComponent = Ember.Component.extend({
-  classNames: ["field"],
-  classNameBindings: [
-    "is_type_text:is-full-width",
-    "is_type_text:has-textarea-height",
-    "is_type_boolean:has-normal-height",
-    "is_other_type:has-normal-height"
-  ],
+  classNames: "field",
+
+  did_insert_element: function() {
+    var el = this.get("element");
+
+    if (this.get("is_type_text")) {
+      el.classList.add("is-full-width");
+      el.classList.add("has-textarea-height");
+    } else {
+      el.classList.add("has-normal-height");
+    }
+  }.on("didInsertElement"),
 
 
   is_type_text: function() {
     return this.get("type") == "text";
-  }.property("type").readOnly(),
+  }.property().readOnly(),
 
 
   is_type_boolean: function() {
     return this.get("type") == "boolean";
-  }.property("type").readOnly(),
+  }.property().readOnly(),
 
 
   is_other_type: function() {
     var t = this.get("type");
     return t != "text" && t != "boolean";
-  }.property("type").readOnly(),
+  }.property().readOnly(),
 
 
   fieldValue: function(k, val, old_val) {
@@ -46,6 +51,6 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
 
     }
 
-  }.property("key")
+  }.property()
 
 });

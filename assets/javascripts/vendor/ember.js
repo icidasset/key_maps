@@ -1,11 +1,11 @@
 /*!
  * @overview  Ember - JavaScript Application Framework
- * @copyright Copyright 2011-2014 Tilde Inc. and contributors
+ * @copyright Copyright 2011-2015 Tilde Inc. and contributors
  *            Portions Copyright 2006-2011 Strobe Inc.
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
  * @license   Licensed under MIT license
  *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   1.11.0-beta.1+canary.e96b4d75
+ * @version   1.11.0-beta.1+canary.c0f38aa5
  */
 
 (function() {
@@ -3238,12 +3238,18 @@ enifed("ember-application/system/application",
 
         for (var i = 0; i < initializers.length; i++) {
           initializer = initializersByName[initializers[i]];
-          graph.addEdges(initializer.name, initializer.initialize, initializer.before, initializer.after);
+          graph.addEdges(initializer.name, initializer, initializer.before, initializer.after);
         }
 
         graph.topsort(function (vertex) {
           var initializer = vertex.value;
-                    initializer(registry, namespace);
+          
+          if (Ember.FEATURES.isEnabled("ember-application-initializer-context")) {
+            initializer.initialize(registry, namespace);
+          } else {
+            var ref = initializer.initialize;
+            ref(registry, namespace);
+          }
         });
       },
 
@@ -4672,7 +4678,6 @@ enifed("ember-htmlbars",
     var makeBoundHelper = __dependency4__["default"];
 
     var registerHelper = __dependency5__.registerHelper;
-    var helper = __dependency5__.helper;
     var helpers = __dependency5__["default"];
     var viewHelper = __dependency6__.viewHelper;
     var componentHelper = __dependency7__.componentHelper;
@@ -4700,9 +4705,9 @@ enifed("ember-htmlbars",
     // Ember.Handlebars global if htmlbars is enabled
 
     registerHelper('view', viewHelper);
-    if (Ember.FEATURES.isEnabled('ember-htmlbars-component-helper')) {
+    
       registerHelper('component', componentHelper);
-    }
+    
     registerHelper('yield', yieldHelper);
     registerHelper('with', withHelper);
     registerHelper('if', ifHelper);
@@ -11594,7 +11599,7 @@ enifed("ember-metal/core",
 
       @class Ember
       @static
-      @version 1.11.0-beta.1+canary.e96b4d75
+      @version 1.11.0-beta.1+canary.c0f38aa5
     */
 
     if ('undefined' === typeof Ember) {
@@ -11621,10 +11626,10 @@ enifed("ember-metal/core",
     /**
       @property VERSION
       @type String
-      @default '1.11.0-beta.1+canary.e96b4d75'
+      @default '1.11.0-beta.1+canary.c0f38aa5'
       @static
     */
-    Ember.VERSION = '1.11.0-beta.1+canary.e96b4d75';
+    Ember.VERSION = '1.11.0-beta.1+canary.c0f38aa5';
 
     /**
       Standard environmental variables. You can define these in a global `EmberENV`
@@ -16480,8 +16485,7 @@ enifed("ember-metal/run_loop",
         May be a function or a string. If you pass a string
         then it will be looked up on the passed target.
       @param {Object} [args*] Any additional arguments you wish to pass to the method.
-      @return {Object} return value from invoking the passed function. Please note,
-      when called within an existing loop, no return value is possible.
+      @return {Function} returns a new function that will always have a particular context
       @since 1.4.0
     */
     run.bind = function(target, method /* args */) {
@@ -28014,7 +28018,7 @@ enifed("ember-runtime/controllers/object_controller",
     var ControllerMixin = __dependency2__["default"];
     var ObjectProxy = __dependency3__["default"];
 
-    var objectControllerDeprecation = 'Ember.ObjectController is deprected, ' +
+    var objectControllerDeprecation = 'Ember.ObjectController is deprecated, ' +
       'please use Ember.Controller and use `model.propertyName`.';
     __exports__.objectControllerDeprecation = objectControllerDeprecation;
     /**
@@ -28443,6 +28447,9 @@ enifed("ember-runtime/ext/rsvp",
       if (e && e.errorThrown) {
         // jqXHR provides this
         error = e.errorThrown;
+        if (typeof error === 'string') {
+          error = new Error(error);
+        }
         error.__reason_with_error_thrown__ = e;
       } else {
         error = e;
@@ -38300,8 +38307,8 @@ enifed("ember-views/system/lookup_partial",
     }
   });
 enifed("ember-views/system/render_buffer",
-  ["ember-views/system/jquery","ember-metal/core","ember-metal/platform","ember-metal/environment","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+  ["ember-views/system/jquery","ember-metal/core","ember-metal/platform","ember-metal/environment","morph/dom-helper/prop","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
     /**
     @module ember
@@ -38312,6 +38319,7 @@ enifed("ember-views/system/render_buffer",
     var Ember = __dependency2__["default"];
     var create = __dependency3__.create;
     var environment = __dependency4__["default"];
+    var normalizeProperty = __dependency5__.normalizeProperty;
 
     // The HTML spec allows for "omitted start tags". These tags are optional
     // when their intended child is the first thing in the parent tag. For
@@ -38787,7 +38795,9 @@ enifed("ember-views/system/render_buffer",
 
         if (props) {
           for (prop in props) {
-            this.dom.setPropertyStrict(element, prop, props[prop]);
+            var normalizedCase = normalizeProperty(element, prop) || prop;
+
+            this.dom.setPropertyStrict(element, normalizedCase, props[prop]);
           }
 
           this.elementProperties = null;
@@ -39013,8 +39023,10 @@ enifed("ember-views/system/renderer",
     Renderer.prototype.willRemoveElement = function (view) {};
 
     Renderer.prototype.willDestroyElement = function (view) {
-      if (view.trigger) { view.trigger('willDestroyElement'); }
-      if (view.trigger) { view.trigger('willClearRender'); }
+      if (view.trigger) {
+        view.trigger('willDestroyElement');
+        view.trigger('willClearRender');
+      }
     };
 
     Renderer.prototype.didDestroyElement = function (view) {
@@ -39719,24 +39731,19 @@ enifed("ember-views/views/collection_view",
 
             view = this.createChildView(itemViewClass, itemViewProps);
 
-            if (Ember.FEATURES.isEnabled('ember-htmlbars-each-with-index')) {
+            
               if (this.blockParams > 1) {
                 view._blockArguments = [item, view.getStream('_view.contentIndex')];
               } else if (this.blockParams === 1) {
                 view._blockArguments = [item];
               }
-            } else {
-              if (this.blockParams > 0) {
-                view._blockArguments = [item];
-              }
-            }
-
+            
             addedViews.push(view);
           }
 
           this.replace(start, 0, addedViews);
 
-          if (Ember.FEATURES.isEnabled('ember-htmlbars-each-with-index')) {
+          
             if (this.blockParams > 1) {
               var childViews = this._childViews;
               for (idx = start+added; idx < len; idx++) {
@@ -39744,7 +39751,7 @@ enifed("ember-views/views/collection_view",
                 set(view, 'contentIndex', idx);
               }
             }
-          }
+          
         } else {
           emptyView = get(this, 'emptyView');
 
@@ -48066,6 +48073,7 @@ enifed("morph/attr-morph",
   function(__dependency1__, __dependency2__, __dependency3__, __exports__) {
     "use strict";
     var sanitizeAttributeValue = __dependency1__.sanitizeAttributeValue;
+    var isAttrRemovalValue = __dependency2__.isAttrRemovalValue;
     var normalizeProperty = __dependency2__.normalizeProperty;
     var svgNamespace = __dependency3__.svgNamespace;
 
@@ -48074,7 +48082,7 @@ enifed("morph/attr-morph",
     }
 
     function updateAttribute(value) {
-      if (value === null) {
+      if (isAttrRemovalValue(value)) {
         this.domHelper.removeAttribute(this.element, this.attrName);
       } else {
         this.domHelper.setAttribute(this.element, this.attrName, value);
@@ -48082,7 +48090,7 @@ enifed("morph/attr-morph",
     }
 
     function updateAttributeNS(value) {
-      if (value === null) {
+      if (isAttrRemovalValue(value)) {
         this.domHelper.removeAttribute(this.element, this.attrName);
       } else {
         this.domHelper.setAttributeNS(this.element, this.namespace, this.attrName, value);
@@ -48189,6 +48197,7 @@ enifed("morph/dom-helper",
     var addClasses = __dependency4__.addClasses;
     var removeClasses = __dependency4__.removeClasses;
     var normalizeProperty = __dependency5__.normalizeProperty;
+    var isAttrRemovalValue = __dependency5__.isAttrRemovalValue;
 
     var doc = typeof document === 'undefined' ? false : document;
 
@@ -48330,7 +48339,7 @@ enifed("morph/dom-helper",
     };
 
     prototype.setAttributeNS = function(element, namespace, name, value) {
-      element.setAttributeNS(namespace, name, value);
+      element.setAttributeNS(namespace, name, String(value));
     };
 
     prototype.removeAttribute = function(element, name) {
@@ -48344,7 +48353,7 @@ enifed("morph/dom-helper",
     prototype.setProperty = function(element, name, value, namespace) {
       var lowercaseName = name.toLowerCase();
       if (element.namespaceURI === svgNamespace || lowercaseName === 'style') {
-        if (value === null) {
+        if (isAttrRemovalValue(value)) {
           element.removeAttribute(name);
         } else {
           if (namespace) {
@@ -48358,7 +48367,7 @@ enifed("morph/dom-helper",
         if (normalized) {
           element[normalized] = value;
         } else {
-          if (value === null) {
+          if (isAttrRemovalValue(value)) {
             element.removeAttribute(name);
           } else {
             if (namespace) {
@@ -48932,7 +48941,11 @@ enifed("morph/dom-helper/prop",
   ["exports"],
   function(__exports__) {
     "use strict";
-    // TODO should this be an o_create kind of thing?
+    function isAttrRemovalValue(value) {
+      return value === null || value === undefined;
+    }
+
+    __exports__.isAttrRemovalValue = isAttrRemovalValue;// TODO should this be an o_create kind of thing?
     var propertyCaches = {};
     __exports__.propertyCaches = propertyCaches;
     function normalizeProperty(element, attrName) {

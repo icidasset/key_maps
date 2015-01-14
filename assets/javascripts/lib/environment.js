@@ -7,6 +7,3 @@ window.ENV = {
   }
 
 };
-
-
-Ember.FEATURES['ember-htmlbars-each-with-index'] = true;

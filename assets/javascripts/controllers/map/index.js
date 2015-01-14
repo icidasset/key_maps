@@ -6,9 +6,9 @@ K.MapIndexController = Ember.Controller.extend({
   halt_model_changes: false,
 
   // aliases
-  keys: Ember.computed.alias("controllers.map.keys"),
-  keys_object: Ember.computed.alias("controllers.map.keys_object"),
-  has_keys: Ember.computed.alias("controllers.map.has_keys"),
+  keys: Ember.computed.readOnly("controllers.map.keys"),
+  keys_object: Ember.computed.readOnly("controllers.map.keys_object"),
+  has_keys: Ember.computed.readOnly("controllers.map.has_keys"),
 
   // check for halt-model-changes flag
   flaggedModel: Ember.arrayComputed("model", {
@@ -58,7 +58,10 @@ K.MapIndexController = Ember.Controller.extend({
   //
   sort_by: function() {
     return this.get("controllers.map.model.sort_by") || this.get("keys")[0];
-  }.property("controllers.map.model.sort_by", "keys"),
+  }.property(
+    "controllers.map.model.sort_by",
+    "keys"
+  ).readOnly(),
 
 
   struct: function() {
@@ -87,7 +90,9 @@ K.MapIndexController = Ember.Controller.extend({
     });
 
     return all;
-  }.property("controllers.map.model.structure"),
+  }.property(
+    "controllers.map.model.structure"
+  ).readOnly(),
 
 
   //

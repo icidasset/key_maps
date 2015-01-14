@@ -12,7 +12,7 @@ K.MapItemDataComponent = Ember.Component.extend({
   //
   number: function() {
     return this.get("idx") + 1;
-  }.property("idx"),
+  }.property("idx").readOnly(),
 
 
   //

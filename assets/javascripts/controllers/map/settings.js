@@ -2,7 +2,7 @@ K.MapSettingsController = Ember.Controller.extend({
   needs: ["map"],
 
   // aliases
-  has_keys: Ember.computed.alias("controllers.map.has_keys"),
+  has_keys: Ember.computed.readOnly("controllers.map.has_keys"),
 
 
   //

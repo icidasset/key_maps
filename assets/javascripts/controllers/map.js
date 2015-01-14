@@ -41,12 +41,16 @@ K.MapController = Ember.Controller.extend({
   has_keys: function() {
     var k = this.get("keys");
     return k.length > 0;
-  }.property("keys"),
+  }.property(
+    "keys"
+  ).readOnly(),
 
 
   keys: function() {
     return this.get("model.structure").mapBy("key");
-  }.property("model.structure"),
+  }.property(
+    "model.structure"
+  ).readOnly(),
 
 
   keys_object: function() {
@@ -57,7 +61,9 @@ K.MapController = Ember.Controller.extend({
     });
 
     return o;
-  }.property("model.structure"),
+  }.property(
+    "model.structure"
+  ).readOnly(),
 
 
   public_url: function() {
@@ -73,6 +79,6 @@ K.MapController = Ember.Controller.extend({
     "model.slug",
     "model.map_items.[]",
     "model.map_items.@each.structure_data"
-  )
+  ).readOnly()
 
 });

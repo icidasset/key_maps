@@ -95,6 +95,37 @@ K.MapIndexController = Ember.Controller.extend({
   ).readOnly(),
 
 
+  item_template: function() {
+    var t = [
+      '<div class="row-prefix" {{action "destroy"}}>',
+        '<span class="row-prefix__title row-prefix__center">',
+          '{{#if item.isNew}}NEW{{else}}{{number}}{{/if}}',
+        '</span>',
+        '<span class="row-prefix__destroy row-prefix__center">',
+          '<i class="cross"></i>',
+        '</span>',
+      '</div>'
+    ].join("");
+
+    this.get("struct").forEach(function(s) {
+      var row_class = "row " + (s.length === 1 ? "row__with-one-item" : "");
+
+      // <row>
+      t = t + '<div class="' + row_class + '">';
+
+      // fields
+      s.forEach(function(field) {
+        t = t + '{{map-item-data-field key="' + field.key + '" type="' + field.type + '"}}';
+      });
+
+      // </row>
+      t = t + '</div>';
+    });
+
+    return Ember.Handlebars.compile(t);
+  }.property("struct").readOnly(),
+
+
   //
   //  Other
   //

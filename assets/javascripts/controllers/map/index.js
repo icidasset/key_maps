@@ -99,7 +99,7 @@ K.MapIndexController = Ember.Controller.extend({
     var t = [
       '<div class="row-prefix" {{action "destroy"}}>',
         '<span class="row-prefix__title row-prefix__center">',
-          '{{#if item.isNew}}NEW{{else}}{{number}}{{/if}}',
+          '{{#if map_item.isNew}}NEW{{else}}{{number}}{{/if}}',
         '</span>',
         '<span class="row-prefix__destroy row-prefix__center">',
           '<i class="cross"></i>',
@@ -115,7 +115,7 @@ K.MapIndexController = Ember.Controller.extend({
 
       // fields
       s.forEach(function(field) {
-        t = t + '{{map-item-data-field key="' + field.key + '" type="' + field.type + '"}}';
+        t = t + '{{map-item-data-field item=map_item key="' + field.key + '" type="' + field.type + '"}}';
       });
 
       // </row>

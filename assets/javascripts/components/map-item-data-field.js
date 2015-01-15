@@ -30,14 +30,14 @@ K.MapItemDataFieldComponent = Ember.Component.extend({
 
 
   fieldValue: function(k, val, old_val) {
-    var structure_data = this.get("targetObject.item.structure_data");
-    var structure_changed_data = this.get("targetObject.item.structure_changed_data");
+    var structure_data = this.get("item.structure_data");
+    var structure_changed_data = this.get("item.structure_changed_data");
     var key = this.get("key");
 
     // check
     if (!structure_changed_data) {
-      this.set("targetObject.item.structure_changed_data", {});
-      structure_changed_data = this.get("targetObject.item.structure_changed_data");
+      this.set("item.structure_changed_data", {});
+      structure_changed_data = this.get("item.structure_changed_data");
     }
 
     // getter

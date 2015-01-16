@@ -65,7 +65,7 @@
     @include appearance(none);
     @include transition(border-color $default_transition_duration);
     background: none;
-    border: 2px solid #e4e4e4;
+    border: 2px solid $input_border_color;
     border-radius: 0;
     box-sizing: border-box;
     color: $black;
@@ -208,7 +208,7 @@
   //  Rows
   //
   .row-prefix {
-    border: 2px dashed #e4e4e4;
+    border: 2px dashed $input_border_color;
     border-right: 0;
     cursor: pointer;
     display: block;
@@ -237,7 +237,7 @@
   }
 
   .row-prefix__title {
-    color: rgba(black, .225);
+    color: rgba(black, .325);
     display: inline-block;
     pointer-events: none;
     z-index: 1;
@@ -271,7 +271,17 @@
   //  Map item
   //
   .form__map-item-data {
-    margin-bottom: 11px;
+
+    &:before {
+      @include linear-gradient(90deg, $input_border_color, lighten($the_color, 21.25));
+      bottom: 0;
+      content: "";
+      height: 2px;
+      right: 0;
+      position: absolute;
+      width: 5%;
+      z-index: 9;
+    }
 
     .row {
       width: 80%;
@@ -287,7 +297,7 @@
     .row-prefix__destroy {
       color: $red;
       display: none;
-      font-size: 1.7em;
+      font-size: 1.8em;
       z-index: 2;
     }
 
@@ -300,6 +310,7 @@
     background: rgba($the_color, .275);
     height: 2px;
     margin-bottom: 13px;
+    margin-top: 11px;
   }
 
 
@@ -324,7 +335,7 @@
 
   .selectize-input {
     background: transparent;
-    border: 2px solid #e4e4e4;
+    border: 2px solid $input_border_color;
     border-radius: 0;
     font-size: 1rem;
     height: $input_height;

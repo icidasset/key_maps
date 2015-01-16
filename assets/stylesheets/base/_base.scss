@@ -20,8 +20,18 @@ body {
 }
 
 body.is-loading {
-  background: white url("../images/puff.svg") center no-repeat;
-  background-size: 50px;
+  background: white url("../images/rings.svg") center no-repeat;
+  background-size: 42px;
+
+  &:after {
+    @include transform(translate(-50%, 26px));
+    content: "LOADING";
+    font-size: 0.85rem;
+    left: 50%;
+    letter-spacing: 0.275em;
+    position: absolute;
+    top: 50%;
+  }
 }
 
 a {

@@ -23,11 +23,12 @@ $_medium: 1024px;
 
 */
 
-$the_color: $orange;
+$the_color: $blue;
 $vanilla: #fef8be;
 
 $header_border_color: #f2f2f2; // darken(white, 11);
-$focus_color: lighten($the_color, 35);
+$input_border_color: #ddd;
+$focus_color: lighten($the_color, 42.5); // 35
 
 
 

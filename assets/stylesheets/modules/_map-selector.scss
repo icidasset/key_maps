@@ -1,8 +1,6 @@
 .mod-map-selector {
   position: relative;
 
-  &.has-selected-map {}
-
   //
   //  Input + Match
   //
@@ -11,7 +9,7 @@
     font-family: "Pacifico", serif;
     font-size: 1.6rem;
     height: 100%;
-    line-height: $main_header_height;
+    line-height: $main_header_height + 0.1rem;
     position: relative;
     z-index: 1;
 

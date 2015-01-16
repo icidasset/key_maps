@@ -27,7 +27,7 @@ import "./models/user";
 
 import "./components/application-header";
 import "./components/input-boolean";
-import "./components/map-item-data";
 
 import "./views/map/index-field";
+import "./views/map/index-row";
 import "./views/map/keys";

@@ -1,3 +1,3 @@
-K.MapItemDataComponent = Ember.Component.extend({
+K.MapIndexRowView = Ember.View.extend({
   classNames: ["form__map-item-data", "row-wrapper"]
 });

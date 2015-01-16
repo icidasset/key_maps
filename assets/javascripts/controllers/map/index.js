@@ -96,26 +96,31 @@ K.MapIndexController = Ember.Controller.extend({
 
 
   item_template: function() {
-    var t = [
-      '<div class="row-prefix" {{action "destroy_item" index}}>',
-        '<span class="row-prefix__title row-prefix__center">',
-          '{{#if map_item.isNew}}NEW{{else}}{{increment index}}{{/if}}',
-        '</span>',
-        '<span class="row-prefix__destroy row-prefix__center">',
-          '<i class="cross"></i>',
-        '</span>',
-      '</div>'
-    ].join("");
+    var t = `
+      <div class="row-prefix" {{action "destroy_item" index}}>
+        <span class="row-prefix__title row-prefix__center">
+          {{#if map_item.isNew}}
+            NEW
+          {{else}}
+            {{increment index}}
+          {{/if}}
+        </span>
+        <span class="row-prefix__destroy row-prefix__center">
+          <i class="cross"></i>
+        </span>
+      </div>
+    `;
 
     this.get("struct").forEach(function(s) {
       var row_class = "row " + (s.length === 1 ? "row__with-one-item" : "");
 
       // <row>
-      t = t + '<div class="' + row_class + '">';
+      t = t + `<div class="${row_class}">`;
 
       // fields
       s.forEach(function(field) {
         var klass = ["field"];
+        var input;
 
         if (field.type === "text") {
           klass.push("is-full-width");
@@ -124,27 +129,26 @@ K.MapIndexController = Ember.Controller.extend({
           klass.push("has-normal-height");
         }
 
-        t = t + '{{#view "mapIndexField" key="' + field.key + '" item=map_item}}';
-
         if (field.type === "text") {
-          t = t + '{{textarea value=view.fieldValue placeholder=view.key}}';
+          input = `{{textarea value=view.fieldValue placeholder=view.key}}`;
         } else if (field.type === "boolean") {
-          t = t + '{{input-boolean value=view.fieldValue key=view.key}}';
+          input = `{{input-boolean value=view.fieldValue key=view.key}}`;
         } else {
-          t = t + '{{input value=view.fieldValue placeholder=view.key}}';
+          input = `{{input value=view.fieldValue placeholder=view.key}}`;
         }
 
-        t = t + [
-          '<div class="field__type">',
-            '<span>{{unbound type}}</span>',
-          '</div>'
-        ].join("");
-
-        t = t + '{{/view}}';
+        t = t + `
+          {{#view "mapIndexField" key="${field.key}" item=map_item}}
+            ${input}
+            <div class="field__type">
+              <span>{{unbound type}}</span>
+            </div>
+          {{/view}}
+        `;
       });
 
       // </row>
-      t = t + '</div>';
+      t = t + `</div>`;
     });
 
     return Ember.Handlebars.compile(t);

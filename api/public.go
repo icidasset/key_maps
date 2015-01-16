@@ -17,13 +17,36 @@ func Public__Show(params martini.Params, r render.Render) {
 
   // params
   map_id, _ := strconv.ParseInt(s[0], 10, 0)
+  slug := s[1]
+
+  // map
+  m := Map{}
+
+  db.Inst().Get(
+    &m,
+    "SELECT * FROM maps WHERE id = $1 AND slug = $2",
+    map_id,
+    slug,
+  )
+
+  // return if error
+  if m.Id == 0 {
+    r.JSON(501, map[string]string{ "error": "Provided map id and slug do not match" })
+    return
+  }
 
   // map items
   map_items := []MapItem{}
+  map_items_query := "SELECT structure_data FROM map_items WHERE map_id = $1"
+
+  if m.SortBy != "" {
+    map_items_query = map_items_query +
+      " ORDER BY structure_data::json->>'" + m.SortBy + "'"
+  }
 
   err = db.Inst().Select(
     &map_items,
-    "SELECT structure_data FROM map_items WHERE map_id = $1",
+    map_items_query,
     map_id,
   )
 

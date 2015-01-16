@@ -95,6 +95,66 @@ K.MapIndexController = Ember.Controller.extend({
   ).readOnly(),
 
 
+  item_template: function() {
+    var t = `
+      <div class="row-prefix" {{action "destroy_item" index}}>
+        <span class="row-prefix__title row-prefix__center">
+          {{#if map_item.isNew}}
+            NEW
+          {{else}}
+            {{increment index}}
+          {{/if}}
+        </span>
+        <span class="row-prefix__destroy row-prefix__center">
+          <i class="cross"></i>
+        </span>
+      </div>
+    `;
+
+    this.get("struct").forEach(function(s) {
+      var row_class = "row " + (s.length === 1 ? "row__with-one-item" : "");
+
+      // <row>
+      t = t + `<div class="${row_class}">`;
+
+      // fields
+      s.forEach(function(field) {
+        var klass = ["field"];
+        var input;
+
+        if (field.type === "text") {
+          klass.push("is-full-width");
+          klass.push("has-textarea-height");
+        } else {
+          klass.push("has-normal-height");
+        }
+
+        if (field.type === "text") {
+          input = `{{textarea value=view.fieldValue placeholder=view.key}}`;
+        } else if (field.type === "boolean") {
+          input = `{{input-boolean value=view.fieldValue key=view.key}}`;
+        } else {
+          input = `{{input value=view.fieldValue placeholder=view.key}}`;
+        }
+
+        t = t + `
+          {{#view "mapIndexField" key="${field.key}" item=map_item}}
+            ${input}
+            <div class="field__type">
+              <span>{{unbound type}}</span>
+            </div>
+          {{/view}}
+        `;
+      });
+
+      // </row>
+      t = t + `</div>`;
+    });
+
+    return Ember.Handlebars.compile(t);
+  }.property("struct").readOnly(),
+
+
   //
   //  Other
   //
@@ -182,6 +242,16 @@ K.MapIndexController = Ember.Controller.extend({
 
       // woof
       this.wuphf.success("<i class='check'></i> Saved");
+    },
+
+
+    destroy_item: function(item_index) {
+      var item = this.get("sortedModel").objectAt(item_index);
+
+      this.deleted_map_items.push(item);
+      this.get("model").removeObject(item);
+
+      item.deleteRecord();
     }
 
   }

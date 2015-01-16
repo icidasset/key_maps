@@ -97,9 +97,9 @@ K.MapIndexController = Ember.Controller.extend({
 
   item_template: function() {
     var t = [
-      '<div class="row-prefix" {{action "destroy"}}>',
+      '<div class="row-prefix" {{action "destroy_item" index}}>',
         '<span class="row-prefix__title row-prefix__center">',
-          '{{#if map_item.isNew}}NEW{{else}}{{number}}{{/if}}',
+          '{{#if map_item.isNew}}NEW{{else}}{{increment index}}{{/if}}',
         '</span>',
         '<span class="row-prefix__destroy row-prefix__center">',
           '<i class="cross"></i>',
@@ -115,7 +115,32 @@ K.MapIndexController = Ember.Controller.extend({
 
       // fields
       s.forEach(function(field) {
-        t = t + '{{map-item-data-field item=map_item key="' + field.key + '" type="' + field.type + '"}}';
+        var klass = ["field"];
+
+        if (field.type === "text") {
+          klass.push("is-full-width");
+          klass.push("has-textarea-height");
+        } else {
+          klass.push("has-normal-height");
+        }
+
+        t = t + '{{#view "mapIndexField" key="' + field.key + '" item=map_item}}';
+
+        if (field.type === "text") {
+          t = t + '{{textarea value=view.fieldValue placeholder=view.key}}';
+        } else if (field.type === "boolean") {
+          t = t + '{{input-boolean value=view.fieldValue key=view.key}}';
+        } else {
+          t = t + '{{input value=view.fieldValue placeholder=view.key}}';
+        }
+
+        t = t + [
+          '<div class="field__type">',
+            '<span>{{unbound type}}</span>',
+          '</div>'
+        ].join("");
+
+        t = t + '{{/view}}';
       });
 
       // </row>
@@ -213,6 +238,16 @@ K.MapIndexController = Ember.Controller.extend({
 
       // woof
       this.wuphf.success("<i class='check'></i> Saved");
+    },
+
+
+    destroy_item: function(item_index) {
+      var item = this.get("sortedModel").objectAt(item_index);
+
+      this.deleted_map_items.push(item);
+      this.get("model").removeObject(item);
+
+      item.deleteRecord();
     }
 
   }

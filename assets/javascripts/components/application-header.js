@@ -144,6 +144,14 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
         this.set("map_selector_is_idle", false);
 
       }
+    },
+
+
+    reset: function() {
+      this.setProperties({
+        map_selector_is_idle: true,
+        map_selector_value: ""
+      });
     }
 
   },

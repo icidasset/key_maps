@@ -21,16 +21,6 @@ K.MapManageController = Ember.Controller.extend({
       var model = this.get("model");
       if (model) model.destroyRecord();
 
-      // reset map selector
-      var header_component = this.get(
-        "controllers.application.header_component"
-      );
-
-      header_component.setProperties({
-        map_selector_is_idle: true,
-        map_selector_value: ""
-      });
-
       // redirect to index
       this.transitionToRoute("index");
     },

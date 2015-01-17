@@ -29,6 +29,7 @@ K.MapController = Ember.Controller.extend({
         map_selector_is_idle: true,
         map_selector_value: m.get("name")
       });
+
       document.activeElement.blur();
     }
   }.observes(

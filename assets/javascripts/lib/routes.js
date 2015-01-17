@@ -50,8 +50,7 @@ K.IndexRoute = Ember.Route.extend({
     if (this.get("session.isAuthenticated")) {
       var ac = this.controllerFor("application");
       var header_component = ac.get("header_component");
-
-      header_component.send("reset");
+      if (header_component) header_component.send("reset");
     }
   }
 });

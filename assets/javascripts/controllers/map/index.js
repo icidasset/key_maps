@@ -138,10 +138,10 @@ K.MapIndexController = Ember.Controller.extend({
         }
 
         t = t + `
-          {{#view "mapIndexField" key="${field.key}" item=map_item}}
+          {{#view "mapIndexField" key="${field.key}" type="${field.type}" item=map_item}}
             ${input}
             <div class="field__type">
-              <span>{{unbound type}}</span>
+              <span>{{unbound view.type}}</span>
             </div>
           {{/view}}
         `;

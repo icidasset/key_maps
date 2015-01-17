@@ -1,9 +1,10 @@
 const MESSAGES = {
-  create: "Press enter to create",
-  select: "Press enter to select",
-  select_or_create: "Press enter to select" +
-    " <span>or</span> " +
-    "shift-enter to create"
+  create: `Press enter to create`,
+  select: `Press enter to select`,
+  select_or_create: `Press enter to select
+    <span>or</span>
+    shift-enter to create`,
+  _default: `Type to select or create a map`
 };
 
 
@@ -13,8 +14,8 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
 
   // properties
   map_selector_value: "",
-  map_selector_message: MESSAGES.select_or_create,
-  map_selector_show_message: false,
+  map_selector_message: MESSAGES._default,
+  map_selector_is_idle: true,
 
   map_match: false,
   map_match_mask: null,
@@ -88,12 +89,13 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
       status = "select_or_create";
     } else if (val && val.length > 0) {
       status = "create";
+    } else {
+      status = "_default";
     }
 
     this.setProperties({
       map_match: match,
       map_match_mask: match_mask,
-      map_selector_show_message: (val.length > 0),
       map_status: status
     });
   }.observes("map_selector_value"),
@@ -101,8 +103,16 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
 
   set_map_selector_message: function() {
     var status = this.get("map_status");
-    this.set("map_selector_message", MESSAGES[status]);
-  }.observes("map_status"),
+    var is_idle = this.get("map_selector_is_idle");
+
+    this.set(
+      "map_selector_message",
+      MESSAGES[is_idle ? "_default" : status]
+    );
+  }.observes(
+    "map_status",
+    "map_selector_is_idle"
+  ),
 
 
   // actions
@@ -130,6 +140,9 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
             this.get("targetObject").transitionToRoute("index");
         }
 
+      } else {
+        this.set("map_selector_is_idle", false);
+
       }
     }
 
@@ -156,6 +169,10 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
       return;
     }
 
+    comp.setProperties({
+      map_status: "select"
+    });
+
     new_map = controller.store.createRecord("map", {
       name: name,
       structure: []
@@ -174,7 +191,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
     var match = this.get("map_match");
 
     if (match) this.set("map_selector_value", match.name);
-    this.set("map_selector_show_message", false);
+    this.set("map_selector_is_idle", true);
 
     document.activeElement.blur();
   }

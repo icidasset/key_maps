@@ -25,8 +25,10 @@ K.MapController = Ember.Controller.extend({
     m = this.get("model");
 
     if (m) {
-      header_component.set("map_selector_value", m.get("name"));
-      header_component.set("map_selector_show_message", false);
+      header_component.setProperties({
+        map_selector_is_idle: true,
+        map_selector_value: m.get("name")
+      });
       document.activeElement.blur();
     }
   }.observes(

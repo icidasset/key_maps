@@ -4,14 +4,14 @@
 
     <div class="mod-map-selector">
       <div {{bind-attr class=":map-selector__input isValid:is-valid:is-not-valid"}}>
-        {{input value=map_selector_value key-up="input_key_up" placeholder="Type to select or create a map"}}
+        {{input value=map_selector_value key-up="input_key_up" placeholder="Map name goes here"}}
 
         <div class="map-selector__match">
           {{{map_match_mask}}}
         </div>
       </div>
 
-      <div {{bind-attr class=":map-selector__message map_selector_show_message:is-visible"}}>
+      <div class="map-selector__message is-visible">
         <span>{{{map_selector_message}}}</span>
       </div>
     </div>

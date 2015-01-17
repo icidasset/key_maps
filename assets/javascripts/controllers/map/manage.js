@@ -26,8 +26,10 @@ K.MapManageController = Ember.Controller.extend({
         "controllers.application.header_component"
       );
 
-      header_component.set("map_selector_value", "");
-      header_component.set("map_selector_show_message", false);
+      header_component.setProperties({
+        map_selector_is_idle: true,
+        map_selector_value: ""
+      });
 
       // redirect to index
       this.transitionToRoute("index");

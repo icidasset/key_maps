@@ -5,7 +5,7 @@
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
  * @license   Licensed under MIT license
  *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   1.11.0-beta.1+canary.c0f38aa5
+ * @version   1.11.0-beta.1+canary.22eb4439
  */
 
 (function() {
@@ -2378,9 +2378,9 @@ enifed("ember-application/ext/controller",
     var get = __dependency2__.get;
     var EmberError = __dependency3__["default"];
     var inspect = __dependency4__.inspect;
+    var meta = __dependency4__.meta;
     var computed = __dependency5__.computed;
     var ControllerMixin = __dependency6__["default"];
-    var meta = __dependency4__.meta;
     var controllerFor = __dependency7__["default"];
 
     function verifyNeedsDependencies(controller, container, needs) {
@@ -2527,7 +2527,7 @@ enifed("ember-application/ext/controller",
         ```javascript
         App.CommentsController = Ember.ArrayController.extend({
           needs: ['post'],
-          postTitle: function(){
+          postTitle: function() {
             var currentPost = this.get('controllers.post'); // instance of App.PostController
             return currentPost.get('title');
           }.property('controllers.post.title')
@@ -2734,7 +2734,6 @@ enifed("ember-application/system/application",
       If there is any setup required before routing begins, you can implement a
       `ready()` method on your app that will be invoked immediately before routing
       begins.
-      ```
 
       @class Application
       @namespace Ember
@@ -5531,7 +5530,7 @@ enifed("ember-htmlbars/helpers/collection",
       ```javascript
       App = Ember.Application.create();
       App.ApplicationRoute = Ember.Route.extend({
-        model: function(){
+        model: function() {
           return [{name: 'Yehuda'},{name: 'Tom'},{name: 'Peter'}];
         }
       });
@@ -5564,7 +5563,7 @@ enifed("ember-htmlbars/helpers/collection",
       ```javascript
       App = Ember.Application.create();
       App.ApplicationRoute = Ember.Route.extend({
-        model: function(){
+        model: function() {
           return [{name: 'Yehuda'},{name: 'Tom'},{name: 'Peter'}];
         }
       });
@@ -5778,7 +5777,7 @@ enifed("ember-htmlbars/helpers/component",
       ```javascript
       App = Ember.Application.create();
       App.ApplicationController = Ember.Controller.extend({
-        infographicComponentName: function(){
+        infographicComponentName: function() {
           if (this.get('isMarketOpen')) {
             return "live-updating-chart";
           } else {
@@ -7273,7 +7272,7 @@ enifed("ember-htmlbars/helpers/yield",
         if (view._contextView) {
           view = view._contextView;
         } else {
-          view = get(view, '_parentView');
+          view = view._parentView;
         }
       }
 
@@ -11575,7 +11574,7 @@ enifed("ember-metal/core",
   ["exports"],
   function(__exports__) {
     "use strict";
-    /*globals Ember:true,ENV,EmberENV,MetamorphENV:true */
+    /*globals Ember:true,ENV,EmberENV */
 
     /**
     @module ember
@@ -11599,7 +11598,7 @@ enifed("ember-metal/core",
 
       @class Ember
       @static
-      @version 1.11.0-beta.1+canary.c0f38aa5
+      @version 1.11.0-beta.1+canary.22eb4439
     */
 
     if ('undefined' === typeof Ember) {
@@ -11609,9 +11608,10 @@ enifed("ember-metal/core",
     }
 
     // Default imports, exports and lookup to the global object;
-    Ember.imports = Ember.imports || this;
-    Ember.lookup  = Ember.lookup  || this;
-    var exports   = Ember.exports = Ember.exports || this;
+    var global = this || {}; // `this` may be undefined in strict mode
+    Ember.imports = Ember.imports || global;
+    Ember.lookup  = Ember.lookup  || global;
+    var exports   = Ember.exports = Ember.exports || global;
 
     // aliases needed to keep minifiers from removing the global context
     exports.Em = exports.Ember = Ember;
@@ -11626,10 +11626,10 @@ enifed("ember-metal/core",
     /**
       @property VERSION
       @type String
-      @default '1.11.0-beta.1+canary.c0f38aa5'
+      @default '1.11.0-beta.1+canary.22eb4439'
       @static
     */
-    Ember.VERSION = '1.11.0-beta.1+canary.c0f38aa5';
+    Ember.VERSION = '1.11.0-beta.1+canary.22eb4439';
 
     /**
       Standard environmental variables. You can define these in a global `EmberENV`
@@ -11659,12 +11659,6 @@ enifed("ember-metal/core",
       Ember.ENV.DISABLE_RANGE_API = true;
     }
 
-    if ("undefined" === typeof MetamorphENV) {
-      exports.MetamorphENV = {};
-    }
-
-    MetamorphENV.DISABLE_RANGE_API = Ember.ENV.DISABLE_RANGE_API;
-
     /**
       Hash of enabled Canary features. Add to this before creating your application.
 
@@ -11676,7 +11670,11 @@ enifed("ember-metal/core",
       @since 1.1.0
     */
 
-    Ember.FEATURES = Ember.ENV.FEATURES || {};
+    Ember.FEATURES = Ember.ENV.FEATURES;
+
+    if (!Ember.FEATURES) {
+      Ember.FEATURES = {"features-stripped-test":null,"ember-routing-named-substates":true,"ember-metal-injected-properties":true,"mandatory-setter":false,"ember-htmlbars":true,"ember-htmlbars-block-params":true,"ember-htmlbars-component-generation":null,"ember-htmlbars-component-helper":true,"ember-htmlbars-inline-if-helper":true,"ember-htmlbars-attribute-syntax":true,"ember-routing-transitioning-classes":true,"new-computed-syntax":null,"ember-testing-checkbox-helpers":null,"ember-metal-stream":null,"ember-htmlbars-each-with-index":true,"ember-application-initializer-context":null}; //jshint ignore:line
+    }
 
     /**
       Test that a feature is enabled. Parsed by Ember's build tools to leave
@@ -12189,9 +12187,10 @@ enifed("ember-metal/enumerable_utils",
     };
   });
 enifed("ember-metal/environment",
-  ["exports"],
-  function(__exports__) {
+  ["ember-metal/core","exports"],
+  function(__dependency1__, __exports__) {
     "use strict";
+    var Ember = __dependency1__["default"];
 
     /*
       Ember can run in many different environments, including environments like
@@ -12503,7 +12502,7 @@ enifed("ember-metal/events",
         actions[actionIndex+2] |= SUSPENDED; // mark the action as suspended
       }
 
-      function tryable()   { return callback.call(target); }
+      function tryable() { return callback.call(target); }
       function finalizer() { if (actionIndex !== -1) { actions[actionIndex+2] &= ~SUSPENDED; } }
 
       return tryFinally(tryable, finalizer);
@@ -13263,7 +13262,7 @@ enifed("ember-metal/is_present",
       @for Ember
       @param {Object} obj Value to test
       @return {Boolean}
-      @since 1.7.0
+      @since 1.8.0
       */
     __exports__["default"] = function isPresent(obj) {
       return !isBlank(obj);
@@ -13696,6 +13695,7 @@ enifed("ember-metal/map",
       },
 
       /**
+        @since 1.8.0
         @method delete
         @param obj
         @param _guid (optional and for internal use only)
@@ -13843,6 +13843,7 @@ enifed("ember-metal/map",
       /**
         This property will change as the number of objects in the map changes.
 
+        @since 1.8.0
         @property size
         @type number
         @default 0
@@ -13907,6 +13908,7 @@ enifed("ember-metal/map",
       /**
         Removes a value from the map for an associated key.
 
+        @since 1.8.0
         @method delete
         @param {*} key
         @return {Boolean} true if an item was removed, false otherwise
@@ -14626,7 +14628,7 @@ enifed("ember-metal/mixin",
 
       //filters will be a separate  array for every object implementing the mixin
       App.Filterable = Ember.Mixin.create({
-        filters: Ember.computed(function(){return Ember.A();})
+        filters: Ember.computed(function() {return Ember.A();})
       });
 
       //filters will be created as a separate array during the object's initialization
@@ -15333,6 +15335,7 @@ enifed("ember-metal/platform/create",
     /**
       Identical to `Object.create()`. Implements if not available natively.
 
+      @since 1.8.0
       @method create
       @for Ember
     */
@@ -16460,7 +16463,7 @@ enifed("ember-metal/run_loop",
 
       ```javascript
       App.RichTextEditorComponent = Ember.Component.extend({
-        initializeTinyMCE: function(){
+        initializeTinyMCE: function() {
           tinymce.init({
             selector: '#' + this.$().prop('id'),
             setup: Ember.run.bind(this, this.setupEditor)
@@ -16469,7 +16472,7 @@ enifed("ember-metal/run_loop",
 
         setupEditor: function(editor) {
           this.set('editor', editor);
-          editor.on('change', function(){ console.log('content changed!')} );
+          editor.on('change', function() { console.log('content changed!')} );
         }
       });
       ```
@@ -17571,7 +17574,7 @@ enifed("ember-metal/streams/utils",
      ```javascript
          var source = ...;  // stream returning a number
                                 // or a numeric (non-stream) object
-         var result = chain(source, function(){
+         var result = chain(source, function() {
            var currentValue = read(source);
            return currentValue + 1;
          });
@@ -17868,7 +17871,7 @@ enifed("ember-metal/utils",
             return '(Object)';
           }
 
-          if (obj === Array)  {
+          if (obj === Array) {
             return '(Array)';
           }
 
@@ -18393,7 +18396,7 @@ enifed("ember-metal/utils",
     var TYPE_MAP = {};
     var t = "Boolean Number String Function Array Date RegExp Object".split(" ");
     forEach.call(t, function(name) {
-      TYPE_MAP[ "[object " + name + "]" ] = name.toLowerCase();
+      TYPE_MAP["[object " + name + "]"] = name.toLowerCase();
     });
 
     var toString = Object.prototype.toString;
@@ -19071,7 +19074,7 @@ enifed("ember-routing-htmlbars/helpers/action",
       ```javascript
       App.ApplicationView = Ember.View.extend({
         actions: {
-          anActionName: function(){}
+          anActionName: function() {}
         }
       });
 
@@ -19584,7 +19587,7 @@ enifed("ember-routing-htmlbars/helpers/outlet",
 
       outletSource = this;
       while (!outletSource.get('template.isTop')) {
-        outletSource = outletSource.get('_parentView');
+        outletSource = outletSource._parentView;
       }
       set(this, 'outletSource', outletSource);
 
@@ -19939,6 +19942,7 @@ enifed("ember-routing-views/views/link",
       /**
         Sets the `target` attribute of the `LinkView`'s HTML element.
 
+        @since 1.8.0
         @property target
         @default null
       **/
@@ -20718,7 +20722,7 @@ enifed("ember-routing/ext/controller",
 
         ```javascript
         App.Router.map(function() {
-          this.resource('blogPost', {path:':blogPostId'}, function(){
+          this.resource('blogPost', {path:':blogPostId'}, function() {
             this.resource('blogComment', {path: ':blogCommentId'});
           });
         });
@@ -20806,7 +20810,7 @@ enifed("ember-routing/ext/controller",
 
         ```javascript
         App.Router.map(function() {
-          this.resource('blogPost', {path:':blogPostId'}, function(){
+          this.resource('blogPost', {path:':blogPostId'}, function() {
             this.resource('blogComment', {path: ':blogCommentId'});
           });
         });
@@ -24094,7 +24098,7 @@ enifed("ember-routing/system/route",
         ```javascript
         // posts route
         Ember.Route.extend({
-          renderTemplate: function(){
+          renderTemplate: function() {
             this.render('photos', {
               into: 'application',
               outlet: 'anOutletName'
@@ -25169,7 +25173,7 @@ enifed("ember-routing/system/router",
 
       if (error) {
         if (error.message) { errorArgs.push(error.message); }
-        if (error.stack)   { errorArgs.push(error.stack); }
+        if (error.stack) { errorArgs.push(error.stack); }
 
         if (typeof error === "string") { errorArgs.push(error); }
       }
@@ -25983,6 +25987,7 @@ enifed("ember-runtime/computed/reduce_computed",
     var e_get = __dependency2__.get;
     var guidFor = __dependency3__.guidFor;
     var metaFor = __dependency3__.meta;
+    var isArray = __dependency3__.isArray;
     var EmberError = __dependency4__["default"];
     var propertyWillChange = __dependency5__.propertyWillChange;
     var propertyDidChange = __dependency5__.propertyDidChange;
@@ -25998,7 +26003,6 @@ enifed("ember-runtime/computed/reduce_computed",
     var TrackedArray = __dependency11__["default"];
     var EmberArray = __dependency12__["default"];
     var run = __dependency13__["default"];
-    var isArray = __dependency3__.isArray;
 
     var cacheSet = cacheFor.set;
     var cacheGet = cacheFor.get;
@@ -26334,7 +26338,7 @@ enifed("ember-runtime/computed/reduce_computed",
         return Math.max(0, length + index);
       } else if (index < length) {
         return index;
-      } else /* index > length */ {
+      } else { // index > length
         return Math.min(length - newItemsOffset, index);
       }
     }
@@ -27772,22 +27776,18 @@ enifed("ember-runtime/controllers/array_controller",
     __exports__["default"] = ArrayProxy.extend(ControllerMixin, SortableMixin, {
 
       /**
-        The controller used to wrap items, if any. If the value is a string, it will
-        be used to lookup the container for the controller. As an alternative, you
-        can also provide a controller class as the value.
+        A string containing the controller name used to wrap items.
 
         For example:
 
         ```javascript
         App.MyArrayController = Ember.ArrayController.extend({
-          itemController: Ember.ObjectController.extend({
-            //Item Controller Implementation
-          })
+          itemController: 'myItem' // use App.MyItemController
         });
         ```
 
         @property itemController
-        @type String | Ember.Controller
+        @type String
         @default null
       */
       itemController: null,
@@ -28441,7 +28441,7 @@ enifed("ember-runtime/ext/rsvp",
             return this['catch'](callback, label);
     };
 
-    RSVP.onerrorDefault = function (e) {
+    function onerrorDefault(e) {
       var error;
 
       if (e && e.errorThrown) {
@@ -28474,9 +28474,9 @@ enifed("ember-runtime/ext/rsvp",
           Logger.error(error.stack);
         }
       }
-    };
+    }
 
-    RSVP.on('error', RSVP.onerrorDefault);
+    __exports__.onerrorDefault = onerrorDefault;RSVP.on('error', onerrorDefault);
 
     __exports__["default"] = RSVP;
   });
@@ -29691,8 +29691,8 @@ enifed("ember-runtime/mixins/copyable",
 
     var get = __dependency1__.get;
     var required = __dependency2__.required;
-    var Freezable = __dependency3__.Freezable;
     var Mixin = __dependency2__.Mixin;
+    var Freezable = __dependency3__.Freezable;
     var fmt = __dependency4__.fmt;
     var EmberError = __dependency5__["default"];
 
@@ -32481,7 +32481,7 @@ enifed("ember-runtime/mixins/promise_proxy",
     }
   });
 enifed("ember-runtime/mixins/sortable",
-  ["ember-metal/core","ember-metal/property_get","ember-metal/enumerable_utils","ember-metal/mixin","ember-runtime/mixins/mutable_enumerable","ember-runtime/compare","ember-metal/observer","ember-metal/computed","exports"],
+  ["ember-metal/core","ember-metal/property_get","ember-metal/enumerable_utils","ember-runtime/mixins/mutable_enumerable","ember-runtime/compare","ember-metal/observer","ember-metal/computed","ember-metal/mixin","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __exports__) {
     "use strict";
     /**
@@ -32494,14 +32494,14 @@ enifed("ember-runtime/mixins/sortable",
 
     var get = __dependency2__.get;
     var forEach = __dependency3__.forEach;
-    var Mixin = __dependency4__.Mixin;
-    var MutableEnumerable = __dependency5__["default"];
-    var compare = __dependency6__["default"];
-    var addObserver = __dependency7__.addObserver;
-    var removeObserver = __dependency7__.removeObserver;
-    var computed = __dependency8__.computed;
-    var beforeObserver = __dependency4__.beforeObserver;
-    var observer = __dependency4__.observer;
+    var MutableEnumerable = __dependency4__["default"];
+    var compare = __dependency5__["default"];
+    var addObserver = __dependency6__.addObserver;
+    var removeObserver = __dependency6__.removeObserver;
+    var computed = __dependency7__.computed;
+    var Mixin = __dependency8__.Mixin;
+    var beforeObserver = __dependency8__.beforeObserver;
+    var observer = __dependency8__.observer;
     //ES6TODO: should we access these directly from their package or from how their exposed in ember-metal?
 
     /**
@@ -34036,7 +34036,7 @@ enifed("ember-runtime/system/core_object",
         ```javascript
         App.Person = Ember.Object.extend({
           name : "",
-          sayHello : function(){
+          sayHello : function() {
             alert("Hello. My name is " + this.get('name'));
           }
         });
@@ -34266,6 +34266,7 @@ enifed("ember-runtime/system/each_proxy",
 
     var get = __dependency2__.get;
     var guidFor = __dependency3__.guidFor;
+    var typeOf = __dependency3__.typeOf;
     var forEach = __dependency4__.forEach;
     var indexOf = __dependency5__.indexOf;
     var EmberArray = __dependency6__["default"];
@@ -34276,7 +34277,6 @@ enifed("ember-runtime/system/each_proxy",
     var addBeforeObserver = __dependency9__.addBeforeObserver;
     var removeBeforeObserver = __dependency9__.removeBeforeObserver;
     var removeObserver = __dependency9__.removeObserver;
-    var typeOf = __dependency3__.typeOf;
     var watchedEvents = __dependency10__.watchedEvents;
     var defineProperty = __dependency11__.defineProperty;
     var beginPropertyChanges = __dependency12__.beginPropertyChanges;
@@ -34825,7 +34825,7 @@ enifed("ember-runtime/system/native_array",
     // because they are so common.
 
     /**
-      The NativeArray mixin contains the properties needed to to make the native
+      The NativeArray mixin contains the properties needed to make the native
       Array support Ember.MutableArray and all of its dependent APIs. Unless you
       have `Ember.EXTEND_PROTOTYPES` or `Ember.EXTEND_PROTOTYPES.Array` set to
       false, this will be applied automatically. Otherwise you can apply the mixin
@@ -35586,7 +35586,7 @@ enifed("ember-runtime/system/set",
 
           this.enumerableContentWillChange(removed, null);
           if (isFirst) { propertyWillChange(this, 'firstObject'); }
-          if (isLast)  { propertyWillChange(this, 'lastObject'); }
+          if (isLast) { propertyWillChange(this, 'lastObject'); }
 
           // swap items - basically move the item to the end so it can be removed
           if (idx < len-1) {
@@ -35600,7 +35600,7 @@ enifed("ember-runtime/system/set",
           set(this, 'length', len-1);
 
           if (isFirst) { propertyDidChange(this, 'firstObject'); }
-          if (isLast)  { propertyDidChange(this, 'lastObject'); }
+          if (isLast) { propertyDidChange(this, 'lastObject'); }
           this.enumerableContentDidChange(removed, null);
         }
 
@@ -36773,8 +36773,8 @@ enifed("ember-template-compiler/system/template",
     }
   });
 enifed("ember-views",
-  ["ember-runtime","ember-views/system/jquery","ember-views/system/utils","ember-views/system/render_buffer","ember-views/system/ext","ember-views/views/states","ember-views/views/core_view","ember-views/views/view","ember-views/views/container_view","ember-views/views/collection_view","ember-views/views/component","ember-views/system/event_dispatcher","ember-views/mixins/view_target_action_support","ember-views/component_lookup","ember-views/views/checkbox","ember-views/mixins/text_support","ember-views/views/text_field","ember-views/views/text_area","ember-views/views/simple_bound_view","ember-views/views/metamorph_view","ember-views/views/select","exports"],
-  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __dependency15__, __dependency16__, __dependency17__, __dependency18__, __dependency19__, __dependency20__, __dependency21__, __exports__) {
+  ["ember-runtime","ember-views/system/jquery","ember-views/system/utils","ember-views/system/render_buffer","ember-views/system/renderer","morph","ember-views/system/ext","ember-views/views/states","ember-views/views/core_view","ember-views/views/view","ember-views/views/container_view","ember-views/views/collection_view","ember-views/views/component","ember-views/system/event_dispatcher","ember-views/mixins/view_target_action_support","ember-views/component_lookup","ember-views/views/checkbox","ember-views/mixins/text_support","ember-views/views/text_field","ember-views/views/text_area","ember-views/views/simple_bound_view","ember-views/views/metamorph_view","ember-views/views/select","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __dependency7__, __dependency8__, __dependency9__, __dependency10__, __dependency11__, __dependency12__, __dependency13__, __dependency14__, __dependency15__, __dependency16__, __dependency17__, __dependency18__, __dependency19__, __dependency20__, __dependency21__, __dependency22__, __dependency23__, __exports__) {
     "use strict";
     /**
     Ember Views
@@ -36792,30 +36792,32 @@ enifed("ember-views",
     var getViewClientRects = __dependency3__.getViewClientRects;
     var getViewBoundingClientRect = __dependency3__.getViewBoundingClientRect;
     var RenderBuffer = __dependency4__["default"];
+    var Renderer = __dependency5__["default"];
+    var DOMHelper = __dependency6__.DOMHelper;
      // for the side effect of extending Ember.run.queues
-    var cloneStates = __dependency6__.cloneStates;
-    var states = __dependency6__.states;
+    var cloneStates = __dependency8__.cloneStates;
+    var states = __dependency8__.states;
 
-    var CoreView = __dependency7__["default"];
-    var View = __dependency8__["default"];
-    var ContainerView = __dependency9__["default"];
-    var CollectionView = __dependency10__["default"];
-    var Component = __dependency11__["default"];
+    var CoreView = __dependency9__["default"];
+    var View = __dependency10__["default"];
+    var ContainerView = __dependency11__["default"];
+    var CollectionView = __dependency12__["default"];
+    var Component = __dependency13__["default"];
 
-    var EventDispatcher = __dependency12__["default"];
-    var ViewTargetActionSupport = __dependency13__["default"];
-    var ComponentLookup = __dependency14__["default"];
-    var Checkbox = __dependency15__["default"];
-    var TextSupport = __dependency16__["default"];
-    var TextField = __dependency17__["default"];
-    var TextArea = __dependency18__["default"];
+    var EventDispatcher = __dependency14__["default"];
+    var ViewTargetActionSupport = __dependency15__["default"];
+    var ComponentLookup = __dependency16__["default"];
+    var Checkbox = __dependency17__["default"];
+    var TextSupport = __dependency18__["default"];
+    var TextField = __dependency19__["default"];
+    var TextArea = __dependency20__["default"];
 
-    var SimpleBoundView = __dependency19__["default"];
-    var _MetamorphView = __dependency20__["default"];
-    var _Metamorph = __dependency20__._Metamorph;
-    var Select = __dependency21__.Select;
-    var SelectOption = __dependency21__.SelectOption;
-    var SelectOptgroup = __dependency21__.SelectOptgroup;
+    var SimpleBoundView = __dependency21__["default"];
+    var _MetamorphView = __dependency22__["default"];
+    var _Metamorph = __dependency22__._Metamorph;
+    var Select = __dependency23__.Select;
+    var SelectOption = __dependency23__.SelectOption;
+    var SelectOptgroup = __dependency23__.SelectOptgroup;
     // END IMPORTS
 
     /**
@@ -36840,6 +36842,8 @@ enifed("ember-views",
     Ember.View = View;
     Ember.View.states = states;
     Ember.View.cloneStates = cloneStates;
+    Ember.View.DOMHelper = DOMHelper;
+    Ember.View._Renderer = Renderer;
     Ember.Checkbox = Checkbox;
     Ember.TextField = TextField;
     Ember.TextArea = TextArea;
@@ -38815,7 +38819,7 @@ enifed("ember-views/system/render_buffer",
         var content = this.innerContent();
         // No content means a text node buffer, with the content
         // in _element. Ember._BoundView is an example.
-        if (content === null)  {
+        if (content === null) {
           return this._element;
         }
 
@@ -38823,7 +38827,7 @@ enifed("ember-views/system/render_buffer",
         this.dom.detectNamespace(contextualElement);
 
         if (!this._element) {
-          this._element = document.createDocumentFragment();
+          this._element = this.dom.createDocumentFragment();
         }
 
         if (content.nodeType) {
@@ -39246,7 +39250,7 @@ enifed("ember-views/views/bound_if_view",
     });
   });
 enifed("ember-views/views/bound_partial_view",
-  ["ember-metal/run_loop","ember-views/views/metamorph_view","ember-views/mixins/normalized_rerender_if_needed","ember-views/system/lookup_partial","ember-htmlbars/system/render-view","ember-htmlbars/templates/empty","exports"],
+  ["ember-views/views/metamorph_view","ember-views/mixins/normalized_rerender_if_needed","ember-views/system/lookup_partial","ember-metal/run_loop","ember-htmlbars/system/render-view","ember-htmlbars/templates/empty","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __dependency6__, __exports__) {
     "use strict";
     /**
@@ -39254,11 +39258,10 @@ enifed("ember-views/views/bound_partial_view",
     @submodule ember-views
     */
 
-    var run = __dependency1__["default"];
-    var _MetamorphView = __dependency2__["default"];
-    var NormalizedRerenderIfNeededSupport = __dependency3__["default"];
-    var lookupPartial = __dependency4__["default"];
-    var run = __dependency1__["default"];
+    var _MetamorphView = __dependency1__["default"];
+    var NormalizedRerenderIfNeededSupport = __dependency2__["default"];
+    var lookupPartial = __dependency3__["default"];
+    var run = __dependency4__["default"];
     var renderView = __dependency5__["default"];
     var emptyTemplate = __dependency6__["default"];
 
@@ -40023,7 +40026,7 @@ enifed("ember-views/views/component",
         @default null
       */
       targetObject: computed(function(key) {
-        var parentView = get(this, '_parentView');
+        var parentView = this._parentView;
         return parentView ? get(parentView, 'controller') : null;
       }).property('_parentView'),
 
@@ -40038,7 +40041,7 @@ enifed("ember-views/views/component",
 
         ```javascript
         App.PlayButtonComponent = Ember.Component.extend({
-          click: function(){
+          click: function() {
             if (this.get('isPlaying')) {
               this.sendAction('play');
             } else {
@@ -40065,11 +40068,11 @@ enifed("ember-views/views/component",
         ```javascript
         App.ApplicationController = Ember.Controller.extend({
           actions: {
-            musicStarted: function(){
+            musicStarted: function() {
               // called when the play button is clicked
               // and the music started playing
             },
-            musicStopped: function(){
+            musicStopped: function() {
               // called when the play button is clicked
               // and the music stopped playing
             }
@@ -40082,7 +40085,7 @@ enifed("ember-views/views/component",
 
         ```javascript
         App.NextButtonComponent = Ember.Component.extend({
-          click: function(){
+          click: function() {
             this.sendAction();
           }
         });
@@ -40096,7 +40099,7 @@ enifed("ember-views/views/component",
         ```javascript
         App.ApplicationController = Ember.Controller.extend({
           actions: {
-            playNextSongInAlbum: function(){
+            playNextSongInAlbum: function() {
               ...
             }
           }
@@ -40750,7 +40753,7 @@ enifed("ember-views/views/each",
             binding.connect(controller);
           });
 
-          set(this, '_arrayController', controller);
+          this._arrayController = controller;
         } else {
           this.disableContentObservers(function() {
             binding = new Binding('content', 'dataSource').oneWay();
@@ -40799,10 +40802,8 @@ enifed("ember-views/views/each",
       destroy: function() {
         if (!this._super()) { return; }
 
-        var arrayController = get(this, '_arrayController');
-
-        if (arrayController) {
-          arrayController.destroy();
+        if (this._arrayController) {
+          this._arrayController.destroy();
         }
 
         return this;
@@ -40866,6 +40867,7 @@ enifed("ember-views/views/select",
     var indexOf = __dependency1__.indexOf;
     var indexesOf = __dependency1__.indexesOf;
     var replace = __dependency1__.replace;
+    var map = __dependency1__.map;
 
     var get = __dependency2__.get;
     var set = __dependency3__.set;
@@ -40878,7 +40880,6 @@ enifed("ember-views/views/select",
     var observer = __dependency10__.observer;
     var defineProperty = __dependency11__.defineProperty;
     var run = __dependency12__["default"];
-    var map = __dependency1__.map;
 
     var htmlbarsTemplate = __dependency13__["default"];
 
@@ -42141,16 +42142,17 @@ enifed("ember-views/views/view",
     var removeObserver = __dependency10__.removeObserver;
     var defineProperty = __dependency11__.defineProperty;
     var guidFor = __dependency12__.guidFor;
+    var typeOf = __dependency12__.typeOf;
     var computed = __dependency13__.computed;
+    var Mixin = __dependency14__.Mixin;
     var observer = __dependency14__.observer;
+    var beforeObserver = __dependency14__.beforeObserver;
     var SimpleStream = __dependency15__["default"];
     var KeyStream = __dependency16__["default"];
     var StreamBinding = __dependency17__["default"];
     var ContextStream = __dependency18__["default"];
 
-    var typeOf = __dependency12__.typeOf;
     var isNone = __dependency19__["default"];
-    var Mixin = __dependency14__.Mixin;
     var deprecateProperty = __dependency20__.deprecateProperty;
     var emberA = __dependency21__.A;
 
@@ -42160,8 +42162,6 @@ enifed("ember-views/views/view",
     var forEach = __dependency23__.forEach;
     var addObject = __dependency23__.addObject;
     var removeObject = __dependency23__.removeObject;
-
-    var beforeObserver = __dependency14__.beforeObserver;
 
     var propertyWillChange = __dependency24__.propertyWillChange;
     var propertyDidChange = __dependency24__.propertyDidChange;
@@ -42905,7 +42905,7 @@ enifed("ember-views/views/view",
           return this._controller;
         }
 
-        var parentView = get(this, '_parentView');
+        var parentView = this._parentView;
         return parentView ? get(parentView, 'controller') : null;
       }),
 
@@ -43983,9 +43983,11 @@ enifed("ember-views/views/view",
         var attrs = _attrs || {};
         var view;
         attrs._parentView = this;
+        attrs.renderer = this.renderer;
 
         if (CoreView.detect(maybeViewClass)) {
           attrs.container = this.container;
+
           view = maybeViewClass.create(attrs);
 
           // don't set the property on a virtual view, as they are invisible to
@@ -44305,7 +44307,7 @@ enifed("ember-views/views/view",
     __exports__["default"] = View;
   });
 enifed("ember-views/views/with_view",
-  ["ember-metal/property_set","ember-metal/run_loop","ember-views/views/metamorph_view","ember-views/mixins/normalized_rerender_if_needed","ember-htmlbars/system/render-view","exports"],
+  ["ember-metal/property_set","ember-views/views/metamorph_view","ember-views/mixins/normalized_rerender_if_needed","ember-metal/run_loop","ember-htmlbars/system/render-view","exports"],
   function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __dependency5__, __exports__) {
     "use strict";
     /**
@@ -44314,10 +44316,9 @@ enifed("ember-views/views/with_view",
     */
 
     var set = __dependency1__.set;
-    var run = __dependency2__["default"];
-    var _MetamorphView = __dependency3__["default"];
-    var NormalizedRerenderIfNeededSupport = __dependency4__["default"];
-    var run = __dependency2__["default"];
+    var _MetamorphView = __dependency2__["default"];
+    var NormalizedRerenderIfNeededSupport = __dependency3__["default"];
+    var run = __dependency4__["default"];
     var renderView = __dependency5__["default"];
 
     __exports__["default"] = _MetamorphView.extend(NormalizedRerenderIfNeededSupport, {
@@ -45677,6 +45678,159 @@ enifed("htmlbars-compiler/utils",
     }
 
     __exports__.getNamespace = getNamespace;
+  });
+enifed("htmlbars-runtime",
+  ["htmlbars-runtime/hooks","htmlbars-runtime/helpers","exports"],
+  function(__dependency1__, __dependency2__, __exports__) {
+    "use strict";
+    var hooks = __dependency1__["default"];
+    var helpers = __dependency2__["default"];
+
+    __exports__.hooks = hooks;
+    __exports__.helpers = helpers;
+  });
+enifed("htmlbars-runtime/helpers",
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    function partial(params, hash, options, env) {
+      var template = env.partials[params[0]];
+      return template.render(this, env, options.morph.contextualElement);
+    }
+
+    __exports__.partial = partial;__exports__["default"] = {
+      partial: partial
+    };
+  });
+enifed("htmlbars-runtime/hooks",
+  ["exports"],
+  function(__exports__) {
+    "use strict";
+    function block(env, morph, context, path, params, hash, template, inverse) {
+      var options = {
+        morph: morph,
+        template: template,
+        inverse: inverse
+      };
+
+      var helper = lookupHelper(env, context, path);
+      var value = helper.call(context, params, hash, options, env);
+
+      morph.setContent(value);
+    }
+
+    __exports__.block = block;function inline(env, morph, context, path, params, hash) {
+      var helper = lookupHelper(env, context, path);
+      var value = helper.call(context, params, hash, { morph: morph }, env);
+
+      morph.setContent(value);
+    }
+
+    __exports__.inline = inline;function content(env, morph, context, path) {
+      var helper = lookupHelper(env, context, path);
+
+      var value;
+      if (helper) {
+        value = helper.call(context, [], {}, { morph: morph }, env);
+      } else {
+        value = get(env, context, path);
+      }
+
+      morph.setContent(value);
+    }
+
+    __exports__.content = content;function element(env, domElement, context, path, params, hash) {
+      var helper = lookupHelper(env, context, path);
+      if (helper) {
+        helper.call(context, params, hash, { element: domElement }, env);
+      }
+    }
+
+    __exports__.element = element;function attribute(env, attrMorph, domElement, name, value) {
+      attrMorph.setContent(value);
+    }
+
+    __exports__.attribute = attribute;function subexpr(env, context, helperName, params, hash) {
+      var helper = lookupHelper(env, context, helperName);
+      if (helper) {
+        return helper.call(context, params, hash, {}, env);
+      } else {
+        return get(env, context, helperName);
+      }
+    }
+
+    __exports__.subexpr = subexpr;function get(env, context, path) {
+      if (path === '') {
+        return context;
+      }
+
+      var keys = path.split('.');
+      var value = context;
+      for (var i = 0; i < keys.length; i++) {
+        if (value) {
+          value = value[keys[i]];
+        } else {
+          break;
+        }
+      }
+      return value;
+    }
+
+    __exports__.get = get;function set(env, context, name, value) {
+      context[name] = value;
+    }
+
+    __exports__.set = set;function component(env, morph, context, tagName, attrs, template) {
+      var helper = lookupHelper(env, context, tagName);
+
+      var value;
+      if (helper) {
+        var options = {
+          morph: morph,
+          template: template
+        };
+
+        value = helper.call(context, [], attrs, options, env);
+      } else {
+        value = componentFallback(env, morph, context, tagName, attrs, template);
+      }
+
+      morph.setContent(value);
+    }
+
+    __exports__.component = component;function concat(env, params) {
+      var value = "";
+      for (var i = 0, l = params.length; i < l; i++) {
+        value += params[i];
+      }
+      return value;
+    }
+
+    __exports__.concat = concat;function componentFallback(env, morph, context, tagName, attrs, template) {
+      var element = env.dom.createElement(tagName);
+      for (var name in attrs) {
+        element.setAttribute(name, attrs[name]);
+      }
+      element.appendChild(template.render(context, env, morph.contextualElement));
+      return element;
+    }
+
+    function lookupHelper(env, context, helperName) {
+      return env.helpers[helperName];
+    }
+
+    __exports__["default"] = {
+      content: content,
+      block: block,
+      inline: inline,
+      component: component,
+      element: element,
+      attribute: attribute,
+      subexpr: subexpr,
+      concat: concat,
+      get: get,
+      set: set
+    };
   });
 enifed("htmlbars-syntax",
   ["./htmlbars-syntax/walker","./htmlbars-syntax/builders","./htmlbars-syntax/parser","exports"],
@@ -48055,6 +48209,30 @@ enifed("htmlbars-util/safe-string",
     var SafeString = __dependency1__["default"];
 
     __exports__["default"] = SafeString;
+  });
+enifed("htmlbars",
+  ["./htmlbars-compiler/compiler","./htmlbars-syntax/walker","./morph/morph","./morph/dom-helper","exports"],
+  function(__dependency1__, __dependency2__, __dependency3__, __dependency4__, __exports__) {
+    "use strict";
+    /*
+     * @overview  HTMLBars
+     * @copyright Copyright 2011-2014 Tilde Inc. and contributors
+     * @license   Licensed under MIT license
+     *            See https://raw.githubusercontent.com/tildeio/htmlbars/master/LICENSE
+     * @version   0.8.1
+     */
+
+    var compile = __dependency1__.compile;
+    var compileSpec = __dependency1__.compileSpec;
+    var Walker = __dependency2__["default"];
+    var Morph = __dependency3__["default"];
+    var DOMHelper = __dependency4__["default"];
+
+    __exports__.compile = compile;
+    __exports__.compileSpec = compileSpec;
+    __exports__.Morph = Morph;
+    __exports__.DOMHelper = DOMHelper;
+    __exports__.Walker = Walker;
   });
 enifed("morph",
   ["./morph/morph","./morph/attr-morph","./morph/dom-helper","exports"],
@@ -54766,6 +54944,41 @@ enifed("simple-html-tokenizer",
     __exports__.EndTag = EndTag;
     __exports__.Chars = Chars;
     __exports__.Comment = Comment;
+  });
+enifed("simple-html-tokenizer.umd",
+  ["./simple-html-tokenizer"],
+  function(__dependency1__) {
+    "use strict";
+    /* global define:false, module:false */
+    var Tokenizer = __dependency1__.Tokenizer;
+    var tokenize = __dependency1__.tokenize;
+    var Generator = __dependency1__.Generator;
+    var generate = __dependency1__.generate;
+    var StartTag = __dependency1__.StartTag;
+    var EndTag = __dependency1__.EndTag;
+    var Chars = __dependency1__.Chars;
+    var Comment = __dependency1__.Comment;
+
+    (function (root, factory) {
+      if (typeof enifed === 'function' && enifed.amd) {
+        enifed([], factory);
+      } else if (typeof exports === 'object') {
+        module.exports = factory();
+      } else {
+        root.HTML5Tokenizer = factory();
+      }
+    }(this, function () {
+      return {
+        Tokenizer: Tokenizer,
+        tokenize: tokenize,
+        Generator: Generator,
+        generate: generate,
+        StartTag: StartTag,
+        EndTag: EndTag,
+        Chars: Chars,
+        Comment: Comment
+      };
+    }));
   });
 enifed("simple-html-tokenizer/char-refs/full",
   ["exports"],

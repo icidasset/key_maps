@@ -170,6 +170,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
     }
 
     comp.setProperties({
+      map_selector_is_idle: true,
       map_status: "select"
     });
 
@@ -179,15 +180,16 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
     });
 
     new_map.save().then(function() {
-      comp.select_map(new_map.get("slug"));
+      comp.select_map(new_map.get("slug"), true);
     }, function() {
       controller.transitionToRoute("index");
     });
   },
 
 
-  select_map: function(slug) {
-    var transition = this.get("targetObject").transitionToRoute("map", slug);
+  select_map: function(slug, via_create=false) {
+    var route = via_create ? "map.keys" : "map.index";
+    var transition = this.get("targetObject").transitionToRoute(route, slug);
     var match = this.get("map_match");
 
     if (match) this.set("map_selector_value", match.name);

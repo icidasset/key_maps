@@ -41,6 +41,7 @@
     letter-spacing: 0.065em;
     line-height: $main_header_height + 0.35rem;
     padding: 0 36px;
+    position: relative;
     text-align: center;
     text-transform: uppercase;
 
@@ -49,6 +50,26 @@
       float: right;
       height: 100%;
       padding: 0 50px;
+    }
+  }
+
+  .application-header__menu-trigger {
+    border-left: 2px solid $header_border_color;
+    color: rgba(black, .25);
+    cursor: pointer;
+    float: left;
+    font-family: "feather-icons";
+    font-size: 1.125rem;
+    height: $main_header_height;
+    line-height: $main_header_height + 0.35rem;
+    padding: 0 $general_padding;
+
+    &:after {
+      content: "";
+    }
+
+    .tooltip-data {
+      display: none;
     }
   }
 

@@ -16,6 +16,14 @@
       </div>
     </div>
 
+    <div class="application-header__menu-trigger">
+      <div class="tooltip-data">
+        <div class="group">
+          {{#link-to "sign_out"}}Sign out{{/link-to}}
+        </div>
+      </div>
+    </div>
+
   {{else}}
 
     <div class="mod-application-header-menu">
@@ -31,7 +39,7 @@
 
 
   {{#link-to "index" class="logo"}}
-    Keymaps
+    <span class="logo__app-name">Keymaps</span>
   {{/link-to}}
 
 </script>

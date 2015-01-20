@@ -39,13 +39,47 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
   },
 
 
-  // handlers
+  //
+  //  Handlers
+  //
   _register: function() {
     this.set("register-as", this);
   }.on("init"),
 
 
-  // observations
+  _init_element: function() {
+    var t = new BareTooltip(
+      this.get("element"), {
+      trigger_type: "click",
+      delegate_selector: ".application-header__menu-trigger"
+    });
+
+    t.move_tooltip = function(e) {
+      var $tooltip = this.state.$tooltip_element;
+      var t = e.currentTarget;
+      var tb = t.getBoundingClientRect();
+
+      $tooltip.css({
+        left: tb.left + (tb.width / 2) - ($tooltip.outerWidth() / 2) + 2,
+        top: tb.top + tb.height + 16
+      });
+    };
+
+    t.setup();
+
+    this.tooltip = t;
+  }.on("didInsertElement"),
+
+
+  _destroy_element: function() {
+    this.tooltip.self_destruct();
+    this.tooltip = null;
+  }.on("willDestroyElement"),
+
+
+  //
+  //  Observers
+  //
   map_selector_value_changed: function() {
     var val, match, result, partial, match_mask, name, is_absolute_match, status;
     var searcher = this.get("targetObject.searcher");
@@ -115,49 +149,9 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
   ),
 
 
-  // actions
-  actions: {
-
-    input_key_up: function(val, e) {
-      var match = this.get("map_match");
-
-      if (e.which == 13 && !this.get("has_alert_shown")) {
-        switch (this.get("map_status")) {
-          case "create":
-            this.create_map(val);
-            break;
-
-          case "select":
-            this.select_map(match.slug);
-            break;
-
-          case "select_or_create":
-            if (e.shiftKey) this.create_map(val);
-            else this.select_map(match.slug);
-            break;
-
-          default:
-            this.get("targetObject").transitionToRoute("index");
-        }
-
-      } else {
-        this.set("map_selector_is_idle", false);
-
-      }
-    },
-
-
-    reset: function() {
-      this.setProperties({
-        map_selector_is_idle: true,
-        map_selector_value: ""
-      });
-    }
-
-  },
-
-
-  // other
+  //
+  //  Other
+  //
   create_map: function(name) {
     var controller = this.get("targetObject");
     var comp = this, new_map;
@@ -204,6 +198,50 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
     this.set("map_selector_is_idle", true);
 
     document.activeElement.blur();
+  },
+
+
+  //
+  //  Actions
+  //
+  actions: {
+
+    input_key_up: function(val, e) {
+      var match = this.get("map_match");
+
+      if (e.which == 13 && !this.get("has_alert_shown")) {
+        switch (this.get("map_status")) {
+          case "create":
+            this.create_map(val);
+            break;
+
+          case "select":
+            this.select_map(match.slug);
+            break;
+
+          case "select_or_create":
+            if (e.shiftKey) this.create_map(val);
+            else this.select_map(match.slug);
+            break;
+
+          default:
+            this.get("targetObject").transitionToRoute("index");
+        }
+
+      } else {
+        this.set("map_selector_is_idle", false);
+
+      }
+    },
+
+
+    reset: function() {
+      this.setProperties({
+        map_selector_is_idle: true,
+        map_selector_value: ""
+      });
+    }
+
   }
 
 });

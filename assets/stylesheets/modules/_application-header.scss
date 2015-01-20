@@ -44,6 +44,7 @@
     position: relative;
     text-align: center;
     text-transform: uppercase;
+    z-index: 1;
 
     @include min-small {
       border-top: 0;
@@ -54,15 +55,26 @@
   }
 
   .application-header__menu-trigger {
-    border-left: 2px solid $header_border_color;
     color: rgba(black, .25);
     cursor: pointer;
     float: left;
     font-family: "feather-icons";
     font-size: 1.125rem;
     height: $main_header_height;
-    line-height: $main_header_height + 0.35rem;
+    line-height: $main_header_height + 0.275rem;
+    margin-top: 2px;
     padding: 0 $general_padding;
+    position: absolute;
+    right: 0;
+    top: $main_header_height;
+    z-index: 2;
+
+    @include min-small {
+      border-left: 2px solid $header_border_color;
+      margin-top: 0;
+      position: relative;
+      top: 0;
+    }
 
     &:after {
       content: "";

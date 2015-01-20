@@ -55,13 +55,25 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
     });
 
     t.move_tooltip = function(e) {
-      var $tooltip = this.state.$tooltip_element;
-      var t = e.currentTarget;
-      var tb = t.getBoundingClientRect();
+      var $tooltip = this.state.$tooltip_element,
+          t = e.currentTarget,
+          tb = t.getBoundingClientRect(),
+          tw = $tooltip.outerWidth();
+
+      var left = tb.left + (tb.width / 2) - (tw / 2) + 2,
+          top = tb.top + tb.height + 16;
+
+      if (left < 24) {
+        left = tb.left + (tb.width / 2) - 24 + 1;
+        $tooltip.addClass("is-left");
+      } else if (left + tw > window.innerWidth - 24) {
+        left = tb.left + (tb.width / 2) - tw + 24;
+        $tooltip.addClass("is-right");
+      }
 
       $tooltip.css({
-        left: tb.left + (tb.width / 2) - ($tooltip.outerWidth() / 2) + 2,
-        top: tb.top + tb.height + 16
+        left: left,
+        top: top
       });
     };
 

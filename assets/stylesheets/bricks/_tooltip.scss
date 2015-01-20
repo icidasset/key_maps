@@ -61,9 +61,18 @@
     opacity: .7;
   }
 
-  .group a:last-child {
-    /* border-bottom: 0; */
-  }
+
+}
 
 
+//
+//  Alterations
+//
+.tooltip.is-left .arrow {
+  left: 24px;
+}
+
+.tooltip.is-right .arrow {
+  left: auto;
+  right: 24px - 6px;
 }

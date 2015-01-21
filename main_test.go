@@ -1,6 +1,9 @@
 package main
 
 import (
+  "bytes"
+  "encoding/json"
+  "fmt"
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/api"
   "net/http"
@@ -22,21 +25,57 @@ import (
 
 */
 
+
+
+//
+//  Root
+//
 func TestRootHandler(t *testing.T) {
   router := web.New(api.Context{})
   CreateRootRoute(router)
 
-  rr, req := newTestRequest("GET", "/")
-  router.ServeHTTP(rr, req)
+  rec, req := newTestRequest("GET", "/")
+  router.ServeHTTP(rec, req)
 
   // should load route and contain ember templates
   substr := `<script type="text/x-handlebars" data-template-name="index">`
 
-  if rr.Code != 200 {
+  if rec.Code != 200 {
     t.Error("Could not load the root route.")
-  } else if strings.Contains(responseBodyToString(rr), substr) == false {
+  } else if strings.Contains(responseBodyToString(rec), substr) == false {
     t.Error("Could not find the ember templates when making request to the root route.")
   }
+}
+
+
+
+//
+//  API - Users
+//
+func TestApiUsers(t *testing.T) {
+  router := web.New(api.Context{})
+  CreateUserRoutes(router)
+
+  // create user
+  user := api.UserAuth{ Email: "test@gmail.com", Password: "password" }
+  user_form_data := api.UserAuthFormData{ User: user }
+  j, _ := json.Marshal(user_form_data)
+
+  req, _ := http.NewRequest("POST", "/api/users", bytes.NewBuffer(j))
+  req.Header.Set("Content-Type", "application/json")
+  rec := httptest.NewRecorder()
+  router.ServeHTTP(rec, req)
+
+  // result := map[string]api.UserPublic{}
+  // json.Unmarshal(rec.Body.Bytes(), result)
+
+  if rec.Code != 201 {
+    t.Error("Did not create user correctly.")
+  }
+
+  // else if result["user"].Token == "" {
+  //   t.Error("Did not return the user's token on user create.")
+  // }
 }
 
 

@@ -18,13 +18,13 @@ type User struct {
 
 
 type UserAuth struct {
-  Email string                `form:"email"`
-  Password string             `form:"password"`
+  Email string                `form:"email" json:"email"`
+  Password string             `form:"password" json:"password"`
 }
 
 
 type UserAuthFormData struct {
-  User UserAuth               `form:"user"`
+  User UserAuth               `form:"user" json:"user"`
 }
 
 

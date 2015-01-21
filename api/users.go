@@ -1,10 +1,9 @@
 package api
 
 import (
+  "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
-  "github.com/martini-contrib/render"
   "golang.org/x/crypto/bcrypt"
-  "net/http"
   "time"
 )
 
@@ -38,19 +37,19 @@ type UserPublic struct {
 //
 //  {post} CREATE
 //
-func Users__Create(ufd UserAuthFormData, r render.Render) {
+func (c *Context) Users__Create(rw web.ResponseWriter, req *web.Request) {
   query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at) RETURNING id"
 
   // make new user
   encryped_password, _ := bcrypt.GenerateFromPassword(
-    []byte(ufd.User.Password),
+    []byte(c.UserAuthFormData.User.Password),
     bcrypt.DefaultCost,
   )
 
   now := time.Now()
 
   new_user := User{
-    Email: ufd.User.Email,
+    Email: c.UserAuthFormData.User.Email,
     EncryptedPassword: string(encryped_password),
     CreatedAt: now,
     UpdatedAt: now,
@@ -61,7 +60,7 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err));
+    RenderJSON(rw, 500, FormatError(err))
     return
   }
 
@@ -76,9 +75,9 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err));
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(201, map[string]UserPublic{ "user": user_public })
+    RenderJSON(rw, 201, map[string]UserPublic{ "user": user_public })
   }
 }
 
@@ -87,29 +86,29 @@ func Users__Create(ufd UserAuthFormData, r render.Render) {
 //
 //  {post} AUTHENTICATE
 //
-func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
+func (c *Context) Users__Authenticate(rw web.ResponseWriter, req *web.Request) {
   user := User{}
 
   db.Inst().Get(
     &user,
     "SELECT * FROM users WHERE email = $1",
-    ufd.User.Email,
+    c.UserAuthFormData.User.Email,
   )
 
   // <email>
   if user.Email == "" {
-    r.JSON(200, map[string]string{ "error": "User not found." })
+    RenderJSON(rw, 200, map[string]string{ "error": "User not found." })
     return
   }
 
   // <password>
   bcrypt_check_err := bcrypt.CompareHashAndPassword(
     []byte(user.EncryptedPassword),
-    []byte(ufd.User.Password),
+    []byte(c.UserAuthFormData.User.Password),
   )
 
   if bcrypt_check_err != nil {
-    r.JSON(200, map[string]string{ "error": "Invalid password." })
+    RenderJSON(rw, 200, map[string]string{ "error": "Invalid password." })
     return
   }
 
@@ -117,7 +116,7 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
   token := GenerateToken(&user)
   user_public := UserPublic{ Token: token }
 
-  r.JSON(200, map[string]UserPublic{ "user": user_public })
+  RenderJSON(rw, 200, map[string]UserPublic{ "user": user_public })
 }
 
 
@@ -125,14 +124,14 @@ func Users__Authenticate(ufd UserAuthFormData, r render.Render) {
 //
 //  {get} VERIFY TOKEN
 //
-func Users__VerifyToken(req *http.Request, r render.Render) {
+func (c *Context) Users__VerifyToken(rw web.ResponseWriter, req *web.Request) {
   qs := req.URL.Query()
   token := ParseToken(qs.Get("token"))
   is_valid := token.Valid
 
   // invalid token
   if !is_valid {
-    r.JSON(200, map[string]bool{ "is_valid": false })
+    RenderJSON(rw, 200, map[string]bool{ "is_valid": false })
 
   // valid token, but check if the user exists
   } else {
@@ -146,11 +145,11 @@ func Users__VerifyToken(req *http.Request, r render.Render) {
 
     // user exists
     if user.Id != 0 {
-      r.JSON(200, map[string]bool{ "is_valid": true })
+      RenderJSON(rw, 200, map[string]bool{ "is_valid": true })
 
     // user does not exist
     } else {
-      r.JSON(200, map[string]bool{ "is_valid": false })
+      RenderJSON(rw, 200, map[string]bool{ "is_valid": false })
 
     }
 

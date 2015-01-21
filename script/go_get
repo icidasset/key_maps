@@ -2,13 +2,10 @@
 
 repos=(
   'github.com/rubenv/sql-migrate/...'
-  'github.com/go-martini/martini'
-  'github.com/martini-contrib/binding'
-  'github.com/martini-contrib/cors'
-  'github.com/martini-contrib/gzip'
-  'github.com/martini-contrib/render'
   'github.com/lib/pq'
   'github.com/jmoiron/sqlx'
+  'github.com/gocraft/web'
+  'github.com/opennota/json-binding'
   'github.com/extemporalgenome/slug'
   'github.com/dgrijalva/jwt-go'
   'golang.org/x/crypto/bcrypt'

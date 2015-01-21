@@ -1,13 +1,10 @@
 package main
 
 import (
-  "github.com/go-martini/martini"
+  "github.com/gocraft/web"
   "github.com/icidasset/key-maps/api"
   "github.com/icidasset/key-maps/db"
-  "github.com/martini-contrib/binding"
-  "github.com/martini-contrib/cors"
-  "github.com/martini-contrib/gzip"
-  "github.com/martini-contrib/render"
+  "github.com/opennota/json-binding"
   "io/ioutil"
   "net/http"
   "strings"
@@ -16,7 +13,8 @@ import (
 
 
 //
-//  [Templates]
+//  [Root]
+//  -> HTML files (for js application)
 //
 type TemplateData struct {
   EmberTemplates string
@@ -44,52 +42,7 @@ func ScanTemplatesDir(path string) string {
 }
 
 
-//
-//  [Authentication]
-//
-func MustBeAuthenticatedMiddleware(c martini.Context, w http.ResponseWriter, r *http.Request) {
-  auth_header := r.Header.Get("Authorization")
-
-  if strings.Contains(auth_header, "Bearer") {
-    t := strings.Split(auth_header, "Bearer ")[1]
-    token := api.ParseToken(t)
-
-    if !token.Valid {
-      http.Error(w, "Forbidden", http.StatusUnauthorized)
-    } else {
-      id := int(token.Claims["user_id"].(float64))
-      c.Map(api.User{ Id: id })
-    }
-
-  } else {
-    http.Error(w, "Forbidden", http.StatusUnauthorized)
-
-  }
-}
-
-
-//
-//  [GZIP Martini]
-//
-func MartiniClassicGzipped() *martini.ClassicMartini {
-  r := martini.NewRouter()
-  m := martini.New()
-  m.Use(martini.Logger())
-  m.Use(martini.Recovery())
-  m.Use(gzip.All())
-  m.Use(martini.Static("public"))
-  m.MapTo(r, (*martini.Routes)(nil))
-  m.Action(r.Handle)
-  return &martini.ClassicMartini{ Martini: m, Router:r }
-}
-
-
-
-//
-//  [Root]
-//  -> HTML files (for js application)
-//
-func rootHandler(w http.ResponseWriter) {
+func rootHandler(rw web.ResponseWriter, req *web.Request) {
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
@@ -97,7 +50,7 @@ func rootHandler(w http.ResponseWriter) {
 
   ember_templates := ScanTemplatesDir("views/ember_templates/")
   tmpl_data := TemplateData{ EmberTemplates: ember_templates }
-  tmpl.ExecuteTemplate(w, "layout", tmpl_data)
+  tmpl.ExecuteTemplate(rw, "layout", tmpl_data)
 }
 
 
@@ -105,8 +58,8 @@ func rootHandler(w http.ResponseWriter) {
 //  [Main]
 //
 func main() {
-  r := MartiniClassicGzipped()
-  r.Use(render.Renderer())
+  router := web.New(api.BaseContext{})
+  router.Middleware(web.StaticMiddleware("public"))
 
   // prepare database
   if err := db.Open(); err != nil {
@@ -115,83 +68,79 @@ func main() {
 
   defer db.Close()
 
-  // cors
-  allowCORSHandler := cors.Allow(&cors.Options{
-    AllowAllOrigins:  true,
-    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-    ExposeHeaders:    []string{"Content-Length"},
-  })
+  // routes
+  CreateRootRoute(router)
+  CreateUserRoutes(router)
+  // CreateMapRoutes(router)
+  // CreateMapItemRoutes(router)
+  // CreatePublicRoutes(router)
 
-  // - users
-  r.Group("/api/users", func(r martini.Router) {
-    r.Get("/verify-token", api.Users__VerifyToken)
-
-    r.Post(
-      "",
-      binding.Bind(api.UserAuthFormData{}),
-      api.Users__Create,
-    )
-
-    r.Post(
-      "/authenticate",
-      binding.Bind(api.UserAuthFormData{}),
-      api.Users__Authenticate,
-    )
-  })
-
-  // - maps
-  r.Group("/api/maps", func(r martini.Router) {
-    r.Get("", api.Maps__Index)
-    r.Get("/:id", api.Maps__Show)
-
-    r.Post(
-      "",
-      binding.Bind(api.MapFormData{}),
-      api.Maps__Create,
-    )
-
-    r.Put(
-      "/:id",
-      binding.Bind(api.MapFormData{}),
-      api.Maps__Update,
-    )
-
-    r.Delete(
-      "/:id",
-      api.Maps__Destroy,
-    )
-  }, MustBeAuthenticatedMiddleware)
-
-  // - map items
-  r.Group("/api/map_items", func(r martini.Router) {
-    r.Get("/:id", api.MapItems__Show)
-
-    r.Post(
-      "",
-      binding.Bind(api.MapItemFormData{}),
-      api.MapItems__Create,
-    )
-
-    r.Put(
-      "/:id",
-      binding.Bind(api.MapItemFormData{}),
-      api.MapItems__Update,
-    )
-
-    r.Delete(
-      "/:id",
-      api.MapItems__Destroy,
-    )
-  }, MustBeAuthenticatedMiddleware)
-
-  // - public
-  r.Group("/api/public", func(r martini.Router) {
-    r.Get("/:hash", api.Public__Show)
-  }, allowCORSHandler)
-
-  // - root
-  r.Get("/", rootHandler)
-
-  // setup server
-  r.Run()
+  // run
+  http.ListenAndServe("localhost:3000", router)
 }
+
+
+//
+//  Routes — Root
+//
+func CreateRootRoute(router *web.Router) {
+  router.Get("/", rootHandler)
+}
+
+
+//
+//  Routes — Users
+//
+func CreateUserRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/users").
+    Get("/verify-token", (*api.Context).Users__VerifyToken).
+
+    Middleware(binding.Bind(api.UserAuthFormData{})).
+
+    Post("", (*api.Context).Users__Create).
+    Post("/authenticate", (*api.Context).Users__Authenticate)
+}
+
+
+//
+//  Routes — Maps
+//
+// func CreateMapRoutes(router *web.Router) {
+//   api_maps_router = router.Subrouter(ApiMapsContext{}, "/api/maps").
+//     Middleware((*ApiMapItemsContext).MustBeAuthenticated).
+//
+//     Get("", (*ApiMapsContext).api.Maps__Index).
+//     Get("/:id", (*ApiMapsContext).api.Maps__Show).
+//     Delete("/:id", (*ApiMapsContext).api.Maps__Destroy).
+//
+//     Middleware(binding.Bind(api.MapFormData{})).
+//
+//     Post("", (*ApiMapsContext).api.Maps__Create).
+//     Put("/:id", (*ApiMapsContext).api.Maps__Update)
+// }
+
+
+//
+//  Routes — Map Items
+//
+// func CreateMapItemRoutes(router *web.Router) {
+//   api_map_items_router = router.Subrouter(ApiMapItemsContext{}, "/api/map_items").
+//     Middleware((*ApiMapItemsContext).MustBeAuthenticated).
+//
+//     Get("/:id", (*ApiMapItemsContext).api.MapItems__Show).
+//     Delete("/:id", (*ApiMapItemsContext).api.MapItems__Destroy).
+//
+//     Middleware(binding.Bind(api.MapItemFormData{})).
+//
+//     Post("", (*ApiMapItemsContext).api.MapItems__Create).
+//     Put("/:id", (*ApiMapItemsContext).api.MapItems__Update)
+// }
+
+
+//
+//  Routes — Public
+//
+// func CreatePublicRoutes(router *web.Router) {
+//   api_public_router = router.Subrouter(ApiPublicContext{}, "/api/public").
+//     Get("/:hash", (*ApiPublicContext).api.Public__Show)
+// }

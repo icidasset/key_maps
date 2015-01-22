@@ -2,9 +2,8 @@ package api
 
 import (
   "github.com/extemporalgenome/slug"
-  "github.com/go-martini/martini"
+  "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
-  "github.com/martini-contrib/render"
   "strconv"
   "strings"
   "time"
@@ -25,7 +24,7 @@ type Map struct {
 
 
 type MapFormData struct {
-  Map Map                 `json:"map" binding:"required"`
+  Map Map                 `json:"map"`
 }
 
 
@@ -70,7 +69,7 @@ func (i *IntSlice) Scan(src interface{}) error {
 //
 //  {get} INDEX
 //
-func Maps__Index(r render.Render, u User) {
+func (c *Context) Maps__Index(rw web.ResponseWriter, req *web.Request) {
   var maps []Map
   var map_items []MapItem
   var map_item_ids_i []int
@@ -86,12 +85,12 @@ func Maps__Index(r render.Render, u User) {
      FROM maps
      WHERE maps.user_id = $1
      ORDER BY maps.id`,
-     u.Id,
+     c.User.Id,
   )
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
     return
   }
 
@@ -104,7 +103,7 @@ func Maps__Index(r render.Render, u User) {
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err));
+    RenderJSON(rw, 500, FormatError(err));
     return
   }
 
@@ -143,9 +142,9 @@ func Maps__Index(r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(200, MapIndex{ Maps: maps, MapItems: map_items })
+    RenderJSON(rw, 200, MapIndex{ Maps: maps, MapItems: map_items })
   }
 }
 
@@ -154,24 +153,24 @@ func Maps__Index(r render.Render, u User) {
 //
 //  {get} SHOW
 //
-func Maps__Show(params martini.Params, r render.Render, u User) {
+func (c *Context) Maps__Show(rw web.ResponseWriter, req *web.Request) {
   m := Map{}
 
   // execute query
   err := db.Inst().Get(
     &m,
     "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
-    params["id"],
-    u.Id,
+    req.PathParams["id"],
+    c.User.Id,
   )
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else if m.Id == 0 {
-    r.JSON(404, nil)
+    RenderJSON(rw, 404, nil)
   } else {
-    r.JSON(200, map[string]Map{ "map": m })
+    RenderJSON(rw, 200, map[string]Map{ "map": m })
   }
 }
 
@@ -180,21 +179,21 @@ func Maps__Show(params martini.Params, r render.Render, u User) {
 //
 //  {post} CREATE
 //
-func Maps__Create(mfd MapFormData, r render.Render, u User) {
-  query := "INSERT INTO maps (name, slug, structure, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :created_at, :updated_at, :user_id) RETURNING id"
+func (c *Context) Maps__Create(rw web.ResponseWriter, req *web.Request) {
+  query := "INSERT INTO maps (name, slug, structure, sort_by, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :sort_by, :created_at, :updated_at, :user_id) RETURNING id"
 
   // make new map
-  slug := slug.Slug(mfd.Map.Name)
+  slug := slug.Slug(c.MapFormData.Map.Name)
   now := time.Now()
 
-  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, SortBy: mfd.Map.SortBy, CreatedAt: now, UpdatedAt: now, UserId: u.Id}
+  new_map := Map{Name: c.MapFormData.Map.Name, Slug: slug, Structure: c.MapFormData.Map.Structure, SortBy: c.MapFormData.Map.SortBy, CreatedAt: now, UpdatedAt: now, UserId: c.User.Id}
 
   // execute query
   rows, err := db.Inst().NamedQuery(query, new_map)
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err));
+    RenderJSON(rw, 500, FormatError(err));
     return
   }
 
@@ -205,9 +204,9 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(201, map[string]Map{ "map": new_map })
+    RenderJSON(rw, 201, map[string]Map{ "map": new_map })
   }
 }
 
@@ -216,19 +215,19 @@ func Maps__Create(mfd MapFormData, r render.Render, u User) {
 //
 //  {put} UPDATE
 //
-func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u User) {
+func (c *Context) Maps__Update(rw web.ResponseWriter, req *web.Request) {
   _, err := db.Inst().Exec(
     "UPDATE maps SET structure = $1, sort_by = $2, updated_at = $3 WHERE id = $4 AND user_id = $5",
-    mfd.Map.Structure,
-    mfd.Map.SortBy,
+    c.MapFormData.Map.Structure,
+    c.MapFormData.Map.SortBy,
     time.Now(),
-    params["id"],
-    u.Id,
+    req.PathParams["id"],
+    c.User.Id,
   )
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err));
+    RenderJSON(rw, 500, FormatError(err));
     return
   }
 
@@ -238,15 +237,15 @@ func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u Use
   err = db.Inst().Get(
     &m,
     "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
-    params["id"],
-    u.Id,
+    req.PathParams["id"],
+    c.User.Id,
   )
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(200, map[string]Map{ "map": m })
+    RenderJSON(rw, 200, map[string]Map{ "map": m })
   }
 }
 
@@ -255,17 +254,17 @@ func Maps__Update(mfd MapFormData, params martini.Params, r render.Render, u Use
 //
 //  {delete} DESTROY
 //
-func Maps__Destroy(params martini.Params, r render.Render, u User) {
+func (c *Context) Maps__Destroy(rw web.ResponseWriter, req *web.Request) {
   _, err := db.Inst().Exec(
     "DELETE FROM maps WHERE id = $1 AND user_id = $2",
-    params["id"],
-    u.Id,
+    req.PathParams["id"],
+    c.User.Id,
   )
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(204, nil)
+    RenderJSON(rw, 204, nil)
   }
 }

@@ -12,9 +12,14 @@ func (c *Context) MustBeAuthenticated(rw web.ResponseWriter, req *web.Request, n
 
   if strings.Contains(auth_header, "Bearer") {
     t := strings.Split(auth_header, "Bearer ")[1]
-    token := ParseToken(t)
+    token, err := ParseToken(t)
+    is_valid_token := false
 
-    if !token.Valid {
+    if err == nil && token.Valid {
+      is_valid_token = true
+    }
+
+    if !is_valid_token {
       http.Error(rw, "Forbidden", http.StatusUnauthorized)
     } else {
       id := int(token.Claims["user_id"].(float64))

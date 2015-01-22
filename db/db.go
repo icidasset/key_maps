@@ -57,6 +57,8 @@ func Open() error {
   // run migrations if on heroku
   if env_ds == "HEROKU" {
     runMigrations()
+  } else if env == "test" {
+    runMigrations()
   }
 
   // return db error

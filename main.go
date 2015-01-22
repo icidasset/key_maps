@@ -92,12 +92,12 @@ func CreateRootRoute(router *web.Router) {
 //  Routes — Users
 //
 func CreateUserRoutes(router *web.Router) {
-  router.Subrouter(api.Context{}, "/api/users").
-    Get("/verify-token", (*api.Context).Users__VerifyToken).
+  router.Get("/api/users/verify-token", api.Users__VerifyToken)
 
+  router.Subrouter(api.Context{}, "/api/users").
     Middleware(binding.Bind(api.UserAuthFormData{})).
 
-    Post("", (*api.Context).Users__Create).
+    Post("/", (*api.Context).Users__Create).
     Post("/authenticate", (*api.Context).Users__Authenticate)
 }
 
@@ -105,19 +105,18 @@ func CreateUserRoutes(router *web.Router) {
 //
 //  Routes — Maps
 //
-// func CreateMapRoutes(router *web.Router) {
-//   api_maps_router = router.Subrouter(ApiMapsContext{}, "/api/maps").
-//     Middleware((*ApiMapItemsContext).MustBeAuthenticated).
-//
-//     Get("", (*ApiMapsContext).api.Maps__Index).
-//     Get("/:id", (*ApiMapsContext).api.Maps__Show).
-//     Delete("/:id", (*ApiMapsContext).api.Maps__Destroy).
-//
-//     Middleware(binding.Bind(api.MapFormData{})).
-//
-//     Post("", (*ApiMapsContext).api.Maps__Create).
-//     Put("/:id", (*ApiMapsContext).api.Maps__Update)
-// }
+func CreateMapRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/maps").
+    Middleware(binding.Bind(api.MapFormData{})).
+    Middleware((*api.Context).MustBeAuthenticated).
+
+    Get("/", (*api.Context).Maps__Index).
+    Get("/:id", (*api.Context).Maps__Show).
+    Delete("/:id", (*api.Context).Maps__Destroy).
+
+    Post("/", (*api.Context).Maps__Create).
+    Put("/:id", (*api.Context).Maps__Update)
+}
 
 
 //

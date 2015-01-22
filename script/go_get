@@ -9,6 +9,7 @@ repos=(
   'github.com/extemporalgenome/slug'
   'github.com/dgrijalva/jwt-go'
   'golang.org/x/crypto/bcrypt'
+  'gopkg.in/check.v1'
   'gopkg.in/yaml.v2'
 );
 

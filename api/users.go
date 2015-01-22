@@ -18,13 +18,13 @@ type User struct {
 
 
 type UserAuth struct {
-  Email string                `form:"email" json:"email"`
-  Password string             `form:"password" json:"password"`
+  Email string                `json:"email"`
+  Password string             `json:"password"`
 }
 
 
 type UserAuthFormData struct {
-  User UserAuth               `form:"user" json:"user"`
+  User UserAuth               `json:"user"`
 }
 
 
@@ -124,10 +124,14 @@ func (c *Context) Users__Authenticate(rw web.ResponseWriter, req *web.Request) {
 //
 //  {get} VERIFY TOKEN
 //
-func (c *Context) Users__VerifyToken(rw web.ResponseWriter, req *web.Request) {
+func Users__VerifyToken(rw web.ResponseWriter, req *web.Request) {
   qs := req.URL.Query()
-  token := ParseToken(qs.Get("token"))
-  is_valid := token.Valid
+  token, err := ParseToken(qs.Get("token"))
+  is_valid := false
+
+  if err == nil && token.Valid {
+    is_valid = true
+  }
 
   // invalid token
   if !is_valid {

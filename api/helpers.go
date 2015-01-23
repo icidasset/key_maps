@@ -29,11 +29,22 @@ func FormatError(err error) FormattedError {
 }
 
 
+func IsNoResultsError(err string) bool {
+  var msg string = "sql: no rows in result set"
+
+  if err == msg {
+    return true
+  } else {
+    return false
+  }
+}
+
+
 //
 //  Rendering
 //
 func RenderJSON(rw web.ResponseWriter, code int, item interface{}) {
-  rw.Header().Set("Content-Type", "application/json")
+  rw.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
   // to json
   j, err := json.Marshal(item)

@@ -38,7 +38,11 @@ func (c *Context) MapItems__Show(rw web.ResponseWriter, req *web.Request) {
 
   // render
   if err != nil {
-    RenderJSON(rw, 500, FormatError(err))
+    if IsNoResultsError(err.Error()) {
+      RenderJSON(rw, 404, nil)
+    } else {
+      RenderJSON(rw, 500, FormatError(err))
+    }
   } else if mi.Id == 0 {
     RenderJSON(rw, 404, nil)
   } else {

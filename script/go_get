@@ -5,7 +5,6 @@ repos=(
   'github.com/lib/pq'
   'github.com/jmoiron/sqlx'
   'github.com/gocraft/web'
-  'github.com/opennota/json-binding'
   'github.com/extemporalgenome/slug'
   'github.com/dgrijalva/jwt-go'
   'golang.org/x/crypto/bcrypt'

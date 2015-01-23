@@ -23,16 +23,12 @@ import (
   TODO:
 
   - gzip
-  - √ bindings
-  - √ must_be_authenticated middleware
-  - √ root_handler -> render html
-  - √ api handlers -> render json
-  - CORS (public routes only)
 
 */
 
 // setup gocheck
 func Test(t *testing.T) { TestingT(t) }
+
 
 type MySuite struct {
   router *web.Router
@@ -48,6 +44,7 @@ type MySuite struct {
   // map items
   mapItemId int
 }
+
 
 var _ = Suite(&MySuite{})
 
@@ -235,8 +232,8 @@ func (s *MySuite) testApiMaps__Part1(c *C) {
 
 
 func (s *MySuite) testApiMaps__Part2(c *C) {
-  // (s).testApiMaps__Index(c)
-  // (s).testApiMaps__Destroy(c)
+  (s).testApiMaps__Index(c)
+  (s).testApiMaps__Destroy(c)
 }
 
 
@@ -355,6 +352,73 @@ func (s *MySuite) testApiMaps__Show(c *C) {
 }
 
 
+/*
+
+  GET '/api/maps'
+
+  @return --- response-body (application/json)
+    {
+      maps: [
+        ... maps from user ...
+      ],
+
+      map_items: [
+        ... map items related to retrieved maps ...
+      ]
+    }
+
+*/
+func (s *MySuite) testApiMaps__Index(c *C) {
+  req, rec := newTestRequest("GET", "/api/maps/", emptyBuffer())
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response
+  result := api.MapIndex{}
+  json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 200 {
+    c.Error("Did not retrieve the maps and their map items correctly.")
+  } else if len(result.Maps) != 1 {
+    c.Error("Did not return the correct amount of maps.")
+  } else if len(result.MapItems) != 1 {
+    c.Error("Did not return the correct amount of map items.")
+  } else if result.Maps[0].Id != s.mapId {
+    c.Error("Did not return the correct map.")
+  } else if result.MapItems[0].Id != s.mapItemId {
+    c.Error("Did not return the correct map item.")
+  }
+}
+
+
+/*
+
+  DELETE '/api/maps/:id'
+
+*/
+func (s *MySuite) testApiMaps__Destroy(c *C) {
+  req, rec := newTestRequest("DELETE", "/api/maps/" + strconv.Itoa(s.mapId), emptyBuffer())
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // validate
+  if rec.Code != 204 {
+    c.Error("Did not delete map successfully.")
+
+  } else {
+    req, rec = newTestRequest("GET", "/api/maps/" + strconv.Itoa(s.mapId), emptyBuffer())
+    setAuthorizationHeader(req, s)
+    s.router.ServeHTTP(rec, req)
+
+    if rec.Code != 404 {
+      c.Error("Map was not deleted.")
+    }
+
+  }
+}
+
+
 
 //
 //  API - Map items
@@ -366,7 +430,7 @@ func (s *MySuite) testApiMapItems__Part1(c *C) {
 }
 
 func (s *MySuite) testApiMapItems__Part2(c *C) {
-  // (s).testApiMapItems__Destroy(c)
+  (s).testApiMapItems__Destroy(c)
 }
 
 
@@ -382,7 +446,7 @@ func (s *MySuite) testApiMapItems__Part2(c *C) {
 
 */
 func (s *MySuite) testApiMapItems__Create(c *C) {
-  m := api.MapItem{ StructureData: `{ "author": "Author", "quote": "Quote" }`, MapId: 1 }
+  m := api.MapItem{ StructureData: `{ "author": "Author", "quote": "Quote" }`, MapId: s.mapId }
   m_form_data := api.MapItemFormData{ MapItem: m }
   j, _ := json.Marshal(m_form_data)
 
@@ -477,6 +541,33 @@ func (s *MySuite) testApiMapItems__Show(c *C) {
 }
 
 
+/*
+
+  DELETE '/api/map_items/:id'
+
+*/
+func (s *MySuite) testApiMapItems__Destroy(c *C) {
+  req, rec := newTestRequest("DELETE", "/api/map_items/" + strconv.Itoa(s.mapItemId), emptyBuffer())
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // validate
+  if rec.Code != 204 {
+    c.Error("Did not delete map item successfully.")
+
+  } else {
+    req, rec = newTestRequest("GET", "/api/map_items/" + strconv.Itoa(s.mapItemId), emptyBuffer())
+    setAuthorizationHeader(req, s)
+    s.router.ServeHTTP(rec, req)
+
+    if rec.Code != 404 {
+      c.Error("Map item was not deleted.")
+    }
+
+  }
+}
+
+
 
 //
 //  API - Public
@@ -485,17 +576,26 @@ func (s *MySuite) testApiPublic(c *C) {
   str := strconv.Itoa(s.mapItemId) + "/" + s.mapSlug
   hash := base64.StdEncoding.EncodeToString([]byte(str))
 
+  // -> json
+  error_obj := map[string]string{}
+  collection_obj := make([]map[string]string, 0)
+
   // make request
   req, rec := newTestRequest("GET", "/api/public/" + hash, emptyBuffer())
   s.router.ServeHTTP(rec, req)
 
-  // parse json from response - TODO:
-  // result := map[string]api.MapItem{}
-  // json.Unmarshal(rec.Body.Bytes(), &result)
-
   // validate
   if rec.Code != 200 {
-    c.Error("...")
+    json.Unmarshal(rec.Body.Bytes(), &error_obj)
+    c.Error("api/public - Error - " + error_obj["error"])
+
+  } else {
+    json.Unmarshal(rec.Body.Bytes(), &collection_obj)
+
+    if collection_obj[0]["author"] != "Epictetus" {
+      c.Error("api/public did not return the correct values.")
+    }
+
   }
 }
 

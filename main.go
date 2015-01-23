@@ -6,6 +6,7 @@ import (
   "github.com/icidasset/key-maps/db"
   "io/ioutil"
   "net/http"
+  "os"
   "strings"
   "text/template"
 )
@@ -57,8 +58,17 @@ func rootHandler(rw web.ResponseWriter, req *web.Request) {
 //  [Main]
 //
 func main() {
+  env := os.Getenv("ENV")
+
+  // new router
   router := web.New(api.BaseContext{})
   router.Middleware(web.StaticMiddleware("public"))
+
+  // extra middleware
+  if env == "" || env == "development" {
+    router.Middleware(web.LoggerMiddleware)
+    router.Middleware(web.ShowErrorsMiddleware)
+  }
 
   // prepare database
   if err := db.Open(); err != nil {
@@ -135,5 +145,7 @@ func CreateMapItemRoutes(router *web.Router) {
 //
 func CreatePublicRoutes(router *web.Router) {
   router.Subrouter(api.Context{}, "/api/public").
+    Middleware((*api.Context).CORS).
+
     Get("/:hash", (*api.Context).Public__Show)
 }

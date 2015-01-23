@@ -32,3 +32,18 @@ func (c *Context) MustBeAuthenticated(rw web.ResponseWriter, req *web.Request, n
 
   }
 }
+
+
+func (c *Context) CORS(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
+  rw.Header().Set("Access-Control-Allow-Methods", "GET")
+  rw.Header().Set("Access-Control-Allow-Origin", "*")
+
+  next(rw, req)
+}
+
+
+func (c *Context) Gzip(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
+  next(rw, req)
+
+  // if strings.Contains(req.Header.Get("Accept-Encoding"), "gzip") {}
+}

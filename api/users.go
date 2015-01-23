@@ -1,6 +1,7 @@
 package api
 
 import (
+  "encoding/json"
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
   "golang.org/x/crypto/bcrypt"
@@ -40,16 +41,21 @@ type UserPublic struct {
 func (c *Context) Users__Create(rw web.ResponseWriter, req *web.Request) {
   query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at) RETURNING id"
 
+  // parse json from request body
+  uafd := UserAuthFormData{}
+  json_decoder := json.NewDecoder(req.Body)
+  json_decoder.Decode(&uafd)
+
   // make new user
   encryped_password, _ := bcrypt.GenerateFromPassword(
-    []byte(c.UserAuthFormData.User.Password),
+    []byte(uafd.User.Password),
     bcrypt.DefaultCost,
   )
 
   now := time.Now()
 
   new_user := User{
-    Email: c.UserAuthFormData.User.Email,
+    Email: uafd.User.Email,
     EncryptedPassword: string(encryped_password),
     CreatedAt: now,
     UpdatedAt: now,
@@ -89,10 +95,16 @@ func (c *Context) Users__Create(rw web.ResponseWriter, req *web.Request) {
 func (c *Context) Users__Authenticate(rw web.ResponseWriter, req *web.Request) {
   user := User{}
 
+  // parse json from request body
+  uafd := UserAuthFormData{}
+  json_decoder := json.NewDecoder(req.Body)
+  json_decoder.Decode(&uafd)
+
+  // query
   db.Inst().Get(
     &user,
     "SELECT * FROM users WHERE email = $1",
-    c.UserAuthFormData.User.Email,
+    uafd.User.Email,
   )
 
   // <email>
@@ -104,7 +116,7 @@ func (c *Context) Users__Authenticate(rw web.ResponseWriter, req *web.Request) {
   // <password>
   bcrypt_check_err := bcrypt.CompareHashAndPassword(
     []byte(user.EncryptedPassword),
-    []byte(c.UserAuthFormData.User.Password),
+    []byte(uafd.User.Password),
   )
 
   if bcrypt_check_err != nil {
@@ -124,7 +136,7 @@ func (c *Context) Users__Authenticate(rw web.ResponseWriter, req *web.Request) {
 //
 //  {get} VERIFY TOKEN
 //
-func Users__VerifyToken(rw web.ResponseWriter, req *web.Request) {
+func (c *Context) Users__VerifyToken(rw web.ResponseWriter, req *web.Request) {
   qs := req.URL.Query()
   token, err := ParseToken(qs.Get("token"))
   is_valid := false

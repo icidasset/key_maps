@@ -23,7 +23,7 @@ func (c *Context) MustBeAuthenticated(rw web.ResponseWriter, req *web.Request, n
       http.Error(rw, "Forbidden", http.StatusUnauthorized)
     } else {
       id := int(token.Claims["user_id"].(float64))
-      c.User = User{ Id: id }
+      c.User = &User{ Id: id }
       next(rw, req)
     }
 

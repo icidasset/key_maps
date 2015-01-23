@@ -2,6 +2,7 @@ package main
 
 import (
   "bytes"
+  "encoding/base64"
   "encoding/json"
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/api"
@@ -15,8 +16,6 @@ import (
   "strconv"
   "strings"
   "testing"
-
-  "fmt"
 )
 
 /*
@@ -43,6 +42,11 @@ type MySuite struct {
 
   // maps
   mapId int
+  mapSlug string
+  mapSortBy string
+
+  // map items
+  mapItemId int
 }
 
 var _ = Suite(&MySuite{})
@@ -65,6 +69,8 @@ func (s *MySuite) SetUpSuite(c *C) {
   CreateRootRoute(s.router)
   CreateUserRoutes(s.router)
   CreateMapRoutes(s.router)
+  CreateMapItemRoutes(s.router)
+  CreatePublicRoutes(s.router)
 }
 
 
@@ -79,7 +85,11 @@ func (s *MySuite) TearDownSuite(c *C) {
 func (s *MySuite) TestAll(c *C) {
   (s).testRootHandler(c)
   (s).testApiUsers(c)
-  (s).testApiMaps(c)
+  (s).testApiMaps__Part1(c)
+  (s).testApiMapItems__Part1(c)
+  (s).testApiPublic(c)
+  (s).testApiMaps__Part2(c)
+  (s).testApiMapItems__Part2(c)
 }
 
 
@@ -217,8 +227,16 @@ func (s *MySuite) testApiUsers__VerifyToken(c *C) {
 //
 //  API - Maps
 //
-func (s *MySuite) testApiMaps(c *C) {
+func (s *MySuite) testApiMaps__Part1(c *C) {
   (s).testApiMaps__Create(c)
+  (s).testApiMaps__Update(c)
+  (s).testApiMaps__Show(c)
+}
+
+
+func (s *MySuite) testApiMaps__Part2(c *C) {
+  // (s).testApiMaps__Index(c)
+  // (s).testApiMaps__Destroy(c)
 }
 
 
@@ -230,17 +248,13 @@ func (s *MySuite) testApiMaps(c *C) {
     { "map": { "name": "Quotes", "structure": "[]" } }
 
   @return --- response-body (application/json)
-    { "map": { id: "...", "name": "Quotes", "slug": "quotes", "structure": "[]", created_at: "..." } }
+    { "map": { id: 1, "name": "Quotes", "slug": "quotes", "structure": "[]", created_at: "..." } }
 
 */
 func (s *MySuite) testApiMaps__Create(c *C) {
   m := api.Map{ Name: "Quotes", Structure: "[]" }
   m_form_data := api.MapFormData{ Map: m }
   j, _ := json.Marshal(m_form_data)
-
-  fmt.Print("\n\n\n")
-  fmt.Printf("%v", string(j));
-  fmt.Print("\n\n\n")
 
   // make request
   req, rec := newTestRequest("POST", "/api/maps", bytes.NewBuffer(j))
@@ -252,10 +266,6 @@ func (s *MySuite) testApiMaps__Create(c *C) {
   result := map[string]api.Map{}
   json.Unmarshal(rec.Body.Bytes(), &result)
 
-  fmt.Print("\n\n\n")
-  fmt.Printf("%#v", result["map"])
-  fmt.Print("\n\n\n")
-
   // validate
   if rec.Code != 201 {
     c.Error("Did not create map correctly.")
@@ -265,6 +275,7 @@ func (s *MySuite) testApiMaps__Create(c *C) {
     c.Error("Incorrect generation of the slug.")
   } else {
     s.mapId = result["map"].Id
+    s.mapSlug = result["map"].Slug
   }
 }
 
@@ -274,15 +285,15 @@ func (s *MySuite) testApiMaps__Create(c *C) {
   PUT '/api/maps/:id'
 
   @data --- request-body (application/json)
-    { "map": { "name": "Quotes", "structure": "[]" } }
+    { "map": { "name": "Quotes", "structure": "..." } }
 
   @return --- response-body (application/json)
-    { "map": { id: "...", "name": "Quotes", "slug": "quotes", "structure": "[]", created_at: "..." } }
+    { "map": { id: 1, "name": "Quotes", "slug": "quotes", "structure": "...", created_at: "..." } }
 
 */
 func (s *MySuite) testApiMaps__Update(c *C) {
-  new_structure := `[{ "key": "test", "type": "string" }]`
-  new_sort_by := `test`
+  new_structure := `[{ "key": "quote", "type": "text" }, { "key": "author", "type": "string" }]`
+  new_sort_by := `author`
 
   // make json
   m := api.Map{ Name: "Quotes", Structure: new_structure, SortBy: new_sort_by }
@@ -290,7 +301,7 @@ func (s *MySuite) testApiMaps__Update(c *C) {
   j, _ := json.Marshal(m_form_data)
 
   // make request
-  req, rec := newTestRequest("POST", "/api/maps/" + strconv.Itoa(s.mapId), bytes.NewBuffer(j))
+  req, rec := newTestRequest("PUT", "/api/maps/" + strconv.Itoa(s.mapId), bytes.NewBuffer(j))
   req.Header.Set("Content-Type", "application/json")
   setAuthorizationHeader(req, s)
   s.router.ServeHTTP(rec, req)
@@ -300,7 +311,7 @@ func (s *MySuite) testApiMaps__Update(c *C) {
   json.Unmarshal(rec.Body.Bytes(), &result)
 
   // validate
-  if rec.Code != 201 {
+  if rec.Code != 200 {
     c.Error("Did not update map correctly.")
   } else if result["map"].Id == 0 {
     c.Error("Did not return a map.")
@@ -310,6 +321,181 @@ func (s *MySuite) testApiMaps__Update(c *C) {
     c.Error("Did not save new structure value.")
   } else if result["map"].SortBy != new_sort_by {
     c.Error("Did not save new sort_by value.")
+  } else {
+    s.mapSortBy = new_sort_by
+  }
+}
+
+
+/*
+
+  GET '/api/maps/:id'
+
+  @return --- response-body (application/json)
+    { "map": { id: 1, "name": "Quotes", "slug": "quotes", "structure": "...", created_at: "..." }
+
+*/
+func (s *MySuite) testApiMaps__Show(c *C) {
+  req, rec := newTestRequest("GET", "/api/maps/" + strconv.Itoa(s.mapId), emptyBuffer())
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response
+  result := map[string]api.Map{}
+  json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 200 {
+    c.Error("Did not retrieve map correctly.")
+  } else if result["map"].Id == 0 {
+    c.Error("Did not return a map.")
+  } else if result["map"].Id != s.mapId {
+    c.Error("Did not return the correct map.")
+  }
+}
+
+
+
+//
+//  API - Map items
+//
+func (s *MySuite) testApiMapItems__Part1(c *C) {
+  (s).testApiMapItems__Create(c)
+  (s).testApiMapItems__Update(c)
+  (s).testApiMapItems__Show(c)
+}
+
+func (s *MySuite) testApiMapItems__Part2(c *C) {
+  // (s).testApiMapItems__Destroy(c)
+}
+
+
+/*
+
+  POST '/api/map_items'
+
+  @data --- request-body (application/json)
+    { "map_item": { "structure_data": "INSERT_JSON_HERE", "map_id": "1" } }
+
+  @return --- request-body (application/json)
+    { "map_item": { "id": 1, "structure_data": "INSERT_JSON_HERE", "map_id": "1" } }
+
+*/
+func (s *MySuite) testApiMapItems__Create(c *C) {
+  m := api.MapItem{ StructureData: `{ "author": "Author", "quote": "Quote" }`, MapId: 1 }
+  m_form_data := api.MapItemFormData{ MapItem: m }
+  j, _ := json.Marshal(m_form_data)
+
+  // make request
+  req, rec := newTestRequest("POST", "/api/map_items", bytes.NewBuffer(j))
+  req.Header.Set("Content-Type", "application/json")
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response
+  result := map[string]api.MapItem{}
+  json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 201 {
+    c.Error("Did not create map item correctly.")
+  } else if result["map_item"].Id == 0 {
+    c.Error("Did not return a map item.")
+  } else {
+    s.mapItemId = result["map_item"].Id
+  }
+}
+
+
+/*
+
+  PUT '/api/map_items/:id'
+
+  @data --- request-body (application/json)
+    { "map_item": { "structure_data": "INSERT_NEW_JSON_HERE" } }
+
+  @return --- request-body (application/json)
+    { "map_item": { "id": 1, "structure_data": "INSERT_NEW_JSON_HERE", "map_id": 1 } }
+
+*/
+func (s *MySuite) testApiMapItems__Update(c *C) {
+  new_structure_data := `{ "author": "Epictetus", "quote": "No great thing is created suddenly." }`
+
+  // make json
+  m := api.MapItem{ StructureData: new_structure_data }
+  m_form_data := api.MapItemFormData{ MapItem: m }
+  j, _ := json.Marshal(m_form_data)
+
+  // make request
+  req, rec := newTestRequest("PUT", "/api/map_items/" + strconv.Itoa(s.mapItemId), bytes.NewBuffer(j))
+  req.Header.Set("Content-Type", "application/json")
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response
+  result := map[string]api.MapItem{}
+  json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 200 {
+    c.Error("Did not update map item correctly.")
+  } else if result["map_item"].Id == 0 {
+    c.Error("Did not return a map item.")
+  } else if result["map_item"].Id != s.mapItemId {
+    c.Error("Did not return the correct map item.")
+  } else if result["map_item"].StructureData != new_structure_data {
+    c.Error("Did not save new structure-data value.")
+  }
+}
+
+
+/*
+
+  GET '/api/map_items/:id'
+
+  @return --- request-body (application/json)
+    { "map_item": { "id": 1, "structure_data": "INSERT_JSON_HERE", "map_id": 1 } }
+
+*/
+func (s *MySuite) testApiMapItems__Show(c *C) {
+  req, rec := newTestRequest("GET", "/api/map_items/" + strconv.Itoa(s.mapItemId), emptyBuffer())
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response
+  result := map[string]api.MapItem{}
+  json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 200 {
+    c.Error("Did not retrieve map item correctly.")
+  } else if result["map_item"].Id == 0 {
+    c.Error("Did not return a map item.")
+  } else if result["map_item"].Id != s.mapItemId {
+    c.Error("Did not return the correct map item.")
+  }
+}
+
+
+
+//
+//  API - Public
+//
+func (s *MySuite) testApiPublic(c *C) {
+  str := strconv.Itoa(s.mapItemId) + "/" + s.mapSlug
+  hash := base64.StdEncoding.EncodeToString([]byte(str))
+
+  // make request
+  req, rec := newTestRequest("GET", "/api/public/" + hash, emptyBuffer())
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response - TODO:
+  // result := map[string]api.MapItem{}
+  // json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 200 {
+    c.Error("...")
   }
 }
 

@@ -1,6 +1,7 @@
 package api
 
 import (
+  "encoding/json"
   "github.com/extemporalgenome/slug"
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
@@ -182,11 +183,16 @@ func (c *Context) Maps__Show(rw web.ResponseWriter, req *web.Request) {
 func (c *Context) Maps__Create(rw web.ResponseWriter, req *web.Request) {
   query := "INSERT INTO maps (name, slug, structure, sort_by, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :sort_by, :created_at, :updated_at, :user_id) RETURNING id"
 
+  // parse json from request body
+  mfd := MapFormData{}
+  json_decoder := json.NewDecoder(req.Body)
+  json_decoder.Decode(&mfd)
+
   // make new map
-  slug := slug.Slug(c.MapFormData.Map.Name)
+  slug := slug.Slug(mfd.Map.Name)
   now := time.Now()
 
-  new_map := Map{Name: c.MapFormData.Map.Name, Slug: slug, Structure: c.MapFormData.Map.Structure, SortBy: c.MapFormData.Map.SortBy, CreatedAt: now, UpdatedAt: now, UserId: c.User.Id}
+  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, SortBy: mfd.Map.SortBy, CreatedAt: now, UpdatedAt: now, UserId: c.User.Id}
 
   // execute query
   rows, err := db.Inst().NamedQuery(query, new_map)
@@ -216,10 +222,15 @@ func (c *Context) Maps__Create(rw web.ResponseWriter, req *web.Request) {
 //  {put} UPDATE
 //
 func (c *Context) Maps__Update(rw web.ResponseWriter, req *web.Request) {
+  mfd := MapFormData{}
+  json_decoder := json.NewDecoder(req.Body)
+  json_decoder.Decode(&mfd)
+
+  // update map
   _, err := db.Inst().Exec(
     "UPDATE maps SET structure = $1, sort_by = $2, updated_at = $3 WHERE id = $4 AND user_id = $5",
-    c.MapFormData.Map.Structure,
-    c.MapFormData.Map.SortBy,
+    mfd.Map.Structure,
+    mfd.Map.SortBy,
     time.Now(),
     req.PathParams["id"],
     c.User.Id,

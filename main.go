@@ -4,7 +4,6 @@ import (
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/api"
   "github.com/icidasset/key-maps/db"
-  "github.com/opennota/json-binding"
   "io/ioutil"
   "net/http"
   "strings"
@@ -71,9 +70,9 @@ func main() {
   // routes
   CreateRootRoute(router)
   CreateUserRoutes(router)
-  // CreateMapRoutes(router)
-  // CreateMapItemRoutes(router)
-  // CreatePublicRoutes(router)
+  CreateMapRoutes(router)
+  CreateMapItemRoutes(router)
+  CreatePublicRoutes(router)
 
   // run
   http.ListenAndServe("localhost:3000", router)
@@ -92,10 +91,8 @@ func CreateRootRoute(router *web.Router) {
 //  Routes — Users
 //
 func CreateUserRoutes(router *web.Router) {
-  router.Get("/api/users/verify-token", api.Users__VerifyToken)
-
   router.Subrouter(api.Context{}, "/api/users").
-    Middleware(binding.Bind(api.UserAuthFormData{})).
+    Get("/verify-token", (*api.Context).Users__VerifyToken).
 
     Post("/", (*api.Context).Users__Create).
     Post("/authenticate", (*api.Context).Users__Authenticate)
@@ -107,7 +104,6 @@ func CreateUserRoutes(router *web.Router) {
 //
 func CreateMapRoutes(router *web.Router) {
   router.Subrouter(api.Context{}, "/api/maps").
-    Middleware(binding.Bind(api.MapFormData{})).
     Middleware((*api.Context).MustBeAuthenticated).
 
     Get("/", (*api.Context).Maps__Index).
@@ -122,24 +118,22 @@ func CreateMapRoutes(router *web.Router) {
 //
 //  Routes — Map Items
 //
-// func CreateMapItemRoutes(router *web.Router) {
-//   api_map_items_router = router.Subrouter(ApiMapItemsContext{}, "/api/map_items").
-//     Middleware((*ApiMapItemsContext).MustBeAuthenticated).
-//
-//     Get("/:id", (*ApiMapItemsContext).api.MapItems__Show).
-//     Delete("/:id", (*ApiMapItemsContext).api.MapItems__Destroy).
-//
-//     Middleware(binding.Bind(api.MapItemFormData{})).
-//
-//     Post("", (*ApiMapItemsContext).api.MapItems__Create).
-//     Put("/:id", (*ApiMapItemsContext).api.MapItems__Update)
-// }
+func CreateMapItemRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/map_items").
+    Middleware((*api.Context).MustBeAuthenticated).
+
+    Get("/:id", (*api.Context).MapItems__Show).
+    Delete("/:id", (*api.Context).MapItems__Destroy).
+
+    Post("", (*api.Context).MapItems__Create).
+    Put("/:id", (*api.Context).MapItems__Update)
+}
 
 
 //
 //  Routes — Public
 //
-// func CreatePublicRoutes(router *web.Router) {
-//   api_public_router = router.Subrouter(ApiPublicContext{}, "/api/public").
-//     Get("/:hash", (*ApiPublicContext).api.Public__Show)
-// }
+func CreatePublicRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/public").
+    Get("/:hash", (*api.Context).Public__Show)
+}

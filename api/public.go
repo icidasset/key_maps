@@ -3,16 +3,15 @@ package api
 import (
   "encoding/base64"
   "encoding/json"
-  "github.com/go-martini/martini"
+  "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
-  "github.com/martini-contrib/render"
   "strconv"
   "strings"
 )
 
 
-func Public__Show(params martini.Params, r render.Render) {
-  data, err := base64.StdEncoding.DecodeString(params["hash"])
+func (c *Context) Public__Show(rw web.ResponseWriter, req *web.Request) {
+  data, err := base64.StdEncoding.DecodeString(req.PathParams["hash"])
   s := strings.Split(string(data[:]), "/")
 
   // params
@@ -31,7 +30,7 @@ func Public__Show(params martini.Params, r render.Render) {
 
   // return if error
   if m.Id == 0 {
-    r.JSON(501, map[string]string{ "error": "Provided map id and slug do not match" })
+    RenderJSON(rw, 501, map[string]string{ "error": "Provided map id and slug do not match" })
     return
   }
 
@@ -52,7 +51,7 @@ func Public__Show(params martini.Params, r render.Render) {
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err));
+    RenderJSON(rw, 500, FormatError(err));
     return
   }
 
@@ -67,8 +66,8 @@ func Public__Show(params martini.Params, r render.Render) {
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(200, collection)
+    RenderJSON(rw, 200, collection)
   }
 }

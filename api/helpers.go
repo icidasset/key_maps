@@ -12,11 +12,7 @@ type BaseContext struct {}
 type Context struct {
   *BaseContext
 
-  User User
-
-  UserAuthFormData UserAuthFormData
-  MapFormData MapFormData
-  MapItemFormData MapItemFormData
+  User *User
 }
 
 

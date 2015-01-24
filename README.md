@@ -5,7 +5,7 @@
 
 ### Dependencies
 
-- (go) [https://github.com/go-martini/martini]()
+- (go) [https://github.com/gocraft/web]()
 - (go) [https://github.com/rubenv/sql-migrate]()
 - (node) [https://github.com/gulpjs/gulp]()
 

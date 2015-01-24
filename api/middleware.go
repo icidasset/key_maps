@@ -40,10 +40,3 @@ func (c *Context) CORS(rw web.ResponseWriter, req *web.Request, next web.NextMid
 
   next(rw, req)
 }
-
-
-func (c *Context) Gzip(rw web.ResponseWriter, req *web.Request, next web.NextMiddlewareFunc) {
-  next(rw, req)
-
-  // if strings.Contains(req.Header.Get("Accept-Encoding"), "gzip") {}
-}

@@ -2,6 +2,7 @@ package main
 
 import (
   "bytes"
+  "compress/gzip"
   "encoding/base64"
   "encoding/json"
   "github.com/gocraft/web"
@@ -18,13 +19,6 @@ import (
   "testing"
 )
 
-/*
-
-  TODO:
-
-  - gzip
-
-*/
 
 // setup gocheck
 func Test(t *testing.T) { TestingT(t) }
@@ -62,7 +56,9 @@ func (s *MySuite) SetUpSuite(c *C) {
   }
 
   // router
-  s.router = web.New(api.Context{})
+  s.router = web.New(api.BaseContext{})
+  s.router.Middleware((*api.BaseContext).Gzip)
+
   CreateRootRoute(s.router)
   CreateUserRoutes(s.router)
   CreateMapRoutes(s.router)
@@ -572,6 +568,8 @@ func (s *MySuite) testApiMapItems__Destroy(c *C) {
 //
 //  API - Public
 //
+//  -> Also tests the gzip and cors middleware
+//
 func (s *MySuite) testApiPublic(c *C) {
   str := strconv.Itoa(s.mapItemId) + "/" + s.mapSlug
   hash := base64.StdEncoding.EncodeToString([]byte(str))
@@ -582,18 +580,29 @@ func (s *MySuite) testApiPublic(c *C) {
 
   // make request
   req, rec := newTestRequest("GET", "/api/public/" + hash, emptyBuffer())
+  req.Header.Set("Accept-Encoding", "gzip")
   s.router.ServeHTTP(rec, req)
+
+  // parse gzip
+  reader, _ := gzip.NewReader(rec.Body)
+  defer reader.Close()
+
+  buf := new(bytes.Buffer)
+  buf.ReadFrom(reader)
+  response := buf.Bytes()
 
   // validate
   if rec.Code != 200 {
-    json.Unmarshal(rec.Body.Bytes(), &error_obj)
+    json.Unmarshal(response, &error_obj)
     c.Error("api/public - Error - " + error_obj["error"])
 
   } else {
-    json.Unmarshal(rec.Body.Bytes(), &collection_obj)
+    json.Unmarshal(response, &collection_obj)
 
     if collection_obj[0]["author"] != "Epictetus" {
       c.Error("api/public did not return the correct values.")
+    } else if rec.Header().Get("Access-Control-Allow-Origin") != "*" {
+      c.Error("api/public response did not have cors headers.")
     }
 
   }

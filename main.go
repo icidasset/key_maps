@@ -62,6 +62,7 @@ func main() {
 
   // new router
   router := web.New(api.BaseContext{})
+  router.Middleware((*api.BaseContext).Gzip)
   router.Middleware(web.StaticMiddleware("public"))
 
   // extra middleware

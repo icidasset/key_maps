@@ -1,6 +1,7 @@
 package main
 
 import (
+  "flag"
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/api"
   "github.com/icidasset/key-maps/db"
@@ -60,6 +61,11 @@ func rootHandler(rw web.ResponseWriter, req *web.Request) {
 func main() {
   env := os.Getenv("ENV")
 
+  // flags
+  port := flag.String("port", "3000", "Server port address")
+
+  flag.Parse()
+
   // new router
   router := web.New(api.BaseContext{})
   router.Middleware((*api.BaseContext).Gzip)
@@ -86,7 +92,7 @@ func main() {
   CreatePublicRoutes(router)
 
   // run
-  http.ListenAndServe("localhost:3000", router)
+  http.ListenAndServe("localhost:" + *port, router)
 }
 
 

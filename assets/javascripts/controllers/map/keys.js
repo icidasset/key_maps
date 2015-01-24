@@ -66,6 +66,11 @@ K.MapKeysController = Ember.Controller.extend({
       var m = this.get("model");
       var s = this.clean_structure(this.get("reformatted_structure"));
 
+      // default sort by
+      if (!m.get("sort_by") && s[0]) {
+        m.set("sort_by", s[0].key);
+      }
+
       // set & save
       m.set("structure", s);
       m.save();

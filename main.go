@@ -60,6 +60,7 @@ func rootHandler(rw web.ResponseWriter, req *web.Request) {
 //
 func main() {
   env := os.Getenv("ENV")
+  host := os.Getenv("HOST")
 
   // flags
   port := flag.String("port", "3000", "Server port address")
@@ -92,7 +93,11 @@ func main() {
   CreatePublicRoutes(router)
 
   // run
-  http.ListenAndServe("localhost:" + *port, router)
+  if host == "" {
+    host = "0.0.0.0"
+  }
+
+  http.ListenAndServe(host + ":" + *port, router)
 }
 
 

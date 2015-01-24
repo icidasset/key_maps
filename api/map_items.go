@@ -1,9 +1,9 @@
 package api
 
 import (
-  "github.com/go-martini/martini"
+  "encoding/json"
+  "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
-  "github.com/martini-contrib/render"
   "time"
 )
 
@@ -18,7 +18,7 @@ type MapItem struct {
 
 
 type MapItemFormData struct {
-  MapItem MapItem         `json:"map_item" binding:"required"`
+  MapItem MapItem         `json:"map_item"`
 }
 
 
@@ -26,23 +26,27 @@ type MapItemFormData struct {
 //
 //  {get} SHOW
 //
-func MapItems__Show(params martini.Params, r render.Render, u User) {
+func (c *Context) MapItems__Show(rw web.ResponseWriter, req *web.Request) {
   mi := MapItem{}
 
   // execute query
   err := db.Inst().Get(
     &mi,
     "SELECT * FROM map_items WHERE id = $1",
-    params["id"],
+    req.PathParams["id"],
   )
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    if IsNoResultsError(err.Error()) {
+      RenderJSON(rw, 404, nil)
+    } else {
+      RenderJSON(rw, 500, FormatError(err))
+    }
   } else if mi.Id == 0 {
-    r.JSON(404, nil)
+    RenderJSON(rw, 404, nil)
   } else {
-    r.JSON(200, map[string]MapItem{ "map_item": mi })
+    RenderJSON(rw, 200, map[string]MapItem{ "map_item": mi })
   }
 }
 
@@ -51,8 +55,13 @@ func MapItems__Show(params martini.Params, r render.Render, u User) {
 //
 //  {post} CREATE
 //
-func MapItems__Create(mifd MapItemFormData, r render.Render, u User) {
+func (c *Context) MapItems__Create(rw web.ResponseWriter, req *web.Request) {
   query := "INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id) RETURNING *"
+
+  // parse json from request body
+  mifd := MapItemFormData{}
+  json_decoder := json.NewDecoder(req.Body)
+  json_decoder.Decode(&mifd)
 
   // make new map item
   now := time.Now()
@@ -64,7 +73,7 @@ func MapItems__Create(mifd MapItemFormData, r render.Render, u User) {
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
     return
   }
 
@@ -75,9 +84,9 @@ func MapItems__Create(mifd MapItemFormData, r render.Render, u User) {
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(201, map[string]MapItem{ "map_item": new_map_item })
+    RenderJSON(rw, 201, map[string]MapItem{ "map_item": new_map_item })
   }
 }
 
@@ -86,17 +95,22 @@ func MapItems__Create(mifd MapItemFormData, r render.Render, u User) {
 //
 //  {put} UPDATE
 //
-func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Render, u User) {
+func (c *Context) MapItems__Update(rw web.ResponseWriter, req *web.Request) {
+  mifd := MapItemFormData{}
+  json_decoder := json.NewDecoder(req.Body)
+  json_decoder.Decode(&mifd)
+
+  // update map item
   _, err := db.Inst().Exec(
     "UPDATE map_items SET structure_data = $1, updated_at = $2 WHERE id = $3",
     mifd.MapItem.StructureData,
     time.Now(),
-    params["id"],
+    req.PathParams["id"],
   )
 
   // return if error
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
     return
   }
 
@@ -106,14 +120,14 @@ func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Rend
   err = db.Inst().Get(
     &mi,
     "SELECT * FROM map_items WHERE id = $1",
-    params["id"],
+    req.PathParams["id"],
   )
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(200, map[string]MapItem{ "map_item": mi })
+    RenderJSON(rw, 200, map[string]MapItem{ "map_item": mi })
   }
 }
 
@@ -122,16 +136,16 @@ func MapItems__Update(mifd MapItemFormData, params martini.Params, r render.Rend
 //
 //  {delete} DESTROY
 //
-func MapItems__Destroy(params martini.Params, r render.Render, u User) {
+func (c *Context) MapItems__Destroy(rw web.ResponseWriter, req *web.Request) {
   _, err := db.Inst().Exec(
     "DELETE FROM map_items WHERE id = $1",
-    params["id"],
+    req.PathParams["id"],
   )
 
   // render
   if err != nil {
-    r.JSON(500, FormatError(err))
+    RenderJSON(rw, 500, FormatError(err))
   } else {
-    r.JSON(204, nil)
+    RenderJSON(rw, 204, nil)
   }
 }

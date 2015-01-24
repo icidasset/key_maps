@@ -1,22 +1,20 @@
 package main
 
 import (
-  "github.com/go-martini/martini"
+  "github.com/gocraft/web"
   "github.com/icidasset/key-maps/api"
   "github.com/icidasset/key-maps/db"
-  "github.com/martini-contrib/binding"
-  "github.com/martini-contrib/cors"
-  "github.com/martini-contrib/gzip"
-  "github.com/martini-contrib/render"
   "io/ioutil"
   "net/http"
+  "os"
   "strings"
   "text/template"
 )
 
 
 //
-//  [Templates]
+//  [Root]
+//  -> HTML files (for js application)
 //
 type TemplateData struct {
   EmberTemplates string
@@ -44,52 +42,7 @@ func ScanTemplatesDir(path string) string {
 }
 
 
-//
-//  [Authentication]
-//
-func MustBeAuthenticatedMiddleware(c martini.Context, w http.ResponseWriter, r *http.Request) {
-  auth_header := r.Header.Get("Authorization")
-
-  if strings.Contains(auth_header, "Bearer") {
-    t := strings.Split(auth_header, "Bearer ")[1]
-    token := api.ParseToken(t)
-
-    if !token.Valid {
-      http.Error(w, "Forbidden", http.StatusUnauthorized)
-    } else {
-      id := int(token.Claims["user_id"].(float64))
-      c.Map(api.User{ Id: id })
-    }
-
-  } else {
-    http.Error(w, "Forbidden", http.StatusUnauthorized)
-
-  }
-}
-
-
-//
-//  [GZIP Martini]
-//
-func MartiniClassicGzipped() *martini.ClassicMartini {
-  r := martini.NewRouter()
-  m := martini.New()
-  m.Use(martini.Logger())
-  m.Use(martini.Recovery())
-  m.Use(gzip.All())
-  m.Use(martini.Static("public"))
-  m.MapTo(r, (*martini.Routes)(nil))
-  m.Action(r.Handle)
-  return &martini.ClassicMartini{ Martini: m, Router:r }
-}
-
-
-
-//
-//  [Root]
-//  -> HTML files (for js application)
-//
-func rootHandler(w http.ResponseWriter) {
+func rootHandler(rw web.ResponseWriter, req *web.Request) {
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
@@ -97,7 +50,7 @@ func rootHandler(w http.ResponseWriter) {
 
   ember_templates := ScanTemplatesDir("views/ember_templates/")
   tmpl_data := TemplateData{ EmberTemplates: ember_templates }
-  tmpl.ExecuteTemplate(w, "layout", tmpl_data)
+  tmpl.ExecuteTemplate(rw, "layout", tmpl_data)
 }
 
 
@@ -105,8 +58,18 @@ func rootHandler(w http.ResponseWriter) {
 //  [Main]
 //
 func main() {
-  r := MartiniClassicGzipped()
-  r.Use(render.Renderer())
+  env := os.Getenv("ENV")
+
+  // new router
+  router := web.New(api.BaseContext{})
+  router.Middleware((*api.BaseContext).Gzip)
+  router.Middleware(web.StaticMiddleware("public"))
+
+  // extra middleware
+  if env == "" || env == "development" {
+    router.Middleware(web.LoggerMiddleware)
+    router.Middleware(web.ShowErrorsMiddleware)
+  }
 
   // prepare database
   if err := db.Open(); err != nil {
@@ -115,83 +78,75 @@ func main() {
 
   defer db.Close()
 
-  // cors
-  allowCORSHandler := cors.Allow(&cors.Options{
-    AllowAllOrigins:  true,
-    AllowMethods:     []string{"GET", "POST", "PUT", "DELETE"},
-    ExposeHeaders:    []string{"Content-Length"},
-  })
+  // routes
+  CreateRootRoute(router)
+  CreateUserRoutes(router)
+  CreateMapRoutes(router)
+  CreateMapItemRoutes(router)
+  CreatePublicRoutes(router)
 
-  // - users
-  r.Group("/api/users", func(r martini.Router) {
-    r.Get("/verify-token", api.Users__VerifyToken)
+  // run
+  http.ListenAndServe("localhost:3000", router)
+}
 
-    r.Post(
-      "",
-      binding.Bind(api.UserAuthFormData{}),
-      api.Users__Create,
-    )
 
-    r.Post(
-      "/authenticate",
-      binding.Bind(api.UserAuthFormData{}),
-      api.Users__Authenticate,
-    )
-  })
+//
+//  Routes — Root
+//
+func CreateRootRoute(router *web.Router) {
+  router.Get("/", rootHandler)
+}
 
-  // - maps
-  r.Group("/api/maps", func(r martini.Router) {
-    r.Get("", api.Maps__Index)
-    r.Get("/:id", api.Maps__Show)
 
-    r.Post(
-      "",
-      binding.Bind(api.MapFormData{}),
-      api.Maps__Create,
-    )
+//
+//  Routes — Users
+//
+func CreateUserRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/users").
+    Get("/verify-token", (*api.Context).Users__VerifyToken).
 
-    r.Put(
-      "/:id",
-      binding.Bind(api.MapFormData{}),
-      api.Maps__Update,
-    )
+    Post("/", (*api.Context).Users__Create).
+    Post("/authenticate", (*api.Context).Users__Authenticate)
+}
 
-    r.Delete(
-      "/:id",
-      api.Maps__Destroy,
-    )
-  }, MustBeAuthenticatedMiddleware)
 
-  // - map items
-  r.Group("/api/map_items", func(r martini.Router) {
-    r.Get("/:id", api.MapItems__Show)
+//
+//  Routes — Maps
+//
+func CreateMapRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/maps").
+    Middleware((*api.Context).MustBeAuthenticated).
 
-    r.Post(
-      "",
-      binding.Bind(api.MapItemFormData{}),
-      api.MapItems__Create,
-    )
+    Get("/", (*api.Context).Maps__Index).
+    Get("/:id", (*api.Context).Maps__Show).
+    Delete("/:id", (*api.Context).Maps__Destroy).
 
-    r.Put(
-      "/:id",
-      binding.Bind(api.MapItemFormData{}),
-      api.MapItems__Update,
-    )
+    Post("/", (*api.Context).Maps__Create).
+    Put("/:id", (*api.Context).Maps__Update)
+}
 
-    r.Delete(
-      "/:id",
-      api.MapItems__Destroy,
-    )
-  }, MustBeAuthenticatedMiddleware)
 
-  // - public
-  r.Group("/api/public", func(r martini.Router) {
-    r.Get("/:hash", api.Public__Show)
-  }, allowCORSHandler)
+//
+//  Routes — Map Items
+//
+func CreateMapItemRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/map_items").
+    Middleware((*api.Context).MustBeAuthenticated).
 
-  // - root
-  r.Get("/", rootHandler)
+    Get("/:id", (*api.Context).MapItems__Show).
+    Delete("/:id", (*api.Context).MapItems__Destroy).
 
-  // setup server
-  r.Run()
+    Post("", (*api.Context).MapItems__Create).
+    Put("/:id", (*api.Context).MapItems__Update)
+}
+
+
+//
+//  Routes — Public
+//
+func CreatePublicRoutes(router *web.Router) {
+  router.Subrouter(api.Context{}, "/api/public").
+    Middleware((*api.Context).CORS).
+
+    Get("/:hash", (*api.Context).Public__Show)
 }

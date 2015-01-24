@@ -22,16 +22,21 @@ func GenerateToken(user *User) string {
 }
 
 
-func ParseToken(t string) *jwt.Token {
-  token, _ := jwt.Parse(t, func(t *jwt.Token) (interface{}, error) {
+func ParseToken(t string) (*jwt.Token, error) {
+  token, err := jwt.Parse(t, func(token *jwt.Token) (interface{}, error) {
     return SECRET_KEY, nil
   })
 
-  return token
+  return token, err
 }
 
 
 func VerifyToken(t string) bool {
-  token := ParseToken(t)
-  return token.Valid;
+  token, err := ParseToken(t)
+
+  if err == nil && token.Valid {
+    return true
+  } else {
+    return false
+  }
 }

@@ -57,9 +57,9 @@ K.MapIndexController = Ember.Controller.extend({
   //  Properties
   //
   sort_by: function() {
-    return this.get("controllers.map.model.sort_by") || this.get("keys")[0];
+    return this.get("controllers.map.model.settings.sort_by") || this.get("keys")[0];
   }.property(
-    "controllers.map.model.sort_by",
+    "controllers.map.model.settings.sort_by",
     "keys"
   ).readOnly(),
 

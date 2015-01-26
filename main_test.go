@@ -33,7 +33,7 @@ type MySuite struct {
   // maps
   mapId int
   mapSlug string
-  mapSortBy string
+  mapSettings api.MapSettings
 
   // map items
   mapItemId int
@@ -286,10 +286,12 @@ func (s *MySuite) testApiMaps__Create(c *C) {
 */
 func (s *MySuite) testApiMaps__Update(c *C) {
   new_structure := `[{ "key": "quote", "type": "text" }, { "key": "author", "type": "string" }]`
-  new_sort_by := `author`
+  new_settings := api.MapSettings{ SortBy: "author" }
+  new_settings_bytes, _ := json.Marshal(&new_settings)
+  new_settings_string := string(new_settings_bytes)
 
   // make json
-  m := api.Map{ Name: "Quotes", Structure: new_structure, SortBy: new_sort_by }
+  m := api.Map{ Name: "Quotes", Structure: new_structure, Settings: new_settings_string }
   m_form_data := api.MapFormData{ Map: m }
   j, _ := json.Marshal(m_form_data)
 
@@ -312,10 +314,10 @@ func (s *MySuite) testApiMaps__Update(c *C) {
     c.Error("Did not return the correct map.")
   } else if result["map"].Structure != new_structure {
     c.Error("Did not save new structure value.")
-  } else if result["map"].SortBy != new_sort_by {
+  } else if result["map"].Settings != new_settings_string {
     c.Error("Did not save new sort_by value.")
   } else {
-    s.mapSortBy = new_sort_by
+    s.mapSettings = new_settings
   }
 }
 

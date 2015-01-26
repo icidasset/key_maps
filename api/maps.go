@@ -16,11 +16,16 @@ type Map struct {
   Slug string             `json:"slug"`
   Name string             `json:"name"`
   Structure string        `json:"structure"`
-  SortBy string           `json:"sort_by" db:"sort_by"`
+  Settings string         `json:"settings"`
   CreatedAt time.Time     `json:"created_at" db:"created_at"`
   UpdatedAt time.Time     `json:"updated_at" db:"updated_at"`
   MapItems IntSlice       `json:"map_items" db:"map_items"`
   UserId int              `json:"-" db:"user_id"`
+}
+
+
+type MapSettings struct {
+  SortBy string           `json:"sort_by"`
 }
 
 
@@ -185,7 +190,7 @@ func (c *Context) Maps__Show(rw web.ResponseWriter, req *web.Request) {
 //  {post} CREATE
 //
 func (c *Context) Maps__Create(rw web.ResponseWriter, req *web.Request) {
-  query := "INSERT INTO maps (name, slug, structure, sort_by, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :sort_by, :created_at, :updated_at, :user_id) RETURNING id"
+  query := "INSERT INTO maps (name, slug, structure, settings, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :settings, :created_at, :updated_at, :user_id) RETURNING id"
 
   // parse json from request body
   mfd := MapFormData{}
@@ -196,7 +201,7 @@ func (c *Context) Maps__Create(rw web.ResponseWriter, req *web.Request) {
   slug := slug.Slug(mfd.Map.Name)
   now := time.Now()
 
-  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, SortBy: mfd.Map.SortBy, CreatedAt: now, UpdatedAt: now, UserId: c.User.Id}
+  new_map := Map{Name: mfd.Map.Name, Slug: slug, Structure: mfd.Map.Structure, Settings: mfd.Map.Settings, CreatedAt: now, UpdatedAt: now, UserId: c.User.Id}
 
   // execute query
   rows, err := db.Inst().NamedQuery(query, new_map)
@@ -232,9 +237,9 @@ func (c *Context) Maps__Update(rw web.ResponseWriter, req *web.Request) {
 
   // update map
   _, err := db.Inst().Exec(
-    "UPDATE maps SET structure = $1, sort_by = $2, updated_at = $3 WHERE id = $4 AND user_id = $5",
+    "UPDATE maps SET structure = $1, settings = $2, updated_at = $3 WHERE id = $4 AND user_id = $5",
     mfd.Map.Structure,
-    mfd.Map.SortBy,
+    mfd.Map.Settings,
     time.Now(),
     req.PathParams["id"],
     c.User.Id,

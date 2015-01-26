@@ -34,13 +34,17 @@ func (c *Context) Public__Show(rw web.ResponseWriter, req *web.Request) {
     return
   }
 
+  // map settings
+  map_settings := MapSettings{}
+  json.Unmarshal([]byte(m.Settings), &map_settings)
+
   // map items
   map_items := []MapItem{}
   map_items_query := "SELECT structure_data FROM map_items WHERE map_id = $1"
 
-  if m.SortBy != "" {
+  if map_settings.SortBy != "" {
     map_items_query = map_items_query +
-      " ORDER BY structure_data::json->>'" + m.SortBy + "'"
+      " ORDER BY structure_data::json->>'" + map_settings.SortBy + "'"
   }
 
   err = db.Inst().Select(

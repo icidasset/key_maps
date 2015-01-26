@@ -9,7 +9,7 @@ K.MapSettingsController = Ember.Controller.extend({
   //  Observers
   //
   on_init: function() {
-    var s = this.get("controllers.map.model.sort_by");
+    var s = this.get("controllers.map.model.settings.sort_by");
     var keys = this.get("select_keys");
 
     if (!s && keys.length) {
@@ -47,7 +47,7 @@ K.MapSettingsController = Ember.Controller.extend({
       var m = this.get("model");
 
       // sort by
-      m.set("sort_by", this.get("sort_by_select_value").key);
+      m.set("settings.sort_by", this.get("sort_by_select_value").key);
 
       // save
       m.save();

@@ -126,7 +126,7 @@ K.ApplicationHeaderComponent = Ember.Component.extend(Ember.Validations.Mixin, {
       match_mask = (
         ("<span>" + val + "</span>") +
         (name.substr(val.length))
-      );
+      ).replace(/ /g, "&#160;");
     }
 
     if (is_absolute_match) {

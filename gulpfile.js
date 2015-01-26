@@ -76,6 +76,12 @@ gulp.task("fonts", function() {
 });
 
 
+gulp.task("favicon", function() {
+  return gulp.src("./assets/favicon.ico")
+    .pipe(gulp.dest("./public"));
+});
+
+
 gulp.task("stylesheets", function() {
   return gulp.src(paths.stylesheets)
     .pipe(sass({
@@ -124,6 +130,7 @@ gulp.task("javascripts_maps", function() {
 gulp.task("build", [
   "images",
   "fonts",
+  "favicon",
   "stylesheets",
   "javascripts_application",
   "javascripts_vendor"

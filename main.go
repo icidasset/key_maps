@@ -47,6 +47,7 @@ func rootHandler(rw web.ResponseWriter, req *web.Request) {
   tmpl, _ := template.ParseFiles(
     "views/layout.html",
     "views/index.html",
+    "views/_favicons.html",
   )
 
   ember_templates := ScanTemplatesDir("views/ember_templates/")

@@ -5,6 +5,7 @@ import (
   "github.com/gocraft/web"
   "github.com/icidasset/key-maps/db"
   "golang.org/x/crypto/bcrypt"
+  "strings"
   "time"
 )
 
@@ -55,7 +56,7 @@ func (c *Context) Users__Create(rw web.ResponseWriter, req *web.Request) {
   now := time.Now()
 
   new_user := User{
-    Email: uafd.User.Email,
+    Email: strings.ToLower(uafd.User.Email),
     EncryptedPassword: string(encryped_password),
     CreatedAt: now,
     UpdatedAt: now,
@@ -104,7 +105,7 @@ func (c *Context) Users__Authenticate(rw web.ResponseWriter, req *web.Request) {
   db.Inst().Get(
     &user,
     "SELECT * FROM users WHERE email = $1",
-    uafd.User.Email,
+    strings.ToLower(uafd.User.Email),
   )
 
   // <email>

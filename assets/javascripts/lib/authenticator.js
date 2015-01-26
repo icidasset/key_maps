@@ -71,7 +71,7 @@ K.Authenticator = SimpleAuth.Authenticators.Base.extend({
       password: credentials.password
     };
 
-    authentication[this.identificationField] = credentials.identification;
+    authentication[this.identificationField] = credentials.identification.toLowerCase();
 
     return authentication;
   },

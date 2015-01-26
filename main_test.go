@@ -121,14 +121,14 @@ func (s *MySuite) testApiUsers(c *C) {
   POST '/api/users'
 
   @data --- request-body (application/json)
-    { "user": { "email": "test@gmail.com", "password": "password" } }
+    { "user": { "email": "TEST@gmail.com", "password": "password" } }
 
   @return --- response-body (application/json)
     { "token": "some-generated-token" }
 
 */
 func (s *MySuite) testApiUsers__Create(c *C) {
-  user := api.UserAuth{ Email: "test@gmail.com", Password: "password" }
+  user := api.UserAuth{ Email: "TEST@gmail.com", Password: "password" }
   user_form_data := api.UserAuthFormData{ User: user }
   j, _ := json.Marshal(user_form_data)
 
@@ -155,14 +155,14 @@ func (s *MySuite) testApiUsers__Create(c *C) {
   POST '/api/users/authenticate'
 
   @data --- request-body (application/json)
-    { "user": { "email": "test@gmail.com", "password": "password" } }
+    { "user": { "email": "TEST@gmail.com", "password": "password" } }
 
   @return --- response-body (application/json)
     { "token": "some-generated-token" }
 
 */
 func (s *MySuite) testApiUsers__Authenticate(c *C) {
-  user := api.UserAuth{ Email: "test@gmail.com", Password: "password" }
+  user := api.UserAuth{ Email: "TEST@gmail.com", Password: "password" }
   user_form_data := api.UserAuthFormData{ User: user }
   j, _ := json.Marshal(user_form_data)
 

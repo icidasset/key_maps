@@ -32,6 +32,10 @@ K.SignUpController = Ember.Controller.extend({
       var p = m.get("password");
       var pc = m.get("password_confirmation");
 
+      // to lowercase
+      e = e.toLowerCase();
+      m.set("email", e);
+
       // validation
       if (!e || e.length < 5) return err(["email_presence"]);
       if (!p || p.length < 5 || !pc) return err(["password_presence"]);

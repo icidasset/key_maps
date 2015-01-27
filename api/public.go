@@ -71,6 +71,8 @@ func (c *Context) Public__Show(rw web.ResponseWriter, req *web.Request) {
   // render
   if err != nil {
     RenderJSON(rw, 500, FormatError(err))
+  } else if map_settings.IncludeJSONRoot {
+    RenderJSON(rw, 200, map[string][]map[string]interface{}{ slug: collection })
   } else {
     RenderJSON(rw, 200, collection)
   }

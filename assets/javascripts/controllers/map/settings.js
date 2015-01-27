@@ -3,13 +3,14 @@ K.MapSettingsController = Ember.Controller.extend({
 
   // aliases
   has_keys: Ember.computed.readOnly("controllers.map.has_keys"),
+  map_model: Ember.computed.readOnly("controllers.map.model"),
 
 
   //
   //  Observers
   //
   on_init: function() {
-    var s = this.get("controllers.map.model.settings.sort_by");
+    var s = this.get("map_model.settings.sort_by");
     var keys = this.get("select_keys");
 
     if (!s && keys.length) {
@@ -20,7 +21,7 @@ K.MapSettingsController = Ember.Controller.extend({
       "sort_by_select_value",
       { key: s, name: s }
     );
-  }.on("init").observes("model"),
+  }.on("init").observes("map_model"),
 
 
   //

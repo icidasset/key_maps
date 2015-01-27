@@ -26,6 +26,7 @@ type Map struct {
 
 type MapSettings struct {
   SortBy string           `json:"sort_by"`
+  IncludeJSONRoot bool    `json:"include_json_root"`
 }
 
 

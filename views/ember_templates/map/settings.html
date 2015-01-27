@@ -29,6 +29,12 @@
         </div>
       {{/if}}
 
+      <label for="include_json_root">Include Root In JSON</label>
+
+      <div class="field">
+        {{input-boolean value=map_model.settings.include_json_root}}
+      </div>
+
       <button class="btn" type="submit">Save</button>
 
       {{x-wuphf}}

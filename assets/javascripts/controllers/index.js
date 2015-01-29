@@ -11,7 +11,7 @@ K.IndexController = Ember.Controller.extend({
     }
 
     return n.toString() + " map" + (n !== 1 ? "s" : "");
-  }.property("session.isAuthenticated", "model.[]"),
+  }.property("session.isAuthenticated", "controllers.application.model.[]"),
 
 
   item_count: function() {
@@ -24,6 +24,6 @@ K.IndexController = Ember.Controller.extend({
     }
 
     return n.toString() + " map item" + (n !== 1 ? "s" : "");
-  }.property("session.isAuthenticated", "model.[]")
+  }.property("session.isAuthenticated", "controllers.application.model.[]")
 
 });

@@ -7,7 +7,6 @@ K.MapIndexController = Ember.Controller.extend({
 
   // aliases
   keys: Ember.computed.readOnly("controllers.map.keys"),
-  keys_object: Ember.computed.readOnly("controllers.map.keys_object"),
   has_keys: Ember.computed.readOnly("controllers.map.has_keys"),
 
   // check for halt-model-changes flag
@@ -138,7 +137,7 @@ K.MapIndexController = Ember.Controller.extend({
         }
 
         t = t + `
-          {{#view "mapIndexField" key="${field.key}" item=map_item}}
+          {{#view "mapIndexField" key="${field.key}" type="${field.type}" item=map_item}}
             ${input}
             <div class="field__type">
               <span>${field.type}</span>
@@ -160,29 +159,37 @@ K.MapIndexController = Ember.Controller.extend({
   //
   clean_up_data: function(item) {
     var keys = this.get("keys");
-    var keys_object = this.get("keys_object");
     var structure_data = item.get("structure_data");
     var structure_changed_data = item.get("structure_changed_data");
 
+    // initial changed-structure-flag value
     var changed_structure = (
       structure_changed_data &&
       Object.keys(structure_changed_data).length > 0
     );
 
+    // new-data object
     var new_data_obj = $.extend({}, structure_data, structure_changed_data);
-    var data_keys = Object.keys(new_data_obj);
 
-    for (var i=0, j=data_keys.length; i<j; ++i) {
-      var key = data_keys[i];
-      if (keys.indexOf(key) === -1) {
-        delete new_data_obj[key];
-        changed_structure = true;
-      } else if (keys_object[key] == "number") {
-        new_data_obj[key] = parseFloat(new_data_obj[key]);
-        changed_structure = true;
+    // clean it
+    var traverse_object = function(o, prefix) {
+      var _keys = Object.keys(o);
+      prefix = prefix || "";
+
+      for (var i=0, j=_keys.length; i<j; ++i) {
+        var key = _keys[i];
+        var path = prefix + key;
+
+        if (Object.prototype.toString.call(o[key]) == "[object Object]") {
+          traverse_object(o[key]);
+        } else if (keys.indexOf(path) === -1) {
+          delete o[key];
+          changed_structure = true;
+        }
       }
-    }
+    };
 
+    // set structure-data if needed
     if (changed_structure) {
       item.set("structure_data", new_data_obj);
     }

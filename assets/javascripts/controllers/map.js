@@ -60,7 +60,15 @@ K.MapController = Ember.Controller.extend({
     var o = {};
 
     this.get("model.structure").forEach(function(k) {
-      o[k.key] = k.type;
+      var a = k.key.split(".");
+      var down = o;
+
+      a.slice(0, a.length - 1).forEach(function(_k) {
+        if (!down[_k]) down[_k] = {};
+        down = down[_k];
+      });
+
+      down[a[a.length - 1]] = k.type;
     });
 
     return o;

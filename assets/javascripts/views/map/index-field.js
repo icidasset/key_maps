@@ -18,6 +18,13 @@ K.MapIndexFieldView = Ember.View.extend({
         val = parseFloat(val);
       }
 
+      if (!this.get("item.structure_changed_data")) {
+        this.set(
+          "item.structure_changed_data",
+          $.extend({}, this.get("item.structure_data"))
+        );
+      }
+
       key_array = key.split(".");
 
       obj = this.down_the_road(this, key_array, 0);

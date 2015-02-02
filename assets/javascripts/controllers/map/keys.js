@@ -37,8 +37,21 @@ K.MapKeysController = Ember.Controller.extend({
     var c = [];
 
     structure.forEach(function(s) {
-      if (s.key && s.key.length > 0 && s.type && s.type.value) {
-        c.push({ key: s.key, type: s.type.value });
+      var k = s.key && s.key.length > 0 ? s.key : null;
+      var t = s.type ? s.type.value : null;
+
+      if (k && t) {
+        k = k.replace(/\.(\W|\s)+/g, ".")
+             .replace(/(\W|\s)+\./g, ".")
+
+             .replace(/\s+/g, "-")
+             .replace(/[^\w\-\.]+/g, "")
+             .replace(/\-\-+/g, '-')
+             .replace(/(^\W+|\W+$)/, "");
+
+        if (k.length > 0) {
+          c.push({ key: k, type: t });
+        }
       }
     });
 

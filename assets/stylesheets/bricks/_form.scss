@@ -248,16 +248,30 @@
   }
 
   // row class
-  .row {
+  .row,
+  .row-header {
     float: right;
     width: 100%;
   }
 
-  .row-prefix + .row {
+  .row-prefix + .row,
+  .row-prefix + .row-header {
     width: 80%;
     @include min-small {
       width: 90%;
     }
+  }
+
+  .row-header {
+    color: #848484;
+    font-size: 0.8rem;
+    margin-top: -2px;
+    text-transform: uppercase;
+  }
+
+  .row-header > div {
+    border-left: 2px solid $input_border_color;
+    padding: 1rem 18px;
   }
 
   // row wrapper
@@ -283,7 +297,8 @@
       z-index: 9;
     }
 
-    .row {
+    .row,
+    .row-header {
       width: 80%;
       @include min-small {
         width: 90%;

@@ -64,18 +64,24 @@ K.MapIndexController = Ember.Controller.extend({
 
 
   struct: function() {
+    var extract_field_group = this.extract_field_group;
     var structure = this.get("controllers.map.model.structure");
     var fwt = this.get("full_width_types");
     var all = [];
 
     structure.forEach(function(k) {
       var l = all.length === 0 ? undefined : all[all.length - 1];
+      var diff_group;
 
       if (fwt.contains(k.type)) {
         all.push([k]);
         all.push([]);
       } else {
-        if (l === undefined || l.length >= 2) {
+        diff_group = l && l.length > 0 ?
+          extract_field_group(l[0].key) != extract_field_group(k.key) :
+          null;
+
+        if (l === undefined || l.length >= 2 || diff_group) {
           l = [];
           all.push(l);
         }
@@ -110,11 +116,30 @@ K.MapIndexController = Ember.Controller.extend({
       </div>
     `;
 
+    var extract_field_group = this.extract_field_group;
+    var last_header;
+
     this.get("struct").forEach(function(s) {
+      if (!s[0]) return;
+
+      var first_key_split = s[0].key.split(".");
+      var first_key_group = extract_field_group(s[0].key);
+      var first_key_group_label;
+
       var row_class = "row " + (s.length === 1 ? "row__with-one-item" : "");
+      var row_indent = first_key_split.length - 1;
+
+      // <row-header>
+      if (last_header != first_key_group) {
+        if (!(first_key_group === "" && last_header === undefined)) {
+          first_key_group_label = "/ " + first_key_group.replace(/\./g, " / ");
+          t = t + `<div class="row-header"><div>${first_key_group_label}</div></div>`;
+          last_header = first_key_group;
+        }
+      }
 
       // <row>
-      t = t + `<div class="${row_class}">`;
+      t = t + `<div class="${row_class}" indent="${row_indent}">`;
 
       // fields
       s.forEach(function(field) {
@@ -181,13 +206,15 @@ K.MapIndexController = Ember.Controller.extend({
         var path = prefix + key;
 
         if (Object.prototype.toString.call(o[key]) == "[object Object]") {
-          traverse_object(o[key]);
+          traverse_object(o[key], prefix + key + ".");
         } else if (keys.indexOf(path) === -1) {
           delete o[key];
           changed_structure = true;
         }
       }
     };
+
+    traverse_object(new_data_obj);
 
     // set structure-data if needed
     if (changed_structure) {
@@ -206,6 +233,13 @@ K.MapIndexController = Ember.Controller.extend({
     controller.get("model").addObject(
       controller.store.createRecord("map_item", data)
     );
+  },
+
+
+  extract_field_group: function(key) {
+    var s = key.split(".");
+    var g = s.slice(0, s.length - 1).join(".");
+    return g;
   },
 
 

@@ -197,6 +197,13 @@ K.MapIndexController = Ember.Controller.extend({
     var new_data_obj = $.extend({}, structure_data, structure_changed_data);
 
     // clean it
+    var make_filter_fn = function(path) {
+      return function(k) {
+        return k.match(new RegExp("^" + path));
+      };
+    };
+
+
     var traverse_object = function(o, prefix) {
       var _keys = Object.keys(o);
       prefix = prefix || "";
@@ -204,12 +211,13 @@ K.MapIndexController = Ember.Controller.extend({
       for (var i=0, j=_keys.length; i<j; ++i) {
         var key = _keys[i];
         var path = prefix + key;
+        var f = keys.filter(make_filter_fn(path));
 
-        if (Object.prototype.toString.call(o[key]) == "[object Object]") {
-          traverse_object(o[key], prefix + key + ".");
-        } else if (keys.indexOf(path) === -1) {
+        if (f === null || f.length === 0) {
           delete o[key];
           changed_structure = true;
+        } else if (Object.prototype.toString.call(o[key]) == "[object Object]") {
+          traverse_object(o[key], prefix + key + ".");
         }
       }
     };

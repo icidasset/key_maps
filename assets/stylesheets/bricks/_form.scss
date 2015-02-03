@@ -217,7 +217,7 @@
     position: absolute;
     text-align: center;
     top: -2px;
-    width: 100%;
+    width: calc(100% - 2px);
     z-index: 0;
 
     &.is-highlighted {
@@ -228,7 +228,7 @@
 
   .row-prefix__center {
     @include transform(translate(0%, -50%));
-    left: 0%;
+    left: 0;
     position: absolute;
     top: 50%;
     width: calc(20% - 2px);

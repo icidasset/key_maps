@@ -217,11 +217,8 @@
     position: absolute;
     text-align: center;
     top: -2px;
-    width: calc(20% - 2px);
-
-    @include min-small {
-      width: calc(10% - 2px);
-    }
+    width: 100%;
+    z-index: 0;
 
     &.is-highlighted {
       border-color: $the_color;
@@ -230,10 +227,15 @@
   }
 
   .row-prefix__center {
-    @include transform(translate(-50%, -50%));
-    left: 50%;
+    @include transform(translate(0%, -50%));
+    left: 0%;
     position: absolute;
     top: 50%;
+    width: calc(20% - 2px);
+
+    @include min-small {
+      width: calc(10% - 2px);
+    }
   }
 
   .row-prefix__title {
@@ -266,12 +268,15 @@
     color: #848484;
     font-size: 0.8rem;
     margin-top: -2px;
+    position: relative;
     text-transform: uppercase;
+    z-index: 1;
   }
 
   .row-header > div {
-    border-left: 2px solid $input_border_color;
-    padding: 1rem 18px;
+    border: 2px solid $input_border_color;
+    border-right: 0;
+    padding: 1rem 18px calc(1rem - 3px);
   }
 
   // row wrapper
@@ -300,8 +305,31 @@
     .row,
     .row-header {
       width: 80%;
+
+      &[indent="1"] { width: calc(80% - 10px); }
+      &[indent="2"] { width: calc(80% - 20px); }
+      &[indent="3"] { width: calc(80% - 30px); }
+      &[indent="4"] { width: calc(80% - 40px); }
+      &[indent="5"] { width: calc(80% - 50px); }
+      &[indent="6"] { width: calc(80% - 60px); }
+      &[indent="7"] { width: calc(80% - 70px); }
+      &[indent="8"] { width: calc(80% - 80px); }
+      &[indent="9"] { width: calc(80% - 90px); }
+      &[indent="10"] { width: calc(80% - 100px); }
+
       @include min-small {
         width: 90%;
+
+        &[indent="1"] { width: calc(90% - 10px); }
+        &[indent="2"] { width: calc(90% - 20px); }
+        &[indent="3"] { width: calc(90% - 30px); }
+        &[indent="4"] { width: calc(90% - 40px); }
+        &[indent="5"] { width: calc(90% - 50px); }
+        &[indent="6"] { width: calc(90% - 60px); }
+        &[indent="7"] { width: calc(90% - 70px); }
+        &[indent="8"] { width: calc(90% - 80px); }
+        &[indent="9"] { width: calc(90% - 90px); }
+        &[indent="10"] { width: calc(90% - 100px); }
       }
     }
 

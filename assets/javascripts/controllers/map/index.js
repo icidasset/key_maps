@@ -133,7 +133,7 @@ K.MapIndexController = Ember.Controller.extend({
       if (last_header != first_key_group) {
         if (!(first_key_group === "" && last_header === undefined)) {
           first_key_group_label = "/ " + first_key_group.replace(/\./g, " / ");
-          t = t + `<div class="row-header"><div>${first_key_group_label}</div></div>`;
+          t = t + `<div class="row-header" indent="${row_indent}"><div>${first_key_group_label}</div></div>`;
           last_header = first_key_group;
         }
       }

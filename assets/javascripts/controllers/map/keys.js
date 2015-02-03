@@ -35,10 +35,13 @@ K.MapKeysController = Ember.Controller.extend({
   //
   clean_structure: function(structure) {
     var c = [];
+    var c_keys = [];
 
     structure.forEach(function(s) {
       var k = s.key && s.key.length > 0 ? s.key : null;
       var t = s.type ? s.type.value : null;
+      var conflict = false;
+      var k_chain;
 
       if (k && t) {
         k = k.replace(/\.(\W|\s)+/g, ".")
@@ -50,7 +53,15 @@ K.MapKeysController = Ember.Controller.extend({
              .replace(/(^\W+|\W+$)/, "");
 
         if (k.length > 0) {
-          c.push({ key: k, type: t });
+          k.split(".").forEach(function(p) {
+            k_chain = k_chain ? k_chain + "." + p : p;
+            if (c_keys.indexOf(k_chain) !== -1) conflict = true;
+          });
+
+          if (!conflict) {
+            c.push({ key: k, type: t });
+            c_keys.push(k);
+          }
         }
       }
     });

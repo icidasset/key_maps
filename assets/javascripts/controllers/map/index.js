@@ -175,7 +175,7 @@ K.MapIndexController = Ember.Controller.extend({
       t = t + `</div>`;
     });
 
-    return Ember.Handlebars.compile(t);
+    return Ember.HTMLBars.compile(t);
   }.property("struct").readOnly(),
 
 

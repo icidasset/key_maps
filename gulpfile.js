@@ -40,7 +40,6 @@ var paths = {
   ],
   javascripts_vendor: [
     "./assets/javascripts/vendor/jquery.js",
-    "./assets/javascripts/vendor/handlebars.js",
     "./assets/javascripts/vendor/sifter.js",
     "./assets/javascripts/vendor/microplugin.js",
     "./assets/javascripts/vendor/selectize.js",
@@ -49,6 +48,7 @@ var paths = {
 
     "./assets/javascripts/vendor/ember.js",
     "./assets/javascripts/vendor/ember-data.js",
+    "./assets/javascripts/vendor/ember-template-compiler.js",
     "./assets/javascripts/vendor/ember-simple-auth.js",
     "./assets/javascripts/vendor/ember-cli-selectize.js",
     "./assets/javascripts/vendor/ember-debounced-properties.js",

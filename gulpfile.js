@@ -9,11 +9,11 @@ var gulp = require("gulp"),
     sass = require("gulp-sass"),
     uglify = require("gulp-uglify"),
 
-    to5ify = require("6to5ify"),
+    argv = require("yargs").argv,
+    babelify = require("babelify"),
     browserify = require("browserify"),
     bourbon = require("node-bourbon"),
-    transform = require("vinyl-transform"),
-    argv = require("yargs").argv;
+    through2 = require("through2");
 
 
 var paths = {
@@ -94,16 +94,16 @@ gulp.task("stylesheets", function() {
 
 
 gulp.task("javascripts_application", function() {
-  var browserified = transform(function(filename) {
-    var b = browserify(filename);
-    b.transform(to5ify);
-    return b.bundle();
-  });
-
   return gulp.src(paths.javascripts_application)
-    .pipe(browserified)
+    .pipe(through2.obj(function(file, enc, next) {
+      browserify(file.path)
+        .transform(babelify)
+        .bundle(function(err, res) {
+          file.contents = res; // assumes file.contents is a buffer
+          next(null, file);
+        });
+    }))
     .on("error", swallow_error)
-    .pipe(concat("application.js"))
     .pipe(gulp_if(argv.production, uglify()))
     .pipe(gulp.dest("./public/javascripts"));
 });

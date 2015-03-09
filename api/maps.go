@@ -166,7 +166,7 @@ func (c *Context) Maps__Show(rw web.ResponseWriter, req *web.Request) {
   // execute query
   err := db.Inst().Get(
     &m,
-    "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
+    `SELECT * FROM maps WHERE id = $1 AND user_id = $2`,
     req.PathParams["id"],
     c.User.Id,
   )
@@ -191,7 +191,7 @@ func (c *Context) Maps__Show(rw web.ResponseWriter, req *web.Request) {
 //  {post} CREATE
 //
 func (c *Context) Maps__Create(rw web.ResponseWriter, req *web.Request) {
-  query := "INSERT INTO maps (name, slug, structure, settings, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :settings, :created_at, :updated_at, :user_id) RETURNING id"
+  query := `INSERT INTO maps (name, slug, structure, settings, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :settings, :created_at, :updated_at, :user_id) RETURNING id`
 
   // parse json from request body
   mfd := MapFormData{}
@@ -238,7 +238,9 @@ func (c *Context) Maps__Update(rw web.ResponseWriter, req *web.Request) {
 
   // update map
   _, err := db.Inst().Exec(
-    "UPDATE maps SET structure = $1, settings = $2, updated_at = $3 WHERE id = $4 AND user_id = $5",
+    `UPDATE maps
+     SET structure = $1, settings = $2, updated_at = $3
+     WHERE id = $4 AND user_id = $5`,
     mfd.Map.Structure,
     mfd.Map.Settings,
     time.Now(),
@@ -257,7 +259,7 @@ func (c *Context) Maps__Update(rw web.ResponseWriter, req *web.Request) {
 
   err = db.Inst().Get(
     &m,
-    "SELECT * FROM maps WHERE id = $1 AND user_id = $2",
+    `SELECT * FROM maps WHERE id = $1 AND user_id = $2`,
     req.PathParams["id"],
     c.User.Id,
   )
@@ -276,15 +278,29 @@ func (c *Context) Maps__Update(rw web.ResponseWriter, req *web.Request) {
 //  {delete} DESTROY
 //
 func (c *Context) Maps__Destroy(rw web.ResponseWriter, req *web.Request) {
-  _, err := db.Inst().Exec(
-    "DELETE FROM maps WHERE id = $1 AND user_id = $2",
+  var err_delete_a error;
+  var err_delete_b error;
+
+  // delete related map items
+  _, err_delete_b = db.Inst().Exec(
+    `DELETE FROM map_items
+     WHERE map_id = $1 AND map_id IN (SELECT id FROM maps WHERE user_id = $2)`,
+    req.PathParams["id"],
+    c.User.Id,
+  )
+
+  // delete map
+  _, err_delete_a = db.Inst().Exec(
+    `DELETE FROM maps WHERE id = $1 AND user_id = $2`,
     req.PathParams["id"],
     c.User.Id,
   )
 
   // render
-  if err != nil {
-    RenderJSON(rw, 500, FormatError(err))
+  if err_delete_b != nil {
+    RenderJSON(rw, 500, FormatError(err_delete_b))
+  } else if err_delete_a != nil {
+    RenderJSON(rw, 500, FormatError(err_delete_a))
   } else {
     RenderJSON(rw, 204, nil)
   }

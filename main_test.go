@@ -37,6 +37,7 @@ type MySuite struct {
 
   // map items
   mapItemId int
+  mapItemId2 int
 }
 
 
@@ -83,6 +84,7 @@ func (s *MySuite) TestAll(c *C) {
   (s).testApiPublic(c)
   (s).testApiMaps__Part2(c)
   (s).testApiMapItems__Part2(c)
+  (s).testApiMaps__Part3(c)
 }
 
 
@@ -229,6 +231,10 @@ func (s *MySuite) testApiMaps__Part1(c *C) {
 
 func (s *MySuite) testApiMaps__Part2(c *C) {
   (s).testApiMaps__Index(c)
+}
+
+
+func (s *MySuite) testApiMaps__Part3(c *C) {
   (s).testApiMaps__Destroy(c)
 }
 
@@ -413,6 +419,17 @@ func (s *MySuite) testApiMaps__Destroy(c *C) {
       c.Error("Map was not deleted.")
     }
 
+    mi := api.MapItem{}
+    db.Inst().Get(
+      &mi,
+      `SELECT * FROM map_items WHERE id = $1`,
+      s.mapItemId2,
+    )
+
+    if mi.Id != 0 {
+      c.Error("Related map items were not deleted.")
+    }
+
   }
 }
 
@@ -429,6 +446,7 @@ func (s *MySuite) testApiMapItems__Part1(c *C) {
 
 func (s *MySuite) testApiMapItems__Part2(c *C) {
   (s).testApiMapItems__Destroy(c)
+  (s).testApiMapItems__Create_2(c)
 }
 
 
@@ -465,6 +483,33 @@ func (s *MySuite) testApiMapItems__Create(c *C) {
     c.Error("Did not return a map item.")
   } else {
     s.mapItemId = result["map_item"].Id
+  }
+}
+
+
+// create 2 - which will be used in the maps/delete test
+func (s *MySuite) testApiMapItems__Create_2(c *C) {
+  m := api.MapItem{ StructureData: `{ "author": "Author 2", "quote": "Quote 2" }`, MapId: s.mapId }
+  m_form_data := api.MapItemFormData{ MapItem: m }
+  j, _ := json.Marshal(m_form_data)
+
+  // make request
+  req, rec := newTestRequest("POST", "/api/map_items", bytes.NewBuffer(j))
+  req.Header.Set("Content-Type", "application/json")
+  setAuthorizationHeader(req, s)
+  s.router.ServeHTTP(rec, req)
+
+  // parse json from response
+  result := map[string]api.MapItem{}
+  json.Unmarshal(rec.Body.Bytes(), &result)
+
+  // validate
+  if rec.Code != 201 {
+    c.Error("Did not create map item correctly.")
+  } else if result["map_item"].Id == 0 {
+    c.Error("Did not return a map item.")
+  } else {
+    s.mapItemId2 = result["map_item"].Id
   }
 }
 

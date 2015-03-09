@@ -32,8 +32,10 @@ func (c *Context) MapItems__Show(rw web.ResponseWriter, req *web.Request) {
   // execute query
   err := db.Inst().Get(
     &mi,
-    "SELECT * FROM map_items WHERE id = $1",
+    `SELECT * FROM map_items
+     WHERE id = $1 AND map_id IN (SELECT id FROM maps WHERE user_id = $2)`,
     req.PathParams["id"],
+    c.User.Id,
   )
 
   // render
@@ -56,7 +58,7 @@ func (c *Context) MapItems__Show(rw web.ResponseWriter, req *web.Request) {
 //  {post} CREATE
 //
 func (c *Context) MapItems__Create(rw web.ResponseWriter, req *web.Request) {
-  query := "INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id) RETURNING *"
+  query := `INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id) RETURNING *`
 
   // parse json from request body
   mifd := MapItemFormData{}
@@ -102,10 +104,13 @@ func (c *Context) MapItems__Update(rw web.ResponseWriter, req *web.Request) {
 
   // update map item
   _, err := db.Inst().Exec(
-    "UPDATE map_items SET structure_data = $1, updated_at = $2 WHERE id = $3",
+    `UPDATE map_items
+     SET structure_data = $1, updated_at = $2
+     WHERE id = $3 AND map_id IN (SELECT id FROM maps WHERE user_id = $4)`,
     mifd.MapItem.StructureData,
     time.Now(),
     req.PathParams["id"],
+    c.User.Id,
   )
 
   // return if error
@@ -119,8 +124,10 @@ func (c *Context) MapItems__Update(rw web.ResponseWriter, req *web.Request) {
 
   err = db.Inst().Get(
     &mi,
-    "SELECT * FROM map_items WHERE id = $1",
+    `SELECT * FROM map_items
+     WHERE id = $1 AND map_id IN (SELECT id FROM maps WHERE user_id = $2)`,
     req.PathParams["id"],
+    c.User.Id,
   )
 
   // render
@@ -138,8 +145,10 @@ func (c *Context) MapItems__Update(rw web.ResponseWriter, req *web.Request) {
 //
 func (c *Context) MapItems__Destroy(rw web.ResponseWriter, req *web.Request) {
   _, err := db.Inst().Exec(
-    "DELETE FROM map_items WHERE id = $1",
+    `DELETE FROM map_items
+     WHERE id = $1 AND map_id IN (SELECT id FROM maps WHERE user_id = $2)`,
     req.PathParams["id"],
+    c.User.Id,
   )
 
   // render

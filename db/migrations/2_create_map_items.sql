@@ -7,7 +7,7 @@ CREATE TABLE map_items (
   map_id integer NOT NULL
 );
 
-CREATE INDEX map_items_map_id_index ON map_items(map_id)
+CREATE INDEX map_items_map_id_index ON map_items(map_id);
 
 -- +migrate Down
 DROP TABLE map_items;

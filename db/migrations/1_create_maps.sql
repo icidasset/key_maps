@@ -9,8 +9,8 @@ CREATE TABLE maps (
   user_id integer NOT NULL
 );
 
-CREATE INDEX maps_user_slug_index ON maps(slug)
-CREATE INDEX maps_user_id_index ON maps(user_id)
+CREATE INDEX maps_user_slug_index ON maps(slug);
+CREATE INDEX maps_user_id_index ON maps(user_id);
 
 -- +migrate Down
 DROP TABLE maps;

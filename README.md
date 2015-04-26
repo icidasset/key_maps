@@ -1,29 +1,12 @@
-# Key Maps
+# Key Maps API
+
+API for [Key Maps](http://keymaps.surge.sh).
+There is also the [interface repository](https://github.com/icidasset/key-maps-interface).
 
 
-## Development
+## Setting up
 
-### Dependencies
-
-- (go) [https://github.com/gocraft/web]()
-- (go) [https://github.com/rubenv/sql-migrate]()
-- (node) [https://github.com/gulpjs/gulp]()
-
-
-### Setting up
-
-1. `script/go_get`
-2. `npm install -g gulp` and `npm install`
-3. make postgres database `keymaps_development`
-4. `script/migrate`
-
-```bash
-# start/watch server
-script/server
-
-# build & watch assets
-gulp
-
-# build assets for production
-gulp build --production
-```
+1. `script/install_dependencies`
+2. make postgresql database `keymaps_development`
+3. `script/migrate`
+4. `script/server`

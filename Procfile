@@ -1,1 +1,1 @@
-web: key-maps -port=$PORT
+web: key-maps-api -port=$PORT

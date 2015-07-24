@@ -38,12 +38,12 @@ type UserHandlers struct {
 //
 //  {post} CREATE
 //
-func Users__Create(c *echo.Context) {
+func Users__Create(c *echo.Context) error {
 	query := "INSERT INTO users (email, encrypted_password, created_at, updated_at) VALUES (:email, :encrypted_password, :created_at, :updated_at) RETURNING id"
 
 	// parse json from request body
 	uafd := UserAuthFormData{}
-	json_decoder := json.NewDecoder(c.Request.Body)
+	json_decoder := json.NewDecoder(c.Request().Body)
 	json_decoder.Decode(&uafd)
 
 	// make new user
@@ -66,8 +66,7 @@ func Users__Create(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// scan rows
@@ -81,21 +80,21 @@ func Users__Create(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(201, map[string]UserPublic{"user": user_public})
+		return c.JSON(201, map[string]UserPublic{"user": user_public})
 	}
 }
 
 //
 //  {post} AUTHENTICATE
 //
-func Users__Authenticate(c *echo.Context) {
+func Users__Authenticate(c *echo.Context) error {
 	user := User{}
 
 	// parse json from request body
 	uafd := UserAuthFormData{}
-	json_decoder := json.NewDecoder(c.Request.Body)
+	json_decoder := json.NewDecoder(c.Request().Body)
 	json_decoder.Decode(&uafd)
 
 	// query
@@ -107,8 +106,7 @@ func Users__Authenticate(c *echo.Context) {
 
 	// <email>
 	if user.Email == "" {
-		c.JSON(200, map[string]string{"error": "User not found."})
-		return
+		return c.JSON(200, map[string]string{"error": "User not found."})
 	}
 
 	// <password>
@@ -118,22 +116,21 @@ func Users__Authenticate(c *echo.Context) {
 	)
 
 	if bcrypt_check_err != nil {
-		c.JSON(200, map[string]string{"error": "Invalid password."})
-		return
+		return c.JSON(200, map[string]string{"error": "Invalid password."})
 	}
 
 	// <success>
 	token := GenerateToken(&user)
 	user_public := UserPublic{Token: token}
 
-	c.JSON(200, map[string]UserPublic{"user": user_public})
+	return c.JSON(200, map[string]UserPublic{"user": user_public})
 }
 
 //
 //  {get} VERIFY TOKEN
 //
-func Users__VerifyToken(c *echo.Context) {
-	qs := c.Request.URL.Query()
+func Users__VerifyToken(c *echo.Context) error {
+	qs := c.Request().URL.Query()
 	token, err := ParseToken(qs.Get("token"))
 	is_valid := false
 
@@ -143,7 +140,7 @@ func Users__VerifyToken(c *echo.Context) {
 
 	// invalid token
 	if !is_valid {
-		c.JSON(200, map[string]bool{"is_valid": false})
+		return c.JSON(200, map[string]bool{"is_valid": false})
 
 		// valid token, but check if the user exists
 	} else {
@@ -157,11 +154,11 @@ func Users__VerifyToken(c *echo.Context) {
 
 		// user exists
 		if user.Id != 0 {
-			c.JSON(200, map[string]bool{"is_valid": true})
+			return c.JSON(200, map[string]bool{"is_valid": true})
 
 			// user does not exist
 		} else {
-			c.JSON(200, map[string]bool{"is_valid": false})
+			return c.JSON(200, map[string]bool{"is_valid": false})
 
 		}
 

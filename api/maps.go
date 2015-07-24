@@ -68,7 +68,7 @@ func (i *IntSlice) Scan(src interface{}) error {
 //
 //  {get} INDEX
 //
-func Maps__Index(c *echo.Context) {
+func Maps__Index(c *echo.Context) error {
 	var maps []Map
 	var map_items []MapItem
 	var map_item_ids_i []int
@@ -89,8 +89,7 @@ func Maps__Index(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// scan rows
@@ -102,8 +101,7 @@ func Maps__Index(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// gather map item ids
@@ -145,16 +143,16 @@ func Maps__Index(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(200, MapIndex{Maps: maps, MapItems: map_items})
+		return c.JSON(200, MapIndex{Maps: maps, MapItems: map_items})
 	}
 }
 
 //
 //  {get} SHOW
 //
-func Maps__Show(c *echo.Context) {
+func Maps__Show(c *echo.Context) error {
 	m := Map{}
 
 	// execute query
@@ -168,26 +166,26 @@ func Maps__Show(c *echo.Context) {
 	// render
 	if err != nil {
 		if IsNoResultsError(err.Error()) {
-			c.JSON(404, nil)
+			return c.JSON(404, nil)
 		} else {
-			c.JSON(500, FormatError(err))
+			return c.JSON(500, FormatError(err))
 		}
 	} else if m.Id == 0 {
-		c.JSON(404, nil)
+		return c.JSON(404, nil)
 	} else {
-		c.JSON(200, map[string]Map{"map": m})
+		return c.JSON(200, map[string]Map{"map": m})
 	}
 }
 
 //
 //  {post} CREATE
 //
-func Maps__Create(c *echo.Context) {
+func Maps__Create(c *echo.Context) error {
 	query := `INSERT INTO maps (name, slug, structure, settings, created_at, updated_at, user_id) VALUES (:name, :slug, :structure, :settings, :created_at, :updated_at, :user_id) RETURNING id`
 
 	// parse json from request body
 	mfd := MapFormData{}
-	json_decoder := json.NewDecoder(c.Request.Body)
+	json_decoder := json.NewDecoder(c.Request().Body)
 	json_decoder.Decode(&mfd)
 
 	// make new map
@@ -201,8 +199,7 @@ func Maps__Create(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// scan rows
@@ -212,18 +209,18 @@ func Maps__Create(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(201, map[string]Map{"map": new_map})
+		return c.JSON(201, map[string]Map{"map": new_map})
 	}
 }
 
 //
 //  {put} UPDATE
 //
-func Maps__Update(c *echo.Context) {
+func Maps__Update(c *echo.Context) error {
 	mfd := MapFormData{}
-	json_decoder := json.NewDecoder(c.Request.Body)
+	json_decoder := json.NewDecoder(c.Request().Body)
 	json_decoder.Decode(&mfd)
 
 	// update map
@@ -240,8 +237,7 @@ func Maps__Update(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// fetch
@@ -256,16 +252,16 @@ func Maps__Update(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(200, map[string]Map{"map": m})
+		return c.JSON(200, map[string]Map{"map": m})
 	}
 }
 
 //
 //  {delete} DESTROY
 //
-func Maps__Destroy(c *echo.Context) {
+func Maps__Destroy(c *echo.Context) error {
 	var err_delete_a error
 	var err_delete_b error
 
@@ -286,10 +282,10 @@ func Maps__Destroy(c *echo.Context) {
 
 	// render
 	if err_delete_b != nil {
-		c.JSON(500, FormatError(err_delete_b))
+		return c.JSON(500, FormatError(err_delete_b))
 	} else if err_delete_a != nil {
-		c.JSON(500, FormatError(err_delete_a))
+		return c.JSON(500, FormatError(err_delete_a))
 	} else {
-		c.JSON(204, nil)
+		return c.JSON(204, nil)
 	}
 }

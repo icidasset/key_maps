@@ -23,7 +23,7 @@ type MapItemFormData struct {
 //
 //  {get} SHOW
 //
-func MapItems__Show(c *echo.Context) {
+func MapItems__Show(c *echo.Context) error {
 	mi := MapItem{}
 
 	// execute query
@@ -38,26 +38,26 @@ func MapItems__Show(c *echo.Context) {
 	// render
 	if err != nil {
 		if IsNoResultsError(err.Error()) {
-			c.JSON(404, nil)
+			return c.JSON(404, nil)
 		} else {
-			c.JSON(500, FormatError(err))
+			return c.JSON(500, FormatError(err))
 		}
 	} else if mi.Id == 0 {
-		c.JSON(404, nil)
+		return c.JSON(404, nil)
 	} else {
-		c.JSON(200, map[string]MapItem{"map_item": mi})
+		return c.JSON(200, map[string]MapItem{"map_item": mi})
 	}
 }
 
 //
 //  {post} CREATE
 //
-func MapItems__Create(c *echo.Context) {
+func MapItems__Create(c *echo.Context) error {
 	query := `INSERT INTO map_items (structure_data, created_at, updated_at, map_id) VALUES (:structure_data, :created_at, :updated_at, :map_id) RETURNING *`
 
 	// parse json from request body
 	mifd := MapItemFormData{}
-	json_decoder := json.NewDecoder(c.Request.Body)
+	json_decoder := json.NewDecoder(c.Request().Body)
 	json_decoder.Decode(&mifd)
 
 	// make new map item
@@ -70,8 +70,7 @@ func MapItems__Create(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// scan rows
@@ -81,18 +80,18 @@ func MapItems__Create(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(201, map[string]MapItem{"map_item": new_map_item})
+		return c.JSON(201, map[string]MapItem{"map_item": new_map_item})
 	}
 }
 
 //
 //  {put} UPDATE
 //
-func MapItems__Update(c *echo.Context) {
+func MapItems__Update(c *echo.Context) error {
 	mifd := MapItemFormData{}
-	json_decoder := json.NewDecoder(c.Request.Body)
+	json_decoder := json.NewDecoder(c.Request().Body)
 	json_decoder.Decode(&mifd)
 
 	// update map item
@@ -108,8 +107,7 @@ func MapItems__Update(c *echo.Context) {
 
 	// return if error
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	// fetch
@@ -125,16 +123,16 @@ func MapItems__Update(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(200, map[string]MapItem{"map_item": mi})
+		return c.JSON(200, map[string]MapItem{"map_item": mi})
 	}
 }
 
 //
 //  {delete} DESTROY
 //
-func MapItems__Destroy(c *echo.Context) {
+func MapItems__Destroy(c *echo.Context) error {
 	_, err := db.Inst().Exec(
 		`DELETE FROM map_items
      WHERE id = $1 AND map_id IN (SELECT id FROM maps WHERE user_id = $2)`,
@@ -144,8 +142,8 @@ func MapItems__Destroy(c *echo.Context) {
 
 	// render
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else {
-		c.JSON(204, nil)
+		return c.JSON(204, nil)
 	}
 }

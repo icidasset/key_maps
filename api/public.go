@@ -17,39 +17,35 @@ type PublicCollection []PublicItem
 //
 //  {public/handler} Show
 //
-func Public__Show(c *echo.Context) {
+func Public__Show(c *echo.Context) error {
 	theMap, err := publicGetMap(c.Param("hash"))
 
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	} else if theMap.Id == 0 {
-		c.JSON(501, map[string]string{"error": "Provided map id and slug do not match"})
-		return
+		return c.JSON(501, map[string]string{"error": "Provided map id and slug do not match"})
 	}
 
 	theMapSettings, err := publicGetMapSettings(&theMap)
 
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	theMapItems, err := publicGetMapItems(&theMap, &theMapSettings)
 
 	if err != nil {
-		c.JSON(500, FormatError(err))
-		return
+		return c.JSON(500, FormatError(err))
 	}
 
 	collection, err := publicMakeCollection(&theMap, &theMapItems)
 
 	if err != nil {
-		c.JSON(500, FormatError(err))
+		return c.JSON(500, FormatError(err))
 	} else if theMapSettings.IncludeJSONRoot {
-		c.JSON(200, map[string]PublicCollection{theMap.Slug: collection})
+		return c.JSON(200, map[string]PublicCollection{theMap.Slug: collection})
 	} else {
-		c.JSON(200, collection)
+		return c.JSON(200, collection)
 	}
 }
 

@@ -11,11 +11,11 @@ import (
 func MustBeAuthenticated(h echo.HandlerFunc) echo.HandlerFunc {
 	return func(c *echo.Context) error {
 
-		if c.Request.Method == "OPTIONS" {
+		if c.Request().Method == "OPTIONS" {
 			return h(c)
 		}
 
-		auth_header := c.Request.Header.Get("Authorization")
+		auth_header := c.Request().Header.Get("Authorization")
 
 		if strings.Contains(auth_header, "Bearer") {
 			t := strings.Split(auth_header, "Bearer ")[1]

@@ -23,12 +23,14 @@ func main() {
 
 	// new router
 	router := echo.New()
-	router.Use(middleware.Gzip)
+
+	router.Use(mw.Recover())
+	router.Use(mw.Gzip())
 	router.Use(middleware.Cors)
 
 	// extra middleware
 	if env == "" || env == "development" {
-		router.Use(mw.Logger)
+		router.Use(mw.Logger())
 	}
 
 	// prepare database
@@ -120,10 +122,10 @@ func CreatePublicRoutes(router *echo.Echo) {
 //
 //  Options
 //
-func Options(c *echo.Context) {
-	c.Response.Header().Set("Access-Control-Allow-Origin", "*")
-	c.Response.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE")
-	c.Response.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization")
+func Options(c *echo.Context) error {
+	c.Response().Header().Set("Access-Control-Allow-Origin", "*")
+	c.Response().Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PUT, PATCH, DELETE")
+	c.Response().Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Authorization")
 
-	c.NoContent(200)
+	return c.NoContent(200)
 }

@@ -18,6 +18,7 @@ import (
 	"github.com/icidasset/key-maps-api/db"
 	"github.com/icidasset/key-maps-api/middleware"
 	"github.com/labstack/echo"
+	mw "github.com/labstack/echo/middleware"
 	. "gopkg.in/check.v1"
 )
 
@@ -56,7 +57,7 @@ func (s *MySuite) SetUpSuite(c *C) {
 
 	// router
 	s.router = echo.New()
-	s.router.Use(middleware.Gzip)
+	s.router.Use(mw.Gzip())
 	s.router.Use(middleware.Cors)
 
 	CreateUserRoutes(s.router)

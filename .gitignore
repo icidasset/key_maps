@@ -1,2 +1,5 @@
-.DS_Store
-key-maps-api
+/_build
+/cover
+/deps
+erl_crash.dump
+*.ez

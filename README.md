@@ -1,12 +1,7 @@
-# Key Maps API
+# Key Maps
 
-API for [Key Maps](http://keymaps.surge.sh).
-There is also the [interface repository](https://github.com/icidasset/key-maps-interface).
+Key maps provides an interface to fill in custom data structures and a JSON api with CORS support to fetch the data.
 
+__Work in progress.__
 
-## Setting up
-
-1. `script/install_dependencies`
-2. make postgresql database `keymaps_development`
-3. `script/migrate`
-4. `script/server`
+_You can find old code in the legacy branches._

@@ -1,6 +1,14 @@
 defmodule KeyMaps.GraphQL.Definitions do
   alias GraphQL.Type.{ID, List}
 
+  def build(model, :all) do
+    %{
+      type: %List{ ofType: build_type(model) },
+      resolve: &model.all/3,
+    }
+  end
+
+
   def build(model, :get, attributes) do
     type_def = build_type(model)
 
@@ -8,14 +16,6 @@ defmodule KeyMaps.GraphQL.Definitions do
       type: type_def,
       args: pick_types(type_def, attributes),
       resolve: &model.get/3,
-    }
-  end
-
-
-  def build(model, :all) do
-    %{
-      type: %List{ ofType: build_type(model) },
-      resolve: &model.all/3,
     }
   end
 

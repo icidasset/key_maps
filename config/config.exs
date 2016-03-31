@@ -1,8 +1,12 @@
 use Mix.Config
 
-config :key_maps, KeyMaps.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  database: "key_maps_development",
-  username: "icidasset",
-  password: "",
-  hostname: "localhost"
+
+config :guardian, Guardian,
+  issuer: "KeyMaps",
+  ttl: { 365, :days },
+  verify_issuer: true,
+  secret_key: System.get_env("SECRET_KEY"),
+  serializer: KeyMaps.Guardian.Serializer
+
+
+import_config "#{Mix.env}.exs"

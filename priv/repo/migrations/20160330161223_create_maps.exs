@@ -3,10 +3,13 @@ defmodule KeyMaps.Repo.Migrations.CreateMaps do
 
   def change do
     create table(:maps) do
-      add :key, :string
       add :name, :string
+      add :attributes, { :array, :string }
+      add :user_id, :integer
 
       timestamps
     end
+
+    create unique_index :maps, [:name]
   end
 end

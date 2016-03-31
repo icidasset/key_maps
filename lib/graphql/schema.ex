@@ -1,6 +1,6 @@
 defmodule KeyMaps.GraphQL.Schema do
   alias KeyMaps.GraphQL.{Definitions}
-  alias KeyMaps.{Models}
+  alias KeyMaps.{Models.Map, Models.MapItem}
 
   def schema do
     %GraphQL.Schema{
@@ -9,8 +9,9 @@ defmodule KeyMaps.GraphQL.Schema do
         name: "Queries",
         description: "Key Maps API Queries",
         fields: %{
-          map: Definitions.build(Models.Map, :get, [:id]),
-          maps: Definitions.build(Models.Map, :all),
+          map: Definitions.build(Map, :get, ~w(id)a),
+          maps: Definitions.build(Map, :all),
+          mapItems: Definitions.build(MapItem, :all),
         }
       },
 
@@ -18,7 +19,8 @@ defmodule KeyMaps.GraphQL.Schema do
         name: "Mutations",
         description: "Key Maps API Mutations",
         fields: %{
-          createMap: Definitions.build(Models.Map, :create, [:name]),
+          createMap: Definitions.build(Map, :create, ~w(name attributes)a),
+          createMapItem: Definitions.build(MapItem, :create, ~w(map_id attributes)a),
         },
       }
 

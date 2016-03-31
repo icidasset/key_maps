@@ -2,7 +2,7 @@ defmodule KeyMaps do
   use Application
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
+    import Supervisor.Spec
 
     children = [
       worker(KeyMaps.Repo, []),

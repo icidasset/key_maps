@@ -16,9 +16,11 @@ defmodule KeyMaps.Mixfile do
   def application do
     [
       applications: [
+        :comeonin,
         :cowboy,
         :ecto,
         :ectograph,
+        :guardian,
         :logger,
         :plug,
         :plug_graphql,
@@ -42,13 +44,15 @@ defmodule KeyMaps.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      { :corsica, "~> 0.4" },
+      { :corsica, "~> 0.4.1" },
+      { :comeonin, "~> 2.3.0" },
       { :cowboy, "~> 1.0.4" },
-      { :ecto, "~> 1.1.3" },
-      { :ectograph, path: "../ectograph" },
-      { :graphql, "~> 0.1.2" },
-      { :plug, "~> 1.1.1" },
-      { :plug_graphql, "~> 0.1.5" },
+      { :ecto, "~> 1.1.5" },
+      { :ectograph, "~> 0.0.3" },
+      { :graphql, "~> 0.2.0" },
+      { :guardian, "~> 0.10.1" },
+      { :plug, "~> 1.1.2" },
+      { :plug_graphql, "~> 0.2.0" },
       { :postgrex, "~> 0.11.1" },
     ]
   end

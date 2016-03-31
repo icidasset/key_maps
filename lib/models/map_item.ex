@@ -1,12 +1,16 @@
 defmodule KeyMaps.Models.MapItem do
   use Ecto.Schema
+
   alias KeyMaps.{Repo, Models}
+
   import Ecto.Changeset
+  import Ecto.Query
 
 
   schema "map_items" do
     field :attributes, :map
-    field :map_id, :integer
+
+    belongs_to :map, Models.Map
 
     timestamps
   end

@@ -12,6 +12,8 @@ defmodule KeyMaps.Models.User do
     field :password, :string, virtual: true
     field :password_hash, :string
 
+    has_many :maps, Models.Map
+
     timestamps
   end
 

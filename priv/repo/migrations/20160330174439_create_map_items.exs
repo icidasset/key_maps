@@ -4,7 +4,7 @@ defmodule KeyMaps.Repo.Migrations.CreateMapItems do
   def change do
     create table(:map_items) do
       add :attributes, :map
-      add :map_id, :integer
+      add :map_id, references(:maps)
 
       timestamps
     end

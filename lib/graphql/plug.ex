@@ -51,7 +51,7 @@ defmodule KeyMaps.GraphQL.Plug do
       end
 
     rescue
-      err ->
+      err in GraphQL.CustomError ->
         msg = if Map.has_key?(err, :message),
           do: err.message,
           else: err.__struct__.message(err)

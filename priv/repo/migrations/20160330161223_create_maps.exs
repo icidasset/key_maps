@@ -5,7 +5,7 @@ defmodule KeyMaps.Repo.Migrations.CreateMaps do
     create table(:maps) do
       add :name, :string
       add :attributes, { :array, :string }
-      add :user_id, :integer
+      add :user_id, references(:users)
 
       timestamps
     end

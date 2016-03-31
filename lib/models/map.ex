@@ -10,7 +10,9 @@ defmodule KeyMaps.Models.Map do
   schema "maps" do
     field :name, :string
     field :attributes, { :array, :string }
-    field :user_id, :integer
+
+    belongs_to :user, Models.User
+    has_many :map_items, Models.MapItem
 
     timestamps
   end
@@ -31,15 +33,13 @@ defmodule KeyMaps.Models.Map do
   end
 
 
-  def get(_, %{ id: id }, _),   do: Models.Map |> Repo.get_by(id: id)
-  def create(params, attr, _),  do: insert(attr, params.user_id)
+  def get(params, %{ id: id }, _) do
+    Repo.get_by(id: id, user_id: params.user_id)
+  end
 
 
-  #
-  # Private
-  #
-  defp insert(attr, user_id) do
-    attr = %{ user_id: user_id } |> Map.merge(attr)
+  def create(params, attr, _) do
+    attr = %{ user_id: params.user_id } |> Map.merge(attr)
 
     case Repo.insert changeset(%Models.Map{}, attr) do
       { :ok, map } -> map

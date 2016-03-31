@@ -30,6 +30,7 @@ mutation M createMap(
 
 __Note:__ The map name must be unique, it will be casted to
 lowercase for validation.
+
 We now have a "repository" for our quotes,
 and we can add one by, for example, executing this query:
 
@@ -59,7 +60,7 @@ __That's it!__
 PS. This is how you remove map items and maps:
 
 ```
-mutation M removeMapItem(map: "Quotes", id: ITEM_HASH)
+mutation M removeMapItem(map: "Quotes", id: ITEM_ID)
 mutation M removeMap(name: "Quotes")
 ```
 

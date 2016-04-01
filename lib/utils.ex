@@ -18,15 +18,15 @@ defmodule KeyMaps.Utils do
   end
 
 
-  def render_token(conn, user) do
-     conn = Guardian.Plug.api_sign_in(conn, user)
-     token = Guardian.Plug.current_token(conn)
+  def render_token(conn, status, user) do
+    conn = Guardian.Plug.api_sign_in(conn, user)
+    token = Guardian.Plug.current_token(conn)
 
-     data = %{
-       token: token,
-     }
+    data = %{
+      token: token,
+    }
 
-     render_data(conn, 200, data)
+    render_data(conn, status, data)
   end
 
 

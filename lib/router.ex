@@ -1,4 +1,4 @@
-defmodule KeyMaps.Api do
+defmodule KeyMaps.Router do
   use Plug.Router
 
   alias KeyMaps.{ Models }
@@ -21,7 +21,7 @@ defmodule KeyMaps.Api do
 
 
   def start_link do
-    { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Api, [], port: 8080
+    { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: 8080
   end
 
 
@@ -29,27 +29,12 @@ defmodule KeyMaps.Api do
   # GraphQL API
   #
   defmodule ApiPipeline do
+    use Plug.Builder
 
-    def init(_) do
-      opts = [
-        schema: { KeyMaps.GraphQL.Schema, :schema },
-        root_value: &KeyMaps.GraphQL.Session.root_value/1
-      ]
-
-      graphiql = GraphQL.Plug.GraphiQL.init(opts)
-      endpoint = KeyMaps.GraphQL.Plug.init(opts)
-
-      opts = Keyword.merge(graphiql, endpoint)
-      opts = Enum.dedup(opts)
-      opts
-    end
-
-    def call(conn, opts) do
-      if GraphQL.Plug.GraphiQL.use_graphiql?(conn, opts),
-        do: GraphQL.Plug.GraphiQL.call(conn, opts),
-        else: KeyMaps.GraphQL.Plug.call(conn, opts)
-    end
-
+    plug Guardian.Plug.EnsureAuthenticated, handler: KeyMaps.Router
+    plug GraphQL.Plug.Endpoint,
+      schema: { KeyMaps.GraphQL.Schema, :schema },
+      root_value: &KeyMaps.GraphQL.Session.root_value/1
   end
 
 
@@ -66,7 +51,7 @@ defmodule KeyMaps.Api do
     user = Models.User.get_by_email(email)
 
     if user && checkpw(password, user.password_hash) do
-      render_token(conn, user)
+      render_token(conn, 200, user)
     else
       render_error(conn, 403, "Email and/or password were invalid")
     end
@@ -90,14 +75,14 @@ defmodule KeyMaps.Api do
     }
 
     case Models.User.create(attr) do
-      { :ok, user } -> render_token(conn, user)
+      { :ok, user } -> render_token(conn, 201, user)
       { :error, changeset } -> render_error(conn, 400, get_error_from_changeset(changeset))
     end
   end
 
 
   def unauthenticated(conn, _) do
-     render_error(conn, 403, "Forbidden")
+    render_error(conn, 403, "Forbidden")
   end
 
 

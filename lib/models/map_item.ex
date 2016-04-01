@@ -10,7 +10,8 @@ defmodule KeyMaps.Models.MapItem do
   schema "map_items" do
     field :attributes, :map
 
-    belongs_to :map, Models.Map
+    field :map, :string
+    field :map_id, :integer
 
     timestamps
   end
@@ -24,7 +25,7 @@ defmodule KeyMaps.Models.MapItem do
 
 
   #
-  # Attributes
+  # {field} Attributes
   #
   def validate_attributes(changeset, field, _ \\ []) do
     validate_change changeset, field, fn(_, attributes) ->
@@ -55,16 +56,32 @@ defmodule KeyMaps.Models.MapItem do
   #
   # Queries
   #
-  def all(_, _, _),         do: Models.MapItem |> Repo.all
-  def create(_, attr, _),   do: insert(attr)
+  def all(params, attr, _) do
+    map = Models.Map.get(params, %{ name: attr.map }, nil)
+
+    if map do
+      Repo.all(from m in Models.MapItem, where: m.map_id == ^map.id)
+    else
+      __raise_map_error()
+    end
+  end
+
+
+  def create(params, attr, _) do
+    map = Models.Map.get(params, %{ name: attr.map }, nil)
+
+    if map,
+      do: __create(attr, map.id),
+    else: __raise_map_error()
+  end
 
 
   #
   # Private
   #
-  defp insert(attr) do
+  defp __create(attr, map_id) do
     attr = %{
-      map_id: attr.map_id,
+      map_id: map_id,
       attributes: if Map.has_key?(attr, :attributes)
         do Poison.decode!(attr.attributes)
         else nil
@@ -78,6 +95,11 @@ defmodule KeyMaps.Models.MapItem do
           message: KeyMaps.Utils.get_error_from_changeset(changeset),
           status: 422
     end
+  end
+
+
+  defp __raise_map_error do
+    raise GraphQL.CustomError, message: "Could not find map", status: 422
   end
 
 end

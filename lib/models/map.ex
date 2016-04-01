@@ -21,7 +21,7 @@ defmodule KeyMaps.Models.Map do
   def changeset(user, params \\ :empty) do
     user
     |> cast(params, ~w(name attributes user_id), ~w())
-    |> unique_constraint(:name)
+    |> unique_constraint(:name, name: :maps_name_user_id_index)
   end
 
 
@@ -33,8 +33,8 @@ defmodule KeyMaps.Models.Map do
   end
 
 
-  def get(params, %{ id: id }, _) do
-    Repo.get_by(id: id, user_id: params.user_id)
+  def get(params, %{ name: name }, _) do
+    Repo.get_by(Models.Map, name: name, user_id: params.user_id)
   end
 
 

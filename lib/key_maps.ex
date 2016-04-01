@@ -6,7 +6,7 @@ defmodule KeyMaps do
 
     children = [
       worker(KeyMaps.Repo, []),
-      worker(KeyMaps.Api, [])
+      worker(KeyMaps.Router, [])
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one)

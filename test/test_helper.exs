@@ -11,12 +11,17 @@ defmodule KeyMaps.TestHelpers do
   alias KeyMaps.{Router}
 
 
-  def request(method, path, attributes, token \\ nil) do
-    conn(method, path, attributes)
+  def request(method, path, attr, token \\ nil) do
+    conn(method, path, attr)
       |> put_req_header( "accept", "application/json" )
       |> put_req_header( "content-type", "application/json" )
       |> put_req_header( "authorization", token || "" )
       |> Router.call( Router.init([]) )
+  end
+
+
+  def request_with_json_body(method, path, map, token \\ nil) do
+    request(method, path, Poison.encode!(map), token)
   end
 
 
@@ -26,16 +31,43 @@ defmodule KeyMaps.TestHelpers do
 
 
   def data_response(conn), do: response(conn, "data")
-  def error_response(conn), do: response(conn, "errors")
+  def error_response(conn), do: response(conn, "errors") |> List.first
 
 
-  def graph_query_request(query, token \\ nil) do
-    request(:get, "/api", %{ query: "query Q { #{query} }" }, token)
+  def graphql_request(type, name, attr), do: graphql_request(type, name, %{}, attr, nil)
+  def graphql_request(type, name, attr, token), do: graphql_request(type, name, %{}, attr, token)
+
+
+  def graphql_request(type, name, args, attr, token) do
+    query = format_graphql_query(type, name, args, attr)
+    method = if type === :mutation do :post else :get end
+
+    request(method, "/api", %{ query: query }, token)
   end
 
 
-  def graph_mutation_request(query, token \\ nil) do
-    request(:post, "/api", %{ query: "mutation M { #{query} }" }, token)
+  #
+  # Private
+  #
+  defp format_graphql_query(type, name, args, attr) do
+    type = Atom.to_string(type)
+    name = Atom.to_string(name)
+    args = Map.to_list(args)
+    attr = Enum.join(attr, ",")
+    id = type |> String.at(0) |> String.upcase
+
+    args = Enum.map args, fn(arg) ->
+      k = elem(arg, 0)
+      v = Poison.encode!(elem(arg, 1))
+
+      "#{k}: #{v}"
+    end
+
+    args = if length(args) > 0,
+      do: "(" <> Enum.join(args, ", ") <> ")",
+    else: ""
+
+    "#{type} #{id} { #{name} #{args} { #{attr} } }"
   end
 
 end

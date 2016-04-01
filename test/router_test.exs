@@ -24,8 +24,13 @@ defmodule RouterTest do
   end
 
 
+
+  #
+  # AUTHENTICATION
+  #
+
   test "sign up and in" do
-    conn = request(:post, "/sign-up", Poison.encode!(@user_auth))
+    conn = request_with_json_body(:post, "/sign-up", @user_auth)
     token = data_response(conn)["token"]
 
     # assert
@@ -34,7 +39,7 @@ defmodule RouterTest do
     assert String.length(token) > 0
 
     # --- sign in
-    conn = request(:post, "/sign-in", Poison.encode!(@user_auth))
+    conn = request_with_json_body(:post, "/sign-in", @user_auth)
     token = data_response(conn)["token"]
 
     # assert
@@ -45,8 +50,8 @@ defmodule RouterTest do
 
 
   test "must be authenticated for graphql queries (ie. /api)" do
-    conn = graph_query_request("maps { name }")
-    message = List.first(error_response(conn))["message"]
+    conn = graphql_request(:query, :maps, ~w(name))
+    message = error_response(conn)["message"]
 
     # assert
     assert conn.status == 403
@@ -54,9 +59,19 @@ defmodule RouterTest do
   end
 
 
+
+  #
+  # MAPS
+  #
+
   test "maps - create", context do
-    map_attr = "name: \"Test\", attributes: [\"example\"]"
-    conn = graph_mutation_request("createMap (#{map_attr}) { name }", context.token)
+    conn = graphql_request(
+      :mutation,
+      :createMap,
+      %{ name: "Test", attributes: ["example"] },
+      ~w(name),
+      context.token
+    )
 
     # assert
     assert conn.status == 200
@@ -65,8 +80,13 @@ defmodule RouterTest do
 
   test "maps - create - name must be unique (case insensitive)", context do
     try do
-      map_attr = "name: \"quotes\", attributes: [\"something\"]"
-      graph_mutation_request("createMap (#{map_attr}) { name }", context.token)
+      graphql_request(
+        :mutation,
+        :createMap,
+        %{ name: "quotes", attributes: ["something"] },
+        ~w(name),
+        context.token
+      )
     rescue
       err -> assert err.status == 422
     end
@@ -80,8 +100,13 @@ defmodule RouterTest do
     { :ok, token, _ } = Guardian.encode_and_sign(user)
 
     # make map
-    map_attr = "name: \"Quotes\", attributes: [\"something\"]"
-    conn = graph_mutation_request("createMap (#{map_attr}) { name }", token)
+    conn = graphql_request(
+      :mutation,
+      :createMap,
+      %{ name: "Quotes", attributes: ["something"] },
+      ~w(name),
+      token
+    )
 
     # assert
     assert conn.status == 200
@@ -89,7 +114,7 @@ defmodule RouterTest do
 
 
   test "maps - get", context do
-     conn = graph_query_request("map (name: \"Quotes\") { name }", context.token)
+     conn = graphql_request(:query, :map, %{ name: "Quotes" }, ~w(name), context.token)
 
      # assert
      assert data_response(conn)["map"]["name"] == "Quotes"
@@ -97,11 +122,21 @@ defmodule RouterTest do
 
 
   test "maps - all", context do
-     conn = graph_query_request("maps { name }", context.token)
+     conn = graphql_request(:query, :maps, ~w(name), context.token)
+
+     # response
      map_item = data_response(conn)["maps"] |> List.first
 
      # assert
      assert map_item["name"] == "Quotes"
   end
+
+
+
+  #
+  # MAP ITEMS
+  #
+
+  # TODO
 
 end

@@ -12,9 +12,6 @@ defmodule KeyMaps.Router do
     pass: ["*/*"],
     json_decoder: Poison
 
-  plug Guardian.Plug.VerifyHeader
-  plug Guardian.Plug.LoadResource
-
   # => endpoint
   plug :match
   plug :dispatch
@@ -31,8 +28,11 @@ defmodule KeyMaps.Router do
   defmodule ApiPipeline do
     use Plug.Builder
 
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated, handler: KeyMaps.Router
-    plug GraphQL.Plug.Endpoint,
+
+    plug KeyMaps.GraphQL.Plug,
       schema: { KeyMaps.GraphQL.Schema, :schema },
       root_value: &KeyMaps.GraphQL.Session.root_value/1
   end

@@ -20,8 +20,21 @@ defmodule KeyMaps.Models.Map do
 
   def changeset(user, params \\ :empty) do
     user
-    |> cast(params, ~w(name attributes user_id), ~w())
+    |> cast(params, ~w(name attributes user_id)a)
+    |> validate_required(~w(name attributes user_id)a)
     |> unique_constraint(:name, name: :maps_name_user_id_index)
+    |> validate_length(:attributes, min: 1)
+    |> update_attributes(:attributes)
+  end
+
+
+  #
+  # {field} Attributes
+  #
+  def update_attributes(changeset, field) do
+    update_change changeset, field, fn(attributes) ->
+      Enum.map(attributes, &Slugger.slugify_downcase/1)
+    end
   end
 
 
@@ -41,6 +54,7 @@ defmodule KeyMaps.Models.Map do
   def create(params, attr, _) do
     attr = %{ user_id: params.user_id } |> Map.merge(attr)
 
+    # insert
     case Repo.insert changeset(%Models.Map{}, attr) do
       { :ok, map } -> map
       { :error, changeset } ->

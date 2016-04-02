@@ -10,16 +10,23 @@ defmodule KeyMaps.Models.MapItem do
   schema "map_items" do
     field :attributes, :map
 
-    field :map, :string
-    field :map_id, :integer
+    belongs_to :map, Models.Map
 
     timestamps
   end
 
 
+  def graphql_attributes do
+    %{
+      map: %{ type: %GraphQL.Type.String{} }
+    }
+  end
+
+
   def changeset(user, params \\ :empty) do
     user
-    |> cast(params, ~w(attributes map_id), ~w())
+    |> cast(params, ~w(attributes map_id)a)
+    |> validate_required(~w(attributes map_id)a)
     |> validate_attributes(:attributes)
   end
 
@@ -27,14 +34,12 @@ defmodule KeyMaps.Models.MapItem do
   #
   # {field} Attributes
   #
-  def validate_attributes(changeset, field, _ \\ []) do
+  def validate_attributes(changeset, field) do
     validate_change changeset, field, fn(_, attributes) ->
-      field = :attributes
-
       cond do
-        count_attributes(attributes) === 0 ->
+        does_not_have_attributes(attributes) ->
           [{ field, "must not be empty" }]
-        find_non_nil_attribute(attributes) !== nil ->
+        has_nil_attribute(attributes) ->
           [{ field, "must have atleast one attribute that's not nil" }]
         true ->
           []
@@ -43,13 +48,13 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  def count_attributes(attributes) do
-    length(Map.keys(attributes))
+  def does_not_have_attributes(attributes) do
+    (attributes |> Map.keys |> length) === 0
   end
 
 
-  def find_non_nil_attribute(attributes) do
-    Enum.find(Map.values(attributes), fn(m) -> m !== nil end)
+  def has_nil_attribute(attributes) do
+    Enum.find(Map.values(attributes), &(&1 != nil)) == nil
   end
 
 
@@ -67,11 +72,12 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  def create(params, attr, _) do
+  def create(params, attr, internal) do
     map = Models.Map.get(params, %{ name: attr.map }, nil)
+    other = KeyMaps.Utils.extract_other_attributes(internal)
 
     if map,
-      do: __create(attr, map.id),
+      do: __create(other, map),
     else: __raise_map_error()
   end
 
@@ -79,15 +85,18 @@ defmodule KeyMaps.Models.MapItem do
   #
   # Private
   #
-  defp __create(attr, map_id) do
-    attr = %{
-      map_id: map_id,
-      attributes: if Map.has_key?(attr, :attributes)
-        do Poison.decode!(attr.attributes)
-        else nil
-      end
-    }
+  defp __create(attr, map) do
+    attr = Enum.filter attr, fn(a) ->
+      key = elem(a, 0) |> Atom.to_string
+      Enum.member?(map.attributes, key)
+    end
 
+    # add map id
+    attr = Enum.into(attr, %{})
+    attr = %{ attributes: attr }
+    attr = Map.put(attr, :map_id, map.id)
+
+    # insert
     case Repo.insert changeset(%Models.MapItem{}, attr) do
       { :ok, map_item } -> map_item
       { :error, changeset } ->

@@ -61,4 +61,19 @@ defmodule KeyMaps.Utils do
     end
   end
 
+
+  def extract_other_attributes(internal) do
+    inn = internal.field_asts |> List.first
+
+    other_attr = if Map.has_key?(inn, :arguments) do
+      Enum.reduce inn.arguments, %{}, fn(arg, acc) ->
+        k = String.to_atom(arg.name.value)
+        v = arg.value.value
+        Map.put(acc, k, v)
+      end
+    end
+
+    other_attr
+  end
+
 end

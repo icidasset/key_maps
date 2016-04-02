@@ -20,7 +20,8 @@ defmodule KeyMaps.Models.User do
 
   def changeset(user, params \\ :empty) do
     user
-    |> cast(params, ~w(email password password_hash), ~w())
+    |> cast(params, ~w(email password_hash)a)
+    |> validate_required(~w(email password_hash)a)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 5)
     |> unique_constraint(:email)

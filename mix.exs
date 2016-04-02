@@ -25,6 +25,7 @@ defmodule KeyMaps.Mixfile do
         :plug,
         :plug_graphql,
         :postgrex,
+        :slugger,
       ],
       mod: {
         KeyMaps,
@@ -47,13 +48,14 @@ defmodule KeyMaps.Mixfile do
       { :corsica, "~> 0.4.1" },
       { :comeonin, "~> 2.3.0" },
       { :cowboy, "~> 1.0.4" },
-      { :ecto, "~> 1.1.5" },
-      { :ectograph, "~> 0.0.3" },
+      { :ecto, "~> 2.0.0-beta.2" },
+      { :ectograph, "~> 0.0.4" },
       { :graphql, "~> 0.2.0" },
       { :guardian, "~> 0.10.1" },
       { :plug, "~> 1.1.2" },
       { :plug_graphql, "~> 0.2.0" },
       { :postgrex, "~> 0.11.1" },
+      { :slugger, "~> 0.1.0" }
     ]
   end
 end

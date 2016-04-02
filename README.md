@@ -10,62 +10,93 @@ _You can find old code in the legacy branches._
 
 ## How it works
 
-To be able to create maps, you must first authenticate yourself:
+### Authentication
 
-```
-POST /sign-up { email: "...", password: "..." }
+```markdown
+POST  /sign-up
+GET   /sign-in
+
+__Request body:__
+
+{
+  "email": "...",
+  "password": "..."
+}
+
+__Response body:__
+
+{
+  "token": "..."
+}
 ```
 
-This will return a token you can use to authenticate your requests.
-__Same goes for `sign-in`.__  
-After that you create map, which has a name/key and a set of attributes.  
+Use the `token` to authenticate requests.  
 For example:
 
-```graphql
+```http
+GET /api?query=query
+Authorization: PLACE_TOKEN_HERE
+```
+
+
+### Private API
+
+__Endpoint__
+
+```http
+GET /api?query=PLACE_QUERY_HERE
+```
+
+__GraphQL queries__
+
+```
 mutation M createMap(
   name: "Quotes",
   attributes: [ "quote", "author" ]
 )
-```
 
-__Note:__ The map name must be unique, it will be casted to
-lowercase for validation.
-
-We now have a "repository" for our quotes,
-and we can add one by, for example, executing this query:
-
-```graphql
 mutation M createMapItem(
   map: "Quotes",
+
   quote: "Specialization tends to shut off the wide-band tuning searches and thus to preclude further discovery.",
   author: "Buckminster Fuller"
-)
-```
+) {
+  attributes
+}
 
-Thus far we have one quote in our repository.
-Let's fetch it from the api.
+query Q mapItems(map: "Quotes") {
+  attributes
+}
 
-```graphql
-query Q mapItem(map: "Quotes", id: ITEM_ID) { quote, author }
-```
+query Q maps() {
+  name,
+  attributes
+}
 
-Great! But what if we would like to see all quotes?
-
-```graphql
-query Q mapItems(map: "Quotes") { quote, author }
-```
-
-__That's it!__
-
-PS. This is how you remove map items and maps:
-
-```
 mutation M removeMapItem(map: "Quotes", id: ITEM_ID)
 mutation M removeMap(name: "Quotes")
 ```
 
+__Notes__  
+The map name must be unique, it will be casted to lowercase for validation.
 
 
-## Public API
+### Public API
 
-__TODO.__
+__TODO__
+
+
+
+## Development
+
+```
+source .env
+
+mix deps.get
+
+mix ecto.create MIX_ENV=test
+mix test
+
+mix ecto.create
+mix run --no-halt
+```

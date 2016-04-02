@@ -1,5 +1,5 @@
 defmodule RouterTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: true
   use Plug.Test
 
   import KeyMaps.TestHelpers
@@ -11,9 +11,17 @@ defmodule RouterTest do
 
 
   setup_all do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(KeyMaps.Repo)
+
+    # setup db
+    Ecto.Adapters.SQL.Sandbox.mode(KeyMaps.Repo, { :shared, self() })
+
+    # create test user
     { :ok, user } = Models.User.create(@user_default)
     { :ok, token, _ } = Guardian.encode_and_sign(user)
     params = %{ user_id: user.id }
+
+    # IO.inspect KeyMaps.Repo.all(Models.User)
 
     # prebuild map
     map_attributes = %{ name: "Quotes", attributes: ["quote", "author"] }
@@ -113,6 +121,51 @@ defmodule RouterTest do
   end
 
 
+  test "maps - create - must have attributes", context do
+    conn = graphql_request(
+      :mutation,
+      :createMap,
+      %{ name: "Test - MHA", attributes: [] },
+      ~w(name),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 400
+    assert error_response(conn)["message"] =~ "at least 1 item"
+  end
+
+
+  test "maps - create - must have valid attributes", context do
+    conn = graphql_request(
+      :mutation,
+      :createMap,
+      %{ name: "Test - MHVA", attributes: [0, 1, 2] },
+      ~w(attributes),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 400
+    assert error_response(conn)["message"] =~ "can't be blank"
+  end
+
+
+  test "maps - create - must sluggify attributes", context do
+    conn = graphql_request(
+      :mutation,
+      :createMap,
+      %{ name: "Test - MHVA", attributes: ["must be slugged"] },
+      ~w(attributes),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 200
+    assert List.first(data_response(conn)["createMap"]["attributes"]) != "must be slugged"
+  end
+
+
   test "maps - get", context do
      conn = graphql_request(:query, :map, %{ name: "Quotes" }, ~w(name), context.token)
 
@@ -137,6 +190,41 @@ defmodule RouterTest do
   # MAP ITEMS
   #
 
-  # TODO
+  test "map items - create", context do
+    conn = graphql_request(
+      :mutation,
+      :createMapItem,
+      %{ map: "Quotes", quote: "A", author: "B" },
+      ~w(attributes),
+      context.token
+    )
+
+    # response
+    map_item = data_response(conn)["createMapItem"]
+
+    # assert
+    assert conn.status == 200
+    assert map_item["attributes"]["quote"] == "A"
+    assert map_item["attributes"]["author"] == "B"
+  end
+
+
+  test "map items - create - should filter other attributes", context do
+    conn = graphql_request(
+      :mutation,
+      :createMapItem,
+      %{ map: "Quotes", quote: "A", shouldNotBeHere: true },
+      ~w(attributes),
+      context.token
+    )
+
+    # response
+    map_item = data_response(conn)["createMapItem"]
+
+    # assert
+    assert conn.status == 200
+    assert map_item["attributes"]["quote"] == "A"
+    assert map_item["attributes"]["shouldNotBeHere"] == nil
+  end
 
 end

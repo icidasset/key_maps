@@ -42,14 +42,24 @@ defmodule KeyMaps.GraphQL.Definitions do
     cast = Ectograph.Schema.cast_schema(model, :ecto_to_graphql)
 
     if elem(cast, 0) == :ok do
-      elem(cast, 1)
+      cast = elem(cast, 1)
+
+      if function_exported? model, :graphql_attributes, 0 do
+        map = model.graphql_attributes()
+        fields = Map.merge(cast.fields, map)
+        cast = Map.put(cast, :fields, fields)
+      end
+
+      cast
+
     else
       raise "Could not cast Ecto schema `" <> model.__schema__(:source) <> "`"
+
     end
   end
 
 
-  @doc """
+  @docp """
     Pick specific fields from a type definition.
 
     # example:

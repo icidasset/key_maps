@@ -21,8 +21,6 @@ defmodule RouterTest do
     { :ok, token, _ } = Guardian.encode_and_sign(user)
     params = %{ user_id: user.id }
 
-    # IO.inspect KeyMaps.Repo.all(Models.User)
-
     # prebuild map
     map_attributes = %{ name: "Quotes", attributes: ["quote", "author"] }
     map = Models.Map.create(params, map_attributes, nil)

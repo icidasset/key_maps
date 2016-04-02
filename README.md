@@ -49,7 +49,7 @@ GET /api?query=PLACE_QUERY_HERE
 
 __GraphQL queries__
 
-```
+```graphql
 mutation M createMap(
   name: "Quotes",
   attributes: [ "quote", "author" ]

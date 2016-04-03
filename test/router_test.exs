@@ -6,8 +6,8 @@ defmodule RouterTest do
 
   alias KeyMaps.{Models}
 
-  @user_default %{ email: "default@email.com", password: "test-default" }
-  @user_auth %{ email: "auth@email.com", password: "test-auth" }
+  @user_default %{ email: "default@email.com", password: "test-default", username: "default" }
+  @user_auth %{ email: "auth@email.com", password: "test-auth", username: "auth" }
 
 
   setup_all do
@@ -32,10 +32,11 @@ defmodule RouterTest do
 
 
   #
-  # AUTHENTICATION
+  # USERS / AUTHENTICATION
   #
 
-  test "sign up and in" do
+  @tag :users
+  test "users -- sign up and in" do
     conn = request_with_json_body(:post, "/sign-up", @user_auth)
     token = data_response(conn)["token"]
 
@@ -55,7 +56,28 @@ defmodule RouterTest do
   end
 
 
-  test "must be authenticated for graphql queries (ie. /api)" do
+  @tag :users
+  test "users -- should have a unique email" do
+    attr = Map.put(@user_default, :username, "something")
+    conn = request_with_json_body(:post, "/sign-up", attr)
+
+    # assert
+    assert conn.status == 400
+  end
+
+
+  @tag :users
+  test "users -- should have a unique username" do
+    attr = Map.put(@user_default, :email, "other-email@example.com")
+    conn = request_with_json_body(:post, "/sign-up", attr)
+
+    # assert
+    assert conn.status == 400
+  end
+
+
+  @tag :users
+  test "users -- should be authenticated for graphql queries (ie. /api)" do
     conn = graphql_request(:query, :maps, ~w(name))
     message = error_response(conn)["message"]
 
@@ -70,7 +92,8 @@ defmodule RouterTest do
   # MAPS
   #
 
-  test "maps - create", context do
+  @tag :maps
+  test "maps -- create", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -84,7 +107,8 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - name should be unique (case insensitive)", context do
+  @tag :maps
+  test "maps -- create -- name should be unique (case insensitive)", context do
     try do
       graphql_request(
         :mutation,
@@ -99,10 +123,15 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - name should only be unique per user" do
-    attr = %{ email: "maps-create-unique@email.com", password: "test-maps-create" }
+  @tag :maps
+  test "maps -- create -- name should only be unique per user" do
+    user_attr = %{
+      email: "maps-create-unique@email.com",
+      password: "test-maps-create",
+      username: "mcu"
+    }
 
-    { :ok, user } = Models.User.create(attr)
+    { :ok, user } = Models.User.create(user_attr)
     { :ok, token, _ } = Guardian.encode_and_sign(user)
 
     # make map
@@ -119,7 +148,8 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - should have attributes", context do
+  @tag :maps
+  test "maps -- create -- should have attributes", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -134,7 +164,8 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - should have valid attributes", context do
+  @tag :maps
+  test "maps -- create -- should have valid attributes", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -149,7 +180,8 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - should sluggify attributes", context do
+  @tag :maps
+  test "maps -- create -- should sluggify attributes", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -164,7 +196,8 @@ defmodule RouterTest do
   end
 
 
-  test "maps - get", context do
+  @tag :maps
+  test "maps -- get", context do
      conn = graphql_request(:query, :map, %{ name: "Quotes" }, ~w(name), context.token)
 
      # assert
@@ -172,7 +205,8 @@ defmodule RouterTest do
   end
 
 
-  test "maps - all", context do
+  @tag :maps
+  test "maps -- all", context do
      conn = graphql_request(:query, :maps, ~w(name), context.token)
 
      # response
@@ -188,7 +222,8 @@ defmodule RouterTest do
   # MAP ITEMS
   #
 
-  test "map items - create", context do
+  @tag :map_items
+  test "map items -- create", context do
     conn = graphql_request(
       :mutation,
       :createMapItem,
@@ -207,7 +242,8 @@ defmodule RouterTest do
   end
 
 
-  test "map items - create - should filter other attributes", context do
+  @tag :map_items
+  test "map items -- create -- should filter other attributes", context do
     conn = graphql_request(
       :mutation,
       :createMapItem,
@@ -223,6 +259,17 @@ defmodule RouterTest do
     assert conn.status == 200
     assert map_item["attributes"]["quote"] == "A"
     assert map_item["attributes"]["shouldNotBeHere"] == nil
+  end
+
+
+
+  #
+  # PUBLIC
+  #
+
+  @tag :public
+  test "public" do
+    assert true
   end
 
 end

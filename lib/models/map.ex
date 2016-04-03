@@ -18,7 +18,7 @@ defmodule KeyMaps.Models.Map do
   end
 
 
-  def changeset(user, params \\ :empty) do
+  def changeset(user, params) do
     user
     |> cast(params, ~w(name attributes user_id)a)
     |> validate_required(~w(name attributes user_id)a)

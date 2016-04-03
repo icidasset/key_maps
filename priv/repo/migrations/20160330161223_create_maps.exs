@@ -2,7 +2,7 @@ defmodule KeyMaps.Repo.Migrations.CreateMaps do
   use Ecto.Migration
 
   def change do
-    execute "CREATE EXTENSION citext"
+    execute "CREATE EXTENSION IF NOT EXISTS citext"
 
     create table(:maps) do
       add :name, :citext

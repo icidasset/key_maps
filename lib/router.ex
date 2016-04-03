@@ -59,19 +59,10 @@ defmodule KeyMaps.Router do
 
 
   post "/sign-up" do
-    if conn.params["email"] == nil ||
-       conn.params["password"] == nil do
-      render_error(conn, 400, "Need a email and a password")
-    else
-      create_user(conn)
-    end
-  end
-
-
-  def create_user(conn) do
     attr = %{
       email: conn.params["email"],
-      password: conn.params["password"]
+      password: conn.params["password"],
+      username: conn.params["username"]
     }
 
     case Models.User.create(attr) do

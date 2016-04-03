@@ -28,13 +28,16 @@ __Request body:__
 
 {
   "email": "...",
-  "password": "..."
+  "password": "...",
+  "username": "..."
 }
 
 __Response body:__
 
 {
-  "token": "..."
+  "data": {
+    "token": "..."
+  }
 }
 ```
 
@@ -73,6 +76,7 @@ mutation M createMapItem(
 }
 
 query Q mapItems(map: "Quotes") {
+  id,
   attributes
 }
 
@@ -91,7 +95,65 @@ The map name must be unique, it will be casted to lowercase for validation.
 
 ### Public API
 
-__TODO__
+__All__ items for a single map:
+
+```
+GET /public/:username/:map_name
+
+:username, your case-insensitive username
+:map_name, your case-insensitive map name
+```
+
+__One__ item for a single map:
+
+```
+GET /public/:username/:map_name/:map_item_id
+```
+
+__Options__
+
+```
+GET /public/:username/:map_name?sort=asc
+
+**sort**, 'asc' or 'desc', when you not specified, it is sorted by creation date.
+```
+
+
+### Responses
+
+The API will always return data in one of the following formats.
+
+__Data__
+
+```json
+{
+  "data": {
+    "attribute": "example"
+  }
+}
+```
+
+In the case of a GraphQL query or mutation.
+
+```json
+{
+  "data": {
+    "query_or_mutation_name": {
+      "attribute": "example"
+    }
+  }
+}
+```
+
+__Errors__
+
+```json
+{
+  "errors": [
+    { "message": "Error message" }
+  ]
+}
+```
 
 
 

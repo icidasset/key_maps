@@ -23,7 +23,7 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  def changeset(user, params \\ :empty) do
+  def changeset(user, params) do
     user
     |> cast(params, ~w(attributes map_id)a)
     |> validate_required(~w(attributes map_id)a)

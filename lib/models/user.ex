@@ -11,6 +11,7 @@ defmodule KeyMaps.Models.User do
     field :email, :string
     field :password, :string, virtual: true
     field :password_hash, :string
+    field :username, :string
 
     has_many :maps, Models.Map
 
@@ -18,13 +19,15 @@ defmodule KeyMaps.Models.User do
   end
 
 
-  def changeset(user, params \\ :empty) do
+  def changeset(user, params) do
     user
-    |> cast(params, ~w(email password_hash)a)
-    |> validate_required(~w(email password_hash)a)
+    |> cast(params, ~w(email password_hash username)a)
+    |> validate_required(~w(email password_hash username)a)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:password, min: 5)
+    |> validate_length(:username, min: 2)
     |> unique_constraint(:email)
+    |> unique_constraint(:username)
   end
 
 

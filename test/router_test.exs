@@ -21,9 +21,25 @@ defmodule RouterTest do
     { :ok, token, _ } = Guardian.encode_and_sign(user)
     params = %{ user_id: user.id }
 
-    # prebuild map
+    # pre-build map
     map_attributes = %{ name: "Quotes", attributes: ["quote", "author"] }
     map = Models.Map.create(params, map_attributes, nil)
+
+    # pre-build map item – 1
+    map_item_attributes = %{ map: map_attributes.name, quote: "1st Q", author: "1st A" }
+    Models.MapItem.do_create(map_item_attributes, map)
+
+    # pre-build map item – 1 – created a second later
+    t = Task.async fn ->
+      receive do
+        :ok ->
+          map_item_attributes = %{ map: map_attributes.name, quote: "2nd Q", author: "2nd A" }
+          Models.MapItem.do_create(map_item_attributes, map)
+      end
+    end
+
+    Process.send_after(t.pid, :ok, 1000)
+    Task.await(t)
 
     # --> share data with tests
     { :ok, %{ token: token, map: map } }
@@ -268,8 +284,43 @@ defmodule RouterTest do
   #
 
   @tag :public
-  test "public" do
-    assert true
+  test "public -- map" do
+    conn = request(:get, "/public/default/quotes", nil)
+
+    data = data_response(conn)
+    data = Enum.filter data, fn(d) ->
+      if Map.has_key?(d, "author"),
+        do: String.last(d["author"]) === "A"
+    end
+
+    first_item = Enum.at(data, 0)
+    second_item = Enum.at(data, 1)
+
+    # assert
+    assert is_list(data)
+
+    assert first_item["quote"] == "2nd Q"
+    assert first_item["author"] == "2nd A"
+
+    assert second_item["quote"] == "1st Q"
+    assert second_item["author"] == "1st A"
+  end
+
+
+  test "public -- map -- sorted" do
+    conn = request(:get, "/public/default/quotes", %{ sort_by: "author" })
+
+    data = data_response(conn)
+    data = Enum.filter data, fn(d) ->
+      if Map.has_key?(d, "author"),
+        do: String.last(d["author"]) === "A"
+    end
+
+    first_item = Enum.at(data, 0)
+
+    # assert
+    assert first_item["quote"] == "1st Q"
+    assert first_item["author"] == "1st A"
   end
 
 end

@@ -11,7 +11,10 @@ defmodule KeyMaps.TestHelpers do
 
 
   def request(method, path, attr, token \\ nil) do
-    conn(method, path, attr)
+    params = if is_binary(attr), do: attr
+    path = if is_binary(attr), do: path, else: path <> "?" <> Plug.Conn.Query.encode(attr)
+
+    conn(method, path, params)
       |> put_req_header( "accept", "application/json" )
       |> put_req_header( "content-type", "application/json" )
       |> put_req_header( "authorization", token || "" )

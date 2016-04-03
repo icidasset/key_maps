@@ -39,6 +39,11 @@ defmodule KeyMaps.Models.User do
   end
 
 
+  def get_by_username(username) do
+    Repo.get_by(Models.User, username: username)
+  end
+
+
   def create(args) do
     args = Map.put(args, :password_hash, hashpwsalt(args.password))
 

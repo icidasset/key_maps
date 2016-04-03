@@ -64,4 +64,12 @@ defmodule KeyMaps.Models.Map do
     end
   end
 
+
+  #
+  # Associations
+  #
+  def load_map_items_into(map) do
+    Repo.preload(map, map_items: from(m in Models.MapItem, order_by: [desc: m.inserted_at]))
+  end
+
 end

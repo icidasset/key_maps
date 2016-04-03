@@ -112,10 +112,12 @@ GET /public/:username/:map_name/:map_item_id
 
 __Options__
 
-```
-GET /public/:username/:map_name?sort=asc
+```markdown
+GET /public/:username/:map_name?sort_by=author
 
-**sort**, 'asc' or 'desc', when you not specified, it is sorted by creation date.
+**sort_by**, e.g. 'author', when not specified, it is sorted by insertion date.  
+**sort_direction**, 'asc' or 'desc', default is 'asc'.  
+**timestamps**, include this to add the timestamps of the item.  
 ```
 
 
@@ -163,8 +165,6 @@ __Errors__
 source .env
 
 mix deps.get
-
-mix ecto.create MIX_ENV=test
 mix test
 
 mix ecto.create

@@ -1,13 +1,5 @@
 defmodule KeyMaps.Utils do
 
-  def render_json(conn, status, map) do
-    content = Poison.encode!(map)
-
-    Plug.Conn.put_resp_content_type(conn, "application/json")
-    Plug.Conn.send_resp(conn, status, content)
-  end
-
-
   def render_data(conn, status, map) do
     render_json(conn, status, %{ data: map })
   end
@@ -74,6 +66,17 @@ defmodule KeyMaps.Utils do
     end
 
     other_attr
+  end
+
+
+  #
+  # Private
+  #
+  defp render_json(conn, status, map) do
+    content = Poison.encode!(map)
+
+    Plug.Conn.put_resp_content_type(conn, "application/json")
+    Plug.Conn.send_resp(conn, status, content)
   end
 
 end

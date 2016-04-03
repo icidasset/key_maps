@@ -82,10 +82,7 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  #
-  # Private
-  #
-  defp do_create(args, map) do
+  def do_create(args, map) do
     args = Enum.filter args, fn(a) ->
       key = elem(a, 0) |> Atom.to_string
       Enum.member?(map.attributes, key)
@@ -107,6 +104,9 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
+  #
+  # Private
+  #
   defp do_raise_map_error do
     raise GraphQL.CustomError, message: "Could not find map", status: 422
   end

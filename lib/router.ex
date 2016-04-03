@@ -1,7 +1,7 @@
 defmodule KeyMaps.Router do
   use Plug.Router
 
-  alias KeyMaps.{ Models }
+  alias KeyMaps.{Models}
 
   import Comeonin.Bcrypt
   import KeyMaps.Utils

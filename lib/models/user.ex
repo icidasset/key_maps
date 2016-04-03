@@ -31,22 +31,16 @@ defmodule KeyMaps.Models.User do
   #
   # Queries
   #
-  def get_by_email(email), do: Repo.get_by(Models.User, email: email)
-  def create(attr), do: Repo.insert format(attr)
+  def get_by_email(email) do
+    Repo.get_by(Models.User, email: email)
+  end
 
 
-  #
-  # Private
-  #
-  defp format(attr) do
-    changeset(
-      %Models.User{},
-      %{
-        email: attr.email,
-        password: attr.password,
-        password_hash: hashpwsalt(attr.password)
-      }
-    )
+  def create(args) do
+    args = Map.put(args, :password_hash, hashpwsalt(args.password))
+
+    # insert
+    Repo.insert changeset(%Models.User{}, args)
   end
 
 end

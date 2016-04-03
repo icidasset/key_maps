@@ -61,43 +61,43 @@ defmodule KeyMaps.Models.MapItem do
   #
   # Queries
   #
-  def all(params, attr, _) do
-    map = Models.Map.get(params, %{ name: attr.map }, nil)
+  def all(params, args, _) do
+    map = Models.Map.get(params, %{ name: args.map }, nil)
 
     if map do
       Repo.all(from m in Models.MapItem, where: m.map_id == ^map.id)
     else
-      __raise_map_error()
+      do_raise_map_error()
     end
   end
 
 
-  def create(params, attr, internal) do
-    map = Models.Map.get(params, %{ name: attr.map }, nil)
-    other = KeyMaps.Utils.extract_other_attributes(internal)
+  def create(params, args, internal) do
+    map = Models.Map.get(params, %{ name: args.map }, nil)
+    other_args = KeyMaps.Utils.extract_other_arguments(internal)
 
     if map,
-      do: __create(other, map),
-    else: __raise_map_error()
+      do: do_create(other_args, map),
+    else: do_raise_map_error()
   end
 
 
   #
   # Private
   #
-  defp __create(attr, map) do
-    attr = Enum.filter attr, fn(a) ->
+  defp do_create(args, map) do
+    args = Enum.filter args, fn(a) ->
       key = elem(a, 0) |> Atom.to_string
       Enum.member?(map.attributes, key)
     end
 
     # add map id
-    attr = Enum.into(attr, %{})
-    attr = %{ attributes: attr }
-    attr = Map.put(attr, :map_id, map.id)
+    args = Enum.into(args, %{})
+    args = %{ attributes: args }
+    args = Map.put(args, :map_id, map.id)
 
     # insert
-    case Repo.insert changeset(%Models.MapItem{}, attr) do
+    case Repo.insert changeset(%Models.MapItem{}, args) do
       { :ok, map_item } -> map_item
       { :error, changeset } ->
         raise GraphQL.CustomError,
@@ -107,7 +107,7 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  defp __raise_map_error do
+  defp do_raise_map_error do
     raise GraphQL.CustomError, message: "Could not find map", status: 422
   end
 

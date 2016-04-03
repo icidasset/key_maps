@@ -51,11 +51,11 @@ defmodule KeyMaps.Models.Map do
   end
 
 
-  def create(params, attr, _) do
-    attr = %{ user_id: params.user_id } |> Map.merge(attr)
+  def create(params, args, _) do
+    args = %{ user_id: params.user_id } |> Map.merge(args)
 
     # insert
-    case Repo.insert changeset(%Models.Map{}, attr) do
+    case Repo.insert changeset(%Models.Map{}, args) do
       { :ok, map } -> map
       { :error, changeset } ->
         raise GraphQL.CustomError,

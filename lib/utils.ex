@@ -62,7 +62,7 @@ defmodule KeyMaps.Utils do
   end
 
 
-  def extract_other_attributes(internal) do
+  def extract_other_arguments(internal) do
     inn = internal.field_asts |> List.first
 
     other_attr = if Map.has_key?(inn, :arguments) do

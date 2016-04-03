@@ -84,7 +84,7 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - name must be unique (case insensitive)", context do
+  test "maps - create - name should be unique (case insensitive)", context do
     try do
       graphql_request(
         :mutation,
@@ -99,7 +99,7 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - name must only be unique per user" do
+  test "maps - create - name should only be unique per user" do
     attr = %{ email: "maps-create-unique@email.com", password: "test-maps-create" }
 
     { :ok, user } = Models.User.create(attr)
@@ -119,7 +119,7 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - must have attributes", context do
+  test "maps - create - should have attributes", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -134,7 +134,7 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - must have valid attributes", context do
+  test "maps - create - should have valid attributes", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -149,7 +149,7 @@ defmodule RouterTest do
   end
 
 
-  test "maps - create - must sluggify attributes", context do
+  test "maps - create - should sluggify attributes", context do
     conn = graphql_request(
       :mutation,
       :createMap,

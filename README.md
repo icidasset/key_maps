@@ -1,6 +1,6 @@
 # Key Maps
 
-Key maps provides an interface to fill in custom data structures and a JSON api with CORS support to fetch the data.
+A simple data-structure API.
 
 __Work in progress.__
 
@@ -9,6 +9,14 @@ _You can find old code in the legacy branches._
 
 
 ## How it works
+
+1. You make a map (like a database table), e.g. "Quotes"
+2. You add data to the map, e.g. a quote and its author
+3. You can fetch this data through a public JSON API
+
+
+
+## The API
 
 ### Authentication
 

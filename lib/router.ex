@@ -23,26 +23,6 @@ defmodule KeyMaps.Router do
 
 
   #
-  # GraphQL API
-  #
-  defmodule ApiPipeline do
-    use Plug.Builder
-
-    plug Guardian.Plug.VerifyHeader
-    plug Guardian.Plug.LoadResource
-    plug Guardian.Plug.EnsureAuthenticated, handler: KeyMaps.Router
-
-    plug KeyMaps.GraphQL.Plug,
-      schema: { KeyMaps.GraphQL.Schema, :schema },
-      root_value: &KeyMaps.GraphQL.Session.root_value/1
-  end
-
-
-  forward "/api",
-    to: ApiPipeline
-
-
-  #
   # Authentication
   #
   post "/sign-in" do
@@ -78,7 +58,27 @@ defmodule KeyMaps.Router do
 
 
   #
-  # Public
+  # Private API (GraphQL)
+  #
+  defmodule ApiPipeline do
+    use Plug.Builder
+
+    plug Guardian.Plug.VerifyHeader
+    plug Guardian.Plug.LoadResource
+    plug Guardian.Plug.EnsureAuthenticated, handler: KeyMaps.Router
+
+    plug KeyMaps.GraphQL.Plug,
+      schema: { KeyMaps.GraphQL.Schema, :schema },
+      root_value: &KeyMaps.GraphQL.Session.root_value/1
+  end
+
+
+  forward "/api",
+    to: ApiPipeline
+
+
+  #
+  # Public API
   #
   forward "/public",
     to: KeyMaps.Public.Plug

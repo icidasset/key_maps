@@ -27,22 +27,22 @@ defmodule RouterTest do
 
     # pre-build map item – 1
     map_item_attributes = %{ map: map_attributes.name, quote: "1st Q", author: "1st A" }
-    Models.MapItem.do_create(map_item_attributes, map)
+    map_item_1 = Models.MapItem.create(map, map_item_attributes)
 
-    # pre-build map item – 1 – created a second later
+    # pre-build map item – 2 – created a second later
     t = Task.async fn ->
       receive do
         :ok ->
           map_item_attributes = %{ map: map_attributes.name, quote: "2nd Q", author: "2nd A" }
-          Models.MapItem.do_create(map_item_attributes, map)
+          Models.MapItem.create(map, map_item_attributes)
       end
     end
 
-    Process.send_after(t.pid, :ok, 1000)
+    Process.send_after(t.pid, :ok, 1500)
     Task.await(t)
 
     # --> share data with tests
-    { :ok, %{ token: token, map: map } }
+    { :ok, %{ token: token, map: map, map_item_1: map_item_1 } }
   end
 
 
@@ -297,6 +297,7 @@ defmodule RouterTest do
     second_item = Enum.at(data, 1)
 
     # assert
+    assert conn.status == 200
     assert is_list(data)
 
     assert first_item["quote"] == "2nd Q"
@@ -319,8 +320,38 @@ defmodule RouterTest do
     first_item = Enum.at(data, 0)
 
     # assert
+    assert conn.status == 200
     assert first_item["quote"] == "1st Q"
     assert first_item["author"] == "1st A"
+  end
+
+
+  test "public -- map -- timestamps" do
+    conn = request(:get, "/public/default/quotes", %{ timestamps: "1" })
+
+    data = data_response(conn)
+    data = Enum.filter data, fn(d) ->
+      if Map.has_key?(d, "author"),
+        do: String.last(d["author"]) === "A"
+    end
+
+    first_item = Enum.at(data, 0)
+
+    # assert
+    assert conn.status == 200
+    assert first_item["inserted_at"]
+    assert first_item["updated_at"]
+  end
+
+
+  test "public -- map -- single item", context do
+    id = Integer.to_string(context.map_item_1.id)
+    conn = request(:get, "/public/default/quotes/" <> id, %{})
+    data = data_response(conn)
+
+    # assert
+    assert conn.status == 200
+    assert data["quote"] == "1st Q"
   end
 
 end

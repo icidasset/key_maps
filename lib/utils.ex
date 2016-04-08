@@ -11,7 +11,7 @@ defmodule KeyMaps.Utils do
 
 
   def render_token(conn, status, user) do
-    conn = Guardian.Plug.api_sign_in(conn, user)
+    conn = Guardian.Plug.api_sign_in(conn, user, :long_lived_token)
     token = Guardian.Plug.current_token(conn)
 
     data = %{

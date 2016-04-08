@@ -44,11 +44,11 @@ defmodule KeyMaps.Models.User do
   end
 
 
-  def create(args) do
-    args = Map.put(args, :password_hash, hashpwsalt(args.password))
+  def create(attr) do
+    attr = Map.put(attr, :password_hash, hashpwsalt(attr.password))
 
     # insert
-    Repo.insert changeset(%Models.User{}, args)
+    Repo.insert changeset(%Models.User{}, attr)
   end
 
 end

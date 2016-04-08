@@ -2,7 +2,15 @@ defmodule KeyMaps.Public.Processor do
   alias KeyMaps.Models
 
   def run(map, opts \\ %{}) do
-    map = Models.Map.load_map_items_into(map)
+    type = if Map.has_key?(opts, "map_item_id"),
+      do: :single,
+    else: :multiple
+
+    # load map items
+    map = case type do
+      :single -> Models.Map.load_map_item_into(map, opts["map_item_id"])
+      :multiple -> Models.Map.load_map_items_into(map)
+    end
 
     # data
     include_timestamps = Map.has_key?(opts, "timestamps")
@@ -18,23 +26,33 @@ defmodule KeyMaps.Public.Processor do
       attr
     end
 
-    # sort
+    # to be continued
+    do_run(type, map_items, opts)
+  end
+
+
+  defp do_run(:single, map_items, _) do
+    Enum.at(map_items, 0)
+  end
+
+
+  defp do_run(:multiple, map_items, opts) do
     if Map.has_key?(opts, "sort_by") do
       first_map_item = List.first(map_items)
-
       the_sort_key = opts["sort_by"]
-      has_sort_key = if first_map_item, do: Map.has_key?(first_map_item, the_sort_key)
 
       sort_direction = Map.get(opts, "sort_direction", "asc")
       sort_direction = String.to_atom(sort_direction)
 
-      if has_sort_key do
-        map_items = Enum.sort_by(
-          map_items,
-          ( fn(m) -> Map.get(m, the_sort_key) end ),
-          ( if sort_direction == :desc do &>=/2 else &<=/2 end )
-        )
-      end
+      sort_method = if sort_direction == :desc,
+          do: &>=/2,
+        else: &<=/2
+
+      map_items = Enum.sort_by(
+        map_items,
+        ( fn(m) -> Map.get(m, the_sort_key) || "" end ),
+        ( sort_method )
+      )
     end
 
     # return

@@ -4,7 +4,7 @@ defmodule KeyMaps.Models.Map do
   alias KeyMaps.{Repo, Models}
 
   import Ecto.Changeset
-  import Ecto.Query
+  import Ecto.Query, only: [from: 1, from: 2]
 
 
   schema "maps" do
@@ -69,7 +69,14 @@ defmodule KeyMaps.Models.Map do
   # Associations
   #
   def load_map_items_into(map) do
-    Repo.preload(map, map_items: from(m in Models.MapItem, order_by: [desc: m.inserted_at]))
+    query = from(m in Models.MapItem, order_by: [desc: m.inserted_at])
+    Repo.preload(map, map_items: query)
+  end
+
+
+  def load_map_item_into(map, item_id) do
+    query = from(m in Models.MapItem, where: m.id == ^item_id)
+    Repo.preload(map, map_items: query)
   end
 
 end

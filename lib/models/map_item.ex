@@ -4,7 +4,7 @@ defmodule KeyMaps.Models.MapItem do
   alias KeyMaps.{Repo, Models}
 
   import Ecto.Changeset
-  import Ecto.Query
+  import Ecto.Query, only: [from: 1, from: 2]
 
 
   schema "map_items" do
@@ -77,12 +77,17 @@ defmodule KeyMaps.Models.MapItem do
     other_args = KeyMaps.Utils.extract_other_arguments(internal)
 
     if map,
-      do: do_create(other_args, map),
+      do: do_create(map, other_args),
     else: do_raise_map_error()
   end
 
 
-  def do_create(args, map) do
+  def create(map, args) do
+    do_create(map, args)
+  end
+
+
+  defp do_create(map, args) do
     args = Enum.filter args, fn(a) ->
       key = elem(a, 0) |> Atom.to_string
       Enum.member?(map.attributes, key)

@@ -1,9 +1,8 @@
 defmodule KeyMaps.Public.Plug do
-  import Plug.Conn
   import KeyMaps.Utils
 
   alias Plug.Conn
-  alias KeyMaps.{Models, Public.Processor, Repo}
+  alias KeyMaps.{Models, Public.Processor}
 
   @behaviour Plug
 
@@ -61,6 +60,11 @@ defmodule KeyMaps.Public.Plug do
 
   defp collect_and_render(conn, map, opts) do
     processor_options = conn.query_params
+
+    if opts.map_item_id != nil do
+      processor_options = Map.put(processor_options, "map_item_id", opts.map_item_id)
+    end
+
     map_items = Processor.run(map, processor_options)
 
     # render

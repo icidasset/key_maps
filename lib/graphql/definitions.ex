@@ -34,6 +34,17 @@ defmodule KeyMaps.GraphQL.Definitions do
   end
 
 
+  def build(model, :delete, attributes) do
+    type_def = build_type(model)
+
+    %{
+      type: type_def,
+      args: pick_types(type_def, attributes),
+      resolve: &model.delete/3,
+    }
+  end
+
+
   #
   # Private
   #

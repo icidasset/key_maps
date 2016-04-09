@@ -11,6 +11,7 @@ defmodule KeyMaps.GraphQL.Schema do
         fields: %{
           map:        Definitions.build(Map,      :get, ~w(name)a   ),
           maps:       Definitions.build(Map,      :all, ~w()a       ),
+          mapItem:    Definitions.build(MapItem,  :get, ~w(id)a     ),
           mapItems:   Definitions.build(MapItem,  :all, ~w(map)a    ),
         }
       },
@@ -20,7 +21,9 @@ defmodule KeyMaps.GraphQL.Schema do
         description: "Key Maps API Mutations",
         fields: %{
           createMap:      Definitions.build(Map,      :create, ~w(name attributes)a   ),
-          createMapItem:  Definitions.build(MapItem,  :create, ~w(map attributes)a    ),
+          createMapItem:  Definitions.build(MapItem,  :create, ~w(map)a               ),
+          removeMap:      Definitions.build(Map,      :delete, ~w(name)a              ),
+          removeMapItem:  Definitions.build(MapItem,  :delete, ~w(id)a                ),
         },
       }
 

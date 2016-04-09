@@ -65,6 +65,25 @@ defmodule KeyMaps.Models.Map do
   end
 
 
+  def delete(params, args, _) do
+    map = Models.Map.get(params, args, nil)
+
+    if map do
+      case Repo.delete map do
+        { :ok, struct } -> struct
+        { :error, changeset } ->
+          raise GraphQL.CustomError,
+            message: KeyMaps.Utils.get_error_from_changeset(changeset),
+            status: 422
+      end
+
+    else
+      raise GraphQL.CustomError, message: "Could not find map", status: 404
+
+    end
+  end
+
+
   #
   # Associations
   #

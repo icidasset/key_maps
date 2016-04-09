@@ -42,7 +42,11 @@ defmodule RouterTest do
     Task.await(t)
 
     # --> share data with tests
-    { :ok, %{ token: token, map: map, map_item_1: map_item_1 } }
+    { :ok, %{
+      map: map,
+      map_item_1: map_item_1,
+      token: token,
+      user_id: user.id }}
   end
 
 
@@ -214,22 +218,41 @@ defmodule RouterTest do
 
   @tag :maps
   test "maps -- get", context do
-     conn = graphql_request(:query, :map, %{ name: "Quotes" }, ~w(name), context.token)
+    conn = graphql_request(:query, :map, %{ name: "Quotes" }, ~w(name), context.token)
 
-     # assert
-     assert data_response(conn)["map"]["name"] == "Quotes"
+    # assert
+    assert data_response(conn)["map"]["name"] == "Quotes"
   end
 
 
   @tag :maps
   test "maps -- all", context do
-     conn = graphql_request(:query, :maps, ~w(name), context.token)
+    conn = graphql_request(:query, :maps, ~w(name), context.token)
 
-     # response
-     map_item = data_response(conn)["maps"] |> List.first
+    # response
+    map_item = data_response(conn)["maps"] |> List.first
 
-     # assert
-     assert map_item["name"] == "Quotes"
+    # assert
+    assert map_item["name"] == "Quotes"
+  end
+
+
+  @tag :maps
+  test "maps -- remove", context do
+    map_attributes = %{ name: "ZZZ - Remove test", attributes: ["something"] }
+    map = Models.Map.create(context, map_attributes, nil)
+
+    conn = graphql_request(
+      :mutation,
+      :removeMap,
+      %{ name: map.name },
+      ~w(name),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 200
+    assert Models.Map.get(context, %{ name: map.name }, nil) == nil
   end
 
 
@@ -275,6 +298,66 @@ defmodule RouterTest do
     assert conn.status == 200
     assert map_item["attributes"]["quote"] == "A"
     assert map_item["attributes"]["shouldNotBeHere"] == nil
+  end
+
+
+  @tag :map_items
+  test "map items -- all", context do
+    conn = graphql_request(
+      :query,
+      :mapItems,
+      %{ map: "Quotes" },
+      ~w(id attributes),
+      context.token
+    )
+
+    # response
+    map_item = data_response(conn)["mapItems"]
+      |> List.first
+
+    # assert
+    assert conn.status == 200
+    assert map_item["id"]
+    assert map_item["attributes"]
+  end
+
+
+  @tag :map_items
+  test "map items -- get", context do
+    conn = graphql_request(
+      :query,
+      :mapItem,
+      %{ id: context.map_item_1.id },
+      ~w(id attributes),
+      context.token
+    )
+
+    # response
+    map_item = data_response(conn)["mapItem"]
+
+    # assert
+    assert conn.status == 200
+    assert map_item["id"] == Integer.to_string(context.map_item_1.id)
+    assert map_item["attributes"]
+  end
+
+
+  @tag :map_items
+  test "map items -- remove", context do
+    map_item_attributes = %{ map: context.map.name, quote: "Z", author: "Z" }
+    map_item = Models.MapItem.create(context.map, map_item_attributes)
+
+    conn = graphql_request(
+      :mutation,
+      :removeMapItem,
+      %{ id: map_item.id },
+      ~w(id),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 200
+    assert KeyMaps.Repo.get_by(Models.Map, id: map_item.id) == nil
   end
 
 

@@ -85,8 +85,11 @@ query Q maps() {
   attributes
 }
 
-mutation M removeMapItem(map: "Quotes", id: ITEM_ID)
-mutation M removeMap(name: "Quotes")
+query Q mapItem(id: ITEM_ID) { attributes }
+query Q map(name: "Quotes") { attributes }
+
+mutation M removeMapItem(id: ITEM_ID) { id }
+mutation M removeMap(name: "Quotes") { name }
 ```
 
 __Notes__  

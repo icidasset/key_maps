@@ -61,8 +61,8 @@ defmodule KeyMaps.Models.MapItem do
   #
   # Queries
   #
-  def all(params, args, _) do
-    map = Models.Map.get(params, %{ name: args.map }, nil)
+  def all(params, %{ map: map }, _) do
+    map = Models.Map.get(params, %{ name: map }, nil)
 
     if map do
       Repo.all(from m in Models.MapItem, where: m.map_id == ^map.id)
@@ -72,8 +72,18 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  def create(params, args, internal) do
-    map = Models.Map.get(params, %{ name: args.map }, nil)
+  def get(params, %{ id: id }, _) do
+    query = from i in Models.MapItem,
+      join: m in assoc(i, :map),
+      where: i.id == ^id,
+      where: m.user_id == ^params.user_id
+
+    Repo.one(query)
+  end
+
+
+  def create(params, %{ map: map }, internal) do
+    map = Models.Map.get(params, %{ name: map }, nil)
     other_args = KeyMaps.Utils.extract_other_arguments(internal)
 
     if map,
@@ -87,6 +97,28 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
+  def delete(params, args, _) do
+    map_item = Models.MapItem.get(params, args, nil)
+
+    if map_item do
+      case Repo.delete map_item do
+        { :ok, struct } -> struct
+        { :error, changeset } ->
+          raise GraphQL.CustomError,
+            message: KeyMaps.Utils.get_error_from_changeset(changeset),
+            status: 422
+      end
+
+    else
+      do_raise_map_error()
+
+    end
+  end
+
+
+  #
+  # Private
+  #
   defp do_create(map, args) do
     args = Enum.filter args, fn(a) ->
       key = elem(a, 0) |> Atom.to_string
@@ -109,11 +141,8 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  #
-  # Private
-  #
   defp do_raise_map_error do
-    raise GraphQL.CustomError, message: "Could not find map", status: 422
+    raise GraphQL.CustomError, message: "Could not find map", status: 404
   end
 
 end

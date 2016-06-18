@@ -67,7 +67,7 @@ defmodule KeyMaps.Router do
     plug Guardian.Plug.LoadResource
     plug Guardian.Plug.EnsureAuthenticated, handler: KeyMaps.Router
 
-    plug KeyMaps.GraphQL.Plug,
+    plug GraphQL.Plug,
       schema: { KeyMaps.GraphQL.Schema, :schema },
       root_value: &KeyMaps.GraphQL.Session.root_value/1
   end

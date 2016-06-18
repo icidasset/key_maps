@@ -27,4 +27,7 @@ config :guardian, Guardian,
   serializer: KeyMaps.Guardian.Serializer
 
 
+config :key_maps, ecto_repos: [KeyMaps.Repo]
+
+
 import_config "#{Mix.env}.exs"

@@ -45,16 +45,16 @@ defmodule KeyMaps.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      { :corsica, "~> 0.4.1" },
-      { :comeonin, "~> 2.3.0" },
+      { :corsica, "~> 0.4.2" },
+      { :comeonin, "~> 2.4.0" },
       { :cowboy, "~> 1.0.4" },
-      { :ecto, "~> 2.0.0-beta.2" },
-      { :ectograph, "~> 0.0.4" },
-      { :graphql, "~> 0.2.0" },
-      { :guardian, "~> 0.10.1" },
-      { :plug, "~> 1.1.2" },
-      { :plug_graphql, "~> 0.2.0" },
-      { :postgrex, "~> 0.11.1" },
+      { :ecto, "~> 2.0.0-rc.6" },
+      { :ectograph, path: "../ectograph" },
+      { :graphql, "~> 0.3.1" },
+      { :guardian, "~> 0.12.0" },
+      { :plug, "~> 1.1.6" },
+      { :plug_graphql, "~> 0.3.1" },
+      { :postgrex, "~> 0.11.2" },
       { :slugger, "~> 0.1.0" }
     ]
   end

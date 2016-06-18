@@ -179,7 +179,6 @@ defmodule RouterTest do
     )
 
     # assert
-    assert conn.status == 400
     assert error_response(conn)["message"] =~ "at least 1 item"
   end
 
@@ -195,8 +194,7 @@ defmodule RouterTest do
     )
 
     # assert
-    assert conn.status == 400
-    assert error_response(conn)["message"] =~ "can't be blank"
+    assert error_response(conn)["message"] =~ "is invalid"
   end
 
 

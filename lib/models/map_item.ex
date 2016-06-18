@@ -16,13 +16,6 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  def graphql_attributes do
-    %{
-      map: %{ type: %GraphQL.Type.String{} }
-    }
-  end
-
-
   def changeset(user, params) do
     user
     |> cast(params, ~w(attributes map_id)a)
@@ -103,10 +96,7 @@ defmodule KeyMaps.Models.MapItem do
     if map_item do
       case Repo.delete map_item do
         { :ok, struct } -> struct
-        { :error, changeset } ->
-          raise GraphQL.CustomError,
-            message: KeyMaps.Utils.get_error_from_changeset(changeset),
-            status: 422
+        { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
       end
 
     else
@@ -133,16 +123,13 @@ defmodule KeyMaps.Models.MapItem do
     # insert
     case Repo.insert changeset(%Models.MapItem{}, args) do
       { :ok, map_item } -> map_item
-      { :error, changeset } ->
-        raise GraphQL.CustomError,
-          message: KeyMaps.Utils.get_error_from_changeset(changeset),
-          status: 422
+      { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
     end
   end
 
 
   defp do_raise_map_error do
-    raise GraphQL.CustomError, message: "Could not find map", status: 404
+    raise "Could not find map"
   end
 
 end

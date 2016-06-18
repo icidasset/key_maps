@@ -57,10 +57,7 @@ defmodule KeyMaps.Models.Map do
     # insert
     case Repo.insert changeset(%Models.Map{}, args) do
       { :ok, map } -> map
-      { :error, changeset } ->
-        raise GraphQL.CustomError,
-          message: KeyMaps.Utils.get_error_from_changeset(changeset),
-          status: 422
+      { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
     end
   end
 
@@ -71,14 +68,11 @@ defmodule KeyMaps.Models.Map do
     if map do
       case Repo.delete map do
         { :ok, struct } -> struct
-        { :error, changeset } ->
-          raise GraphQL.CustomError,
-            message: KeyMaps.Utils.get_error_from_changeset(changeset),
-            status: 422
+        { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
       end
 
     else
-      raise GraphQL.CustomError, message: "Could not find map", status: 404
+      raise "Could not find map"
 
     end
   end

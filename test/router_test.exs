@@ -236,7 +236,27 @@ defmodule RouterTest do
 
 
   @tag :maps
-  test "maps -- remove", context do
+  test "maps -- update", context do
+    map_attributes = %{ name: "ZZZ - Update test", attributes: ["something"] }
+    map = Models.Map.create(context, map_attributes, nil)
+    new_name = String.replace(map.name, "test", "test success")
+
+    conn = graphql_request(
+      :mutation,
+      :updateMap,
+      %{ id: map.id, name: new_name },
+      ~w(name),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 200
+    assert Models.Map.get(context, %{ id: map.id }, nil).name == "ZZZ - Update test success"
+  end
+
+
+  @tag :maps
+  test "maps -- remove (by name)", context do
     map_attributes = %{ name: "ZZZ - Remove test", attributes: ["something"] }
     map = Models.Map.create(context, map_attributes, nil)
 
@@ -251,6 +271,25 @@ defmodule RouterTest do
     # assert
     assert conn.status == 200
     assert Models.Map.get(context, %{ name: map.name }, nil) == nil
+  end
+
+
+  @tag :maps
+  test "maps -- remove (by id)", context do
+    map_attributes = %{ name: "ZZZ - Remove test", attributes: ["something"] }
+    map = Models.Map.create(context, map_attributes, nil)
+
+    conn = graphql_request(
+      :mutation,
+      :removeMap,
+      %{ id: map.id },
+      ~w(name),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 200
+    assert Models.Map.get(context, %{ id: map.id }, nil) == nil
   end
 
 
@@ -341,6 +380,26 @@ defmodule RouterTest do
 
 
   @tag :map_items
+  test "map items -- update", context do
+    map_item_attributes = %{ map: context.map.name, quote: "Z", author: "Z" }
+    map_item = Models.MapItem.create(context.map, map_item_attributes)
+
+    conn = graphql_request(
+      :mutation,
+      :updateMapItem,
+      %{ id: map_item.id, quote: "Updated" },
+      ~w(id),
+      context.token
+    )
+
+    # assert
+    assert conn.status == 200
+    assert KeyMaps.Repo.get_by(Models.MapItem, id: map_item.id).attributes["quote"] == "Updated"
+    assert KeyMaps.Repo.get_by(Models.MapItem, id: map_item.id).attributes["author"] == "Z"
+  end
+
+
+  @tag :map_items
   test "map items -- remove", context do
     map_item_attributes = %{ map: context.map.name, quote: "Z", author: "Z" }
     map_item = Models.MapItem.create(context.map, map_item_attributes)
@@ -355,7 +414,7 @@ defmodule RouterTest do
 
     # assert
     assert conn.status == 200
-    assert KeyMaps.Repo.get_by(Models.Map, id: map_item.id) == nil
+    assert KeyMaps.Repo.get_by(Models.MapItem, id: map_item.id) == nil
   end
 
 

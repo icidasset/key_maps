@@ -60,7 +60,7 @@ GET /api?query=PLACE_QUERY_HERE
 
 __GraphQL queries__
 
-```graphql
+```bash
 mutation M createMap(
   name: "Quotes",
   attributes: [ "quote", "author" ]
@@ -81,15 +81,21 @@ query Q mapItems(map: "Quotes") {
 }
 
 query Q maps() {
+  id,
   name,
   attributes
 }
 
 query Q mapItem(id: ITEM_ID) { attributes }
 query Q map(name: "Quotes") { attributes }
+# -- uses the name argument to select the map,
+#    but you can also use the map id.
+
+mutation M updateMapItem(id: ITEM_ID, quote: "Updated quote") { quote }
+mutation M updateMap(id: MAP_ID, name: "Updated name") { name }
 
 mutation M removeMapItem(id: ITEM_ID) { id }
-mutation M removeMap(name: "Quotes") { name }
+mutation M removeMap(id: MAP_ID) { id }
 ```
 
 __Notes__  

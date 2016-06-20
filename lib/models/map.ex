@@ -46,8 +46,14 @@ defmodule KeyMaps.Models.Map do
   end
 
 
-  def get(params, %{ name: name }, _) do
-    Repo.get_by(Models.Map, name: name, user_id: params.user_id)
+  def get(params, args, _) do
+    k = cond do
+      Map.has_key?(args, :name)   -> [name: args[:name]]
+      Map.has_key?(args, :id)     -> [id: args[:id]]
+      true                        -> raise "Cannot select map, missing parameters"
+    end
+
+    Repo.get_by(Models.Map, [user_id: params.user_id] ++ k)
   end
 
 
@@ -58,6 +64,23 @@ defmodule KeyMaps.Models.Map do
     case Repo.insert changeset(%Models.Map{}, args) do
       { :ok, map } -> map
       { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
+    end
+  end
+
+
+  def update(params, args, _) do
+    map_args = Map.take(args, [:id])
+    map = Models.Map.get(params, map_args, nil)
+
+    if map do
+      case Repo.update changeset(map, args) do
+        { :ok, map } -> map
+        { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
+      end
+
+    else
+      raise "Could not find map"
+
     end
   end
 

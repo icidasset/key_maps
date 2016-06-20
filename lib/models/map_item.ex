@@ -54,8 +54,8 @@ defmodule KeyMaps.Models.MapItem do
   #
   # Queries
   #
-  def all(params, %{ map: map }, _) do
-    map = Models.Map.get(params, %{ name: map }, nil)
+  def all(params, args, _) do
+    map = do_get_map(params, args)
 
     if map do
       Repo.all(from m in Models.MapItem, where: m.map_id == ^map.id)
@@ -75,8 +75,8 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  def create(params, %{ map: map }, internal) do
-    map = Models.Map.get(params, %{ name: map }, nil)
+  def create(params, args, internal) do
+    map = do_get_map(params, args)
     other_args = KeyMaps.Utils.extract_other_arguments(internal)
 
     if map,
@@ -87,6 +87,16 @@ defmodule KeyMaps.Models.MapItem do
 
   def create(map, args) do
     do_create(map, args)
+  end
+
+
+  def update(params, args, internal) do
+    map_item = get(params, args, nil)
+    other_args = KeyMaps.Utils.extract_other_arguments(internal)
+
+    if map_item,
+      do: do_update(map_item, params, other_args),
+    else: raise "Could not find map item"
   end
 
 
@@ -110,14 +120,11 @@ defmodule KeyMaps.Models.MapItem do
   # Private
   #
   defp do_create(map, args) do
-    args = Enum.filter args, fn(a) ->
-      key = elem(a, 0) |> Atom.to_string
-      Enum.member?(map.attributes, key)
-    end
+    args = args
+      |> do_filter_attributes(map)
+      |> do_transform_attributes
 
     # add map id
-    args = Enum.into(args, %{})
-    args = %{ attributes: args }
     args = Map.put(args, :map_id, map.id)
 
     # insert
@@ -128,8 +135,53 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
+  defp do_update(map_item, params, args) do
+    map = do_get_map(params, %{ map_id: map_item.map_id })
+
+    args = args
+      |> do_filter_attributes(map)
+      |> do_transform_attributes
+
+    args = put_in(
+      args,
+      [:attributes],
+      Map.merge(map_item.attributes, args.attributes)
+    )
+
+    # update
+    case Repo.update changeset(map_item, args) do
+      { :ok, map_item } -> map_item
+      { :error, changeset } -> raise KeyMaps.Utils.get_error_from_changeset(changeset)
+    end
+  end
+
+
+  defp do_get_map(params, args) do
+    args = cond do
+      Map.has_key?(args, :map)    -> %{ name: args[:map] }
+      Map.has_key?(args, :map_id) -> %{ id: args[:map_id] }
+      true                        -> raise "Cannot select map items, missing map identifier"
+    end
+
+    Models.Map.get(params, args, nil)
+  end
+
+
   defp do_raise_map_error do
     raise "Could not find map"
+  end
+
+
+  defp do_filter_attributes(args, map) do
+    Enum.filter args, fn(a) ->
+      key = elem(a, 0) |> Atom.to_string
+      Enum.member?(map.attributes, key)
+    end
+  end
+
+
+  defp do_transform_attributes(args) do
+    %{ attributes: Enum.into(args, %{}) }
   end
 
 end

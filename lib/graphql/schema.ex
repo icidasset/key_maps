@@ -9,10 +9,10 @@ defmodule KeyMaps.GraphQL.Schema do
         name: "Queries",
         description: "Key Maps API Queries",
         fields: %{
-          map:        D.build(Map,      :get, ~w(name)a   ),
-          maps:       D.build(Map,      :all, ~w()a       ),
-          mapItem:    D.build(MapItem,  :get, ~w(id)a     ),
-          mapItems:   D.build(MapItem,  :all, ~w(map)a    ) |> add_map_attr,
+          map:        D.build(Map,      :get, ~w(id name)a    ),
+          maps:       D.build(Map,      :all, ~w()a           ),
+          mapItem:    D.build(MapItem,  :get, ~w(id)a         ),
+          mapItems:   D.build(MapItem,  :all, ~w(map map_id)a ) |> add_map_attr,
         }
       },
 
@@ -21,8 +21,10 @@ defmodule KeyMaps.GraphQL.Schema do
         description: "Key Maps API Mutations",
         fields: %{
           createMap:      D.build(Map,      :create, ~w(name attributes)a   ),
-          createMapItem:  D.build(MapItem,  :create, ~w(map)a               ) |> add_map_attr,
-          removeMap:      D.build(Map,      :delete, ~w(name)a              ),
+          createMapItem:  D.build(MapItem,  :create, ~w(map map_id)a        ) |> add_map_attr,
+          updateMap:      D.build(Map,      :update, ~w(id name attributes)a),
+          updateMapItem:  D.build(MapItem,  :update, ~w(id)a                ),
+          removeMap:      D.build(Map,      :delete, ~w(id name)a           ),
           removeMapItem:  D.build(MapItem,  :delete, ~w(id)a                ),
         },
       }

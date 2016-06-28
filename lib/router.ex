@@ -26,14 +26,22 @@ defmodule KeyMaps.Router do
   # Authentication
   #
   post "/sign-in" do
-    email = conn.params["email"]
+    accessor = if conn.params["email"] && String.length(conn.params["email"]) > 0,
+      do: "email",
+    else: "username"
+
+    accessor_value = conn.params[accessor]
     password = conn.params["password"]
-    user = Models.User.get_by_email(email)
+
+    user = if accessor === "email",
+      do: Models.User.get_by_email(accessor_value),
+    else: Models.User.get_by_username(accessor_value)
 
     if user && checkpw(password, user.password_hash) do
       render_token(conn, 200, user)
     else
-      render_error(conn, 403, "Email and/or password were invalid")
+      accessor_label = String.capitalize(accessor)
+      render_error(conn, 403, "#{accessor_label} and/or password were invalid")
     end
   end
 

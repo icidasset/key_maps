@@ -46,10 +46,10 @@ defmodule KeyMaps.Mixfile do
   defp deps do
     [
       { :corsica, "~> 0.4.2" },
-      { :comeonin, "~> 2.4.0" },
+      { :comeonin, "~> 2.5.1" },
       { :cowboy, "~> 1.0.4" },
-      { :ecto, "~> 2.0.0-rc.6" },
-      { :ectograph, "~> 0.1.1" },
+      { :ecto, "~> 2.0.2" },
+      { :ectograph, "~> 0.1.2" },
       { :graphql, "~> 0.3.1" },
       { :guardian, "~> 0.12.0" },
       { :plug, "~> 1.1.6" },

@@ -12,13 +12,20 @@ defmodule KeyMaps.Router do
     pass: ["*/*"],
     json_decoder: Poison
 
+  plug Corsica,
+    allow_headers: ["accept", "authorization", "content-type", "origin"],
+    origins: [
+      ~r{^https?://localhost:\d+$},
+      ~r{^https?://keymaps.surge.sh$},
+    ]
+
   # => endpoint
   plug :match
   plug :dispatch
 
 
   def start_link do
-    { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: 8080
+    { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: 4000
   end
 
 
@@ -26,23 +33,15 @@ defmodule KeyMaps.Router do
   # Authentication
   #
   post "/sign-in" do
-    accessor = if conn.params["email"] && String.length(conn.params["email"]) > 0,
-      do: "email",
-    else: "username"
-
-    accessor_value = conn.params[accessor]
+    login = conn.params["login"]
     password = conn.params["password"]
 
-    user = if accessor === "email",
-      do: Models.User.get_by_email(accessor_value),
-    else: Models.User.get_by_username(accessor_value)
+    user = Models.User.get_by_email(login) ||
+           Models.User.get_by_username(login)
 
-    if user && checkpw(password, user.password_hash) do
-      render_token(conn, 200, user)
-    else
-      accessor_label = String.capitalize(accessor)
-      render_error(conn, 403, "#{accessor_label} and/or password were invalid")
-    end
+    if user && checkpw(password, user.password_hash),
+      do: render_token(conn, 200, user),
+    else: render_error(conn, 403, "The login and/or password were invalid")
   end
 
 

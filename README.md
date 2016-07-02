@@ -22,7 +22,6 @@ _You can find old code in the legacy branches._
 
 ```markdown
 POST  /sign-up
-GET   /sign-in
 
 __Request body:__
 
@@ -30,6 +29,23 @@ __Request body:__
   "email": "...",
   "password": "...",
   "username": "..."
+}
+
+__Response body:__
+
+{
+  "data": {
+    "token": "..."
+  }
+}
+
+POST  /sign-in
+
+__Request body:__
+
+{
+  "login": "...",
+  "password": "..."
 }
 
 __Response body:__

@@ -65,8 +65,19 @@ defmodule RouterTest do
     assert token
     assert String.length(token) > 0
 
-    # --- sign in
-    conn = request_with_json_body(:post, "/sign-in", @user_auth)
+    # --- sign in with email
+    params = %{ login: @user_auth.email, password: @user_auth.password }
+    conn = request_with_json_body(:post, "/sign-in", params)
+    token = data_response(conn)["token"]
+
+    # assert
+    assert conn.status == 200
+    assert token
+    assert String.length(token) > 0
+
+    # --- sign in with username
+    params = %{ login: @user_auth.username, password: @user_auth.password }
+    conn = request_with_json_body(:post, "/sign-in", params)
     token = data_response(conn)["token"]
 
     # assert
@@ -211,6 +222,7 @@ defmodule RouterTest do
     # assert
     assert conn.status == 200
     assert List.first(data_response(conn)["createMap"]["attributes"]) != "must be slugged"
+    assert List.first(data_response(conn)["createMap"]["attributes"]) == "must-be-slugged"
   end
 
 

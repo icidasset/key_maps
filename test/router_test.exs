@@ -125,16 +125,32 @@ defmodule RouterTest do
 
   @tag :maps
   test "maps -- create", context do
-    conn = graphql_request(
+    conn = do_graphql_request(
       :mutation,
-      :createMap,
-      %{ name: "Test", attributes: ["example"] },
-      ~w(name),
-      context.token
+      context.token,
+      """
+      mutation M {
+        createMap(
+          name: "Test",
+          attributes: [ "example" ],
+          types: { example: "string", test: 1 }
+        ) {
+          name,
+          attributes,
+          types
+        }
+      }
+      """
     )
+
+    # data
+    data = data_response(conn)["createMap"]
 
     # assert
     assert conn.status == 200
+    assert List.first(data["attributes"]) == "example"
+    assert data["types"]["example"] == "string"
+    assert data["types"]["test"] == 1
   end
 
 

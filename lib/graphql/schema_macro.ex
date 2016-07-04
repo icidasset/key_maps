@@ -20,12 +20,12 @@ defmodule KeyMaps.GraphQL.SchemaMacro do
         name: "Mutations",
         description: "Key Maps API Mutations",
         fields: %{
-          createMap:      D.build(Map,      :create, ~w(name attributes)a   ),
-          createMapItem:  D.build(MapItem,  :create, ~w(map map_id)a        ) |> add_map_attr,
-          updateMap:      D.build(Map,      :update, ~w(id name attributes)a),
-          updateMapItem:  D.build(MapItem,  :update, ~w(id)a                ),
-          removeMap:      D.build(Map,      :delete, ~w(id name)a           ),
-          removeMapItem:  D.build(MapItem,  :delete, ~w(id)a                ),
+          createMap:      D.build(Map,      :create, ~w(name attributes types)a ),
+          createMapItem:  D.build(MapItem,  :create, ~w(map map_id)a            ) |> add_map_attr,
+          updateMap:      D.build(Map,      :update, ~w(id name attributes)a    ),
+          updateMapItem:  D.build(MapItem,  :update, ~w(id)a                    ),
+          removeMap:      D.build(Map,      :delete, ~w(id name)a               ),
+          removeMapItem:  D.build(MapItem,  :delete, ~w(id)a                    ),
         },
       }
 

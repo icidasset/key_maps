@@ -49,7 +49,7 @@ defmodule KeyMaps.Mixfile do
       { :comeonin, "~> 2.5.1" },
       { :cowboy, "~> 1.0.4" },
       { :ecto, "~> 2.0.2" },
-      { :ectograph, "~> 0.1.2" },
+      { :ectograph, "~> 0.2.0" },
       { :graphql, "~> 0.3.1" },
       { :guardian, "~> 0.12.0" },
       { :plug, "~> 1.1.6" },

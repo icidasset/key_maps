@@ -42,8 +42,12 @@ defmodule KeyMaps.TestHelpers do
 
   def graphql_request(type, name, args, attr, token) do
     query = format_graphql_query(type, name, args, attr)
-    method = if type === :mutation do :post else :get end
+    do_graphql_request(type, token, query)
+  end
 
+
+  def do_graphql_request(type, token, query) do
+    method = if type === :mutation, do: :post, else: :get
     request(method, "/api", %{ query: query }, token)
   end
 

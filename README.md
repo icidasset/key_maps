@@ -77,45 +77,57 @@ GET /api?query=PLACE_QUERY_HERE
 __GraphQL queries__
 
 ```bash
-mutation M createMap(
+mutation M { createMap(
   name: "Quotes",
   attributes: [ "quote", "author" ]
-)
+) {}}
 
-mutation M createMapItem(
+mutation M { createMapItem(
   map: "Quotes",
 
   quote: "Specialization tends to shut off the wide-band tuning searches and thus to preclude further discovery.",
   author: "Buckminster Fuller"
-) {
-  attributes
-}
+) { attributes }}
 
-query Q mapItems(map: "Quotes") {
+query Q { mapItems(map: "Quotes") {
   id,
   attributes
-}
+}}
 
-query Q maps() {
+query Q { maps() {
   id,
   name,
   attributes
-}
+}}
 
-query Q mapItem(id: ITEM_ID) { attributes }
-query Q map(name: "Quotes") { attributes }
+query Q { mapItem(id: ITEM_ID) { attributes }}
+query Q { map(name: "Quotes") { attributes }}
 # -- uses the name argument to select the map,
 #    but you can also use the map id.
 
-mutation M updateMapItem(id: ITEM_ID, quote: "Updated quote") { quote }
-mutation M updateMap(id: MAP_ID, name: "Updated name") { name }
+mutation M { updateMapItem(id: ITEM_ID, quote: "Updated quote") { quote }}
+mutation M { updateMap(id: MAP_ID, name: "Updated name") { name }}
 
-mutation M removeMapItem(id: ITEM_ID) { id }
-mutation M removeMap(id: MAP_ID) { id }
+mutation M { removeMapItem(id: ITEM_ID) { id }}
+mutation M { removeMap(id: MAP_ID) { id }}
 ```
 
 __Notes__  
 The map name must be unique, it will be casted to lowercase for validation.
+
+#### Defining types for your attributes (optional)
+
+You can define types, but it's totally optional, and it doesn't actually do anything either.
+So why define these, well, you could do this to show a certain input field in your UI.
+For example, if you want to show a date selector.
+
+```
+mutation M { createMap(
+  name: "Author",
+  attributes: [ "date_of_birth" ]
+  types: { date_of_birth: "date" }
+) {}}
+```
 
 
 ### Public API

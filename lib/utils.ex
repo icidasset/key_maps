@@ -22,6 +22,11 @@ defmodule KeyMaps.Utils do
   end
 
 
+  def render_empty(conn, status) do
+    render_json(conn, status, %{}) 
+  end
+
+
   def get_error_from_changeset(changeset) do
     cond do
       # errors

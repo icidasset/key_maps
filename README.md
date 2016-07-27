@@ -199,6 +199,7 @@ __Errors__
 ## Development
 
 ```
+echo 'export SECRET_KEY=WHATEVER' >> .env
 source .env
 
 mix deps.get

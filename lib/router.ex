@@ -6,6 +6,8 @@ defmodule KeyMaps.Router do
   import Comeonin.Bcrypt
   import KeyMaps.Utils
 
+  require Logger
+
   # middleware
   plug Plug.Parsers,
     parsers: [:graphql, :urlencoded, :multipart, :json],
@@ -25,6 +27,7 @@ defmodule KeyMaps.Router do
 
 
   def start_link do
+    Logger.info "Running `Key Maps` on port 4000"
     { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: 4000
   end
 
@@ -59,6 +62,16 @@ defmodule KeyMaps.Router do
   end
 
 
+  get "/validate-token" do
+    token = conn.params["token"]
+
+    case Guardian.decode_and_verify(token) do
+      { :ok, _ } -> render_empty(conn, 202)
+      { :error, _ } -> render_empty(conn, 403)
+    end
+  end
+
+
   def unauthenticated(conn, _) do
     render_error(conn, 403, "Forbidden")
   end
@@ -89,5 +102,11 @@ defmodule KeyMaps.Router do
   #
   forward "/public",
     to: KeyMaps.Public.Plug
+
+
+  #
+  # 404
+  #
+  match _, do: send_resp(conn, 404, "404")
 
 end

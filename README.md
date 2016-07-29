@@ -2,15 +2,13 @@
 
 A simple data-structure API.
 
-__Work in progress.__
-
 _You can find old code in the legacy branches._
 
 
 
 ## How it works
 
-1. You make a map (like a database table), e.g. "Quotes"
+1. You make a map (resembles a database table), e.g. "Quotes"
 2. You add data to the map, e.g. a quote and its author
 3. You can fetch this data through a public JSON API
 
@@ -77,39 +75,56 @@ GET /api?query=PLACE_QUERY_HERE
 __GraphQL queries__
 
 ```bash
+# 1. Create a `map`
 mutation M { createMap(
   name: "Quotes",
   attributes: [ "quote", "author" ]
-) {}}
+) {
+  id,
+  attributes,
+  types
+}}
 
+# 2. Create an item for a `map`
 mutation M { createMapItem(
   map: "Quotes",
 
   quote: "Specialization tends to shut off the wide-band tuning searches and thus to preclude further discovery.",
   author: "Buckminster Fuller"
-) { attributes }}
-
-query Q { mapItems(map: "Quotes") {
+) {
   id,
+  map_id,
   attributes
 }}
 
+# 3. Get all map items for a specific map
+query Q { mapItems(map: "Quotes") {
+  id,
+  map_id,
+  attributes
+}}
+
+# 4. Get all maps
 query Q { maps() {
   id,
   name,
-  attributes
+  attributes,
+  types
 }}
 
-query Q { mapItem(id: ITEM_ID) { attributes }}
-query Q { map(name: "Quotes") { attributes }}
+# 5. Get a specific item and a specific map
+query Q { mapItem(id: ITEM_ID) { ... }}
+query Q { map(name: "Quotes") { ... }}
 # -- uses the name argument to select the map,
 #    but you can also use the map id.
 
-mutation M { updateMapItem(id: ITEM_ID, quote: "Updated quote") { quote }}
-mutation M { updateMap(id: MAP_ID, name: "Updated name") { name }}
+# 6. Update a map item and a map
+mutation M { updateMapItem(id: ITEM_ID, quote: "Updated quote") { ... }}
+mutation M { updateMap(id: MAP_ID, name: "Updated name") { ... }}
 
-mutation M { removeMapItem(id: ITEM_ID) { id }}
-mutation M { removeMap(id: MAP_ID) { id }}
+# 7. Remove a map item and a map
+mutation M { removeMapItem(id: ITEM_ID) { ... }}
+mutation M { removeMap(id: MAP_ID) { ... }}
 ```
 
 __Notes__  
@@ -126,7 +141,7 @@ mutation M { createMap(
   name: "Author",
   attributes: [ "date_of_birth" ]
   types: { date_of_birth: "date" }
-) {}}
+) { ... }}
 ```
 
 

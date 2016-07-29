@@ -58,6 +58,7 @@ defmodule KeyMaps.Router do
     case Models.User.create(attr) do
       { :ok, user } -> render_token(conn, 201, user)
       { :error, changeset } -> render_error(conn, 400, get_error_from_changeset(changeset))
+      nil -> render_error(conn, 403, "Sign-up is currently disabled")
     end
   end
 

@@ -48,7 +48,8 @@ defmodule KeyMaps.Models.User do
     attr = Map.put(attr, :password_hash, hashpwsalt(attr.password))
 
     # insert
-    Repo.insert changeset(%Models.User{}, attr)
+    if is_nil(System.get_env("ENABLE_SIGN_UP")) === false,
+      do: Repo.insert changeset(%Models.User{}, attr)
   end
 
 end

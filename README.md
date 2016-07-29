@@ -63,6 +63,11 @@ GET /api?query=query
 Authorization: PLACE_TOKEN_HERE
 ```
 
+__Notes__
+
+The ability to sign-up is disabled by default,
+you have to define the ENV variable 'ENABLE_SIGN_UP' to enable it.
+
 
 ### Private API
 

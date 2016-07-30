@@ -60,8 +60,6 @@ defmodule KeyMaps.Utils do
 
 
   def extract_other_arguments(internal) do
-    IO.inspect internal.variable_values
-
     if Map.has_key?(internal.variable_values, "map"),
       do: extract_other_arguments(:var, internal),
     else: extract_other_arguments(:ast, internal)

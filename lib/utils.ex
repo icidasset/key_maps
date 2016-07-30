@@ -23,7 +23,7 @@ defmodule KeyMaps.Utils do
 
 
   def render_empty(conn, status) do
-    render_json(conn, status, %{}) 
+    render_json(conn, status, %{})
   end
 
 
@@ -60,17 +60,11 @@ defmodule KeyMaps.Utils do
 
 
   def extract_other_arguments(internal) do
-    inn = internal.field_asts |> List.first
+    IO.inspect internal.variable_values
 
-    other_attr = if Map.has_key?(inn, :arguments) do
-      Enum.reduce inn.arguments, %{}, fn(arg, acc) ->
-        k = String.to_atom(arg.name.value)
-        v = arg.value.value
-        Map.put(acc, k, v)
-      end
-    end
-
-    other_attr
+    if Map.has_key?(internal.variable_values, "map"),
+      do: extract_other_arguments(:var, internal),
+    else: extract_other_arguments(:ast, internal)
   end
 
 
@@ -82,6 +76,32 @@ defmodule KeyMaps.Utils do
 
     Plug.Conn.put_resp_content_type(conn, "application/json")
     Plug.Conn.send_resp(conn, status, content)
+  end
+
+
+  defp extract_other_arguments(:var, internal) do
+    m = Map.delete(internal.variable_values, "map")
+    m = for { key, val } <- m, into: %{}, do: { String.to_atom(key), val }
+    m
+  end
+
+
+  defp extract_other_arguments(:ast, internal) do
+    try do
+      inn = internal.field_asts |> List.first
+
+      if Map.has_key?(inn, :arguments) do
+        Enum.reduce inn.arguments, %{}, fn(arg, acc) ->
+          k = String.to_atom(arg.name.value)
+          v = arg.value.value
+          Map.put(acc, k, v)
+        end
+      end
+
+    rescue
+      KeyError -> %{}
+
+    end
   end
 
 end

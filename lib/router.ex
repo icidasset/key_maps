@@ -27,8 +27,9 @@ defmodule KeyMaps.Router do
 
 
   def start_link do
-    Logger.info "Running `Key Maps` on port 4000"
-    { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: 4000
+    if Mix.env == :dev, do: Logger.info "Running `Key Maps` on port 4000"
+    port = System.get_env("PORT") || 4000
+    { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: port
   end
 
 

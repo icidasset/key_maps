@@ -133,11 +133,13 @@ defmodule RouterTest do
         createMap(
           name: "Test",
           attributes: [ "example" ],
-          types: { example: "string", test: 1 }
+          types: { example: "string", test: 1 },
+          settings: { test: 1 }
         ) {
           name,
           attributes,
-          types
+          types,
+          settings
         }
       }
       """
@@ -151,6 +153,7 @@ defmodule RouterTest do
     assert List.first(data["attributes"]) == "example"
     assert data["types"]["example"] == "string"
     assert data["types"]["test"] == 1
+    assert data["settings"]["test"] == 1
   end
 
 
@@ -278,8 +281,10 @@ defmodule RouterTest do
     )
 
     # assert
+    map = Models.Map.get(context, %{ id: map.id }, nil)
+
     assert conn.status == 200
-    assert Models.Map.get(context, %{ id: map.id }, nil).name == "ZZZ - Update test success"
+    assert map.name == "ZZZ - Update test success"
   end
 
 

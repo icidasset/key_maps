@@ -151,6 +151,18 @@ mutation M { createMap(
 ) { ... }}
 ```
 
+#### Storing map settings
+
+This attribute is there in case you need to store some extra data for a map, e.g. if you want to sort your data in a particular way in your UI.
+
+```
+mutation M { updateMap(
+  id: MAP_ID,
+
+  settings: { ui_sort_by: "author", ui_sort_dir: "asc" }
+) { ... }}
+```
+
 
 ### Public API
 

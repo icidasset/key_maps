@@ -11,6 +11,7 @@ defmodule KeyMaps.Models.Map do
     field :name, :string
     field :attributes, { :array, :string }
     field :types, :map, default: %{}
+    field :settings, :map, default: %{}
 
     belongs_to :user, Models.User
     has_many :map_items, Models.MapItem
@@ -21,7 +22,7 @@ defmodule KeyMaps.Models.Map do
 
   def changeset(user, params) do
     user
-    |> cast(params, ~w(name attributes types user_id)a)
+    |> cast(params, ~w(name attributes types settings user_id)a)
     |> validate_required(~w(name attributes user_id)a)
     |> unique_constraint(:name, name: :maps_name_user_id_index)
     |> validate_length(:attributes, min: 1)

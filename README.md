@@ -33,7 +33,8 @@ __Response body:__
 
 {
   "data": {
-    "token": "..."
+    "token": "...",
+    "user": { username: "..." }
   }
 }
 
@@ -50,7 +51,8 @@ __Response body:__
 
 {
   "data": {
-    "token": "..."
+    "token": "...",
+    "user": { username: "..." }
   }
 }
 ```

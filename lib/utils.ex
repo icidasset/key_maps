@@ -16,6 +16,9 @@ defmodule KeyMaps.Utils do
 
     data = %{
       token: token,
+      user: %{
+        username: user.username,
+      },
     }
 
     render_data(conn, status, data)

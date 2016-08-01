@@ -243,7 +243,10 @@ __Errors__
 ## Development
 
 ```
-echo 'export SECRET_KEY=WHATEVER' >> .env
+echo 'export SECRET_KEY=...' >> .env
+echo 'export AUTH0_DOMAIN=...' >> .env
+echo 'export AUTH0_CLIENT_ID=...' >> .env
+
 source .env
 
 mix deps.get

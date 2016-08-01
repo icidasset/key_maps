@@ -19,13 +19,13 @@ defmodule KeyMaps.Public.Plug do
 
     # opts
     opts = %{
-      username: Enum.at(path, 0),
+      id: Enum.at(path, 0),
       map_name: Enum.at(path, 1),
       map_item_id: Enum.at(path, 2),
     }
 
     # run
-    if opts.username == nil || opts.map_name == nil,
+    if opts.id == nil || opts.map_name == nil,
       do: render_error(conn, 422, "Insufficient parameters"),
     else: check_user(conn, opts)
   end
@@ -40,11 +40,11 @@ defmodule KeyMaps.Public.Plug do
   # Private
   #
   defp check_user(conn, opts) do
-    user = Models.User.get_by_username(opts.username)
+    user = Models.User.get_by_id(opts.id)
 
     if user,
       do: check_map(conn, user.id, opts),
-    else: render_error(conn, 422, "Invalid username")
+    else: render_error(conn, 422, "Invalid user id")
   end
 
 

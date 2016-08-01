@@ -10,18 +10,11 @@ defmodule KeyMaps.Utils do
   end
 
 
-  def render_token(conn, status, user) do
-    conn = Guardian.Plug.api_sign_in(conn, user, :long_lived_token)
-    token = Guardian.Plug.current_token(conn)
-
-    data = %{
-      token: token,
-      user: %{
-        username: user.username,
-      },
-    }
-
-    render_data(conn, status, data)
+  def render_token(conn, status, user, auth0_id_token) do
+    case KeyMaps.Auth.generate_token(user, auth0_id_token) do
+      { :ok, token, _ } -> render_data(conn, status, %{ token: token })
+      { :error, reason } -> render_error(conn, 500, reason)
+    end
   end
 
 

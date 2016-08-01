@@ -21,7 +21,7 @@ _You can find old code in the legacy branches._
 Uses Auth0's passwordless authentication.
 
 ```markdown
-POST  /auth/start
+POST /auth/start
 
 __Request body:__
 
@@ -31,31 +31,43 @@ __Request body:__
 
 __Response body:__
 
-{
-  "data": {
-    "success": true || false
-  }
-}
+Status 200 with empty body if successful
+Status 422 with { errors: ... } if unsuccessful
 
-POST  /auth/exchange
+
+POST /auth/exchange
 
 __Request body:__
 
 {
-  "TODO"
+  auth0_id_token: "..."
 }
 
 __Response body:__
 
 {
   "data": {
-    "token": "...",
-    "user": { username: "..." }
+    "token": "..."
   }
 }
+
+
+POST /auth/validate
+
+__Request body:__
+
+{
+  "token": "..."
+}
+
+__Response body:__
+
+Status 200 with empty body if valid
+Status 422 with empty body if invalid
 ```
 
-Use the `token` to authenticate requests.  
+Use the `token` to authenticate requests.
+User info is located inside the token's claims.  
 For example:
 
 ```http
@@ -167,22 +179,22 @@ mutation M { updateMap(
 __All__ items for a single map:
 
 ```
-GET /public/:username/:map_name
+GET /public/:user_id/:map_name
 
-:username, your case-insensitive username
+:user_id, your case-insensitive user id
 :map_name, your case-insensitive map name
 ```
 
 __One__ item for a single map:
 
 ```
-GET /public/:username/:map_name/:map_item_id
+GET /public/:user_id/:map_name/:map_item_id
 ```
 
 __Options__
 
 ```markdown
-GET /public/:username/:map_name?sort_by=author
+GET /public/:user_id/:map_name?sort_by=author
 
 **sort_by**, e.g. 'author', when not specified, it is sorted by insertion date.  
 **sort_direction**, 'asc' or 'desc', default is 'asc'.  

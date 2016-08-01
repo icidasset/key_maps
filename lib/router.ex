@@ -1,11 +1,7 @@
 defmodule KeyMaps.Router do
   use Plug.Router
-
-  alias KeyMaps.{Models}
-
-  import Comeonin.Bcrypt
+  alias KeyMaps.{Auth, Models}
   import KeyMaps.Utils
-
   require Logger
 
   # middleware
@@ -36,40 +32,35 @@ defmodule KeyMaps.Router do
   #
   # Authentication
   #
-  post "/sign-in" do
-    login = conn.params["login"]
-    password = conn.params["password"]
+  post "/auth/start" do
+    email = conn.params["email"]
+    origin = get_req_header(conn, "origin") |> List.first
 
-    user = Models.User.get_by_email(login) ||
-           Models.User.get_by_username(login)
+    case Auth.start(email, origin) do
+      { :ok } -> render_empty(conn, 200)
+      { :error, reason } -> render_error(conn, 422, reason)
+    end
 
-    if user && checkpw(password, user.password_hash),
-      do: render_token(conn, 200, user),
-    else: render_error(conn, 403, "The login and/or password were invalid")
+    render_empty(conn, 200)
   end
 
 
-  post "/sign-up" do
-    attr = %{
-      email: conn.params["email"],
-      password: conn.params["password"],
-      username: conn.params["username"]
-    }
+  post "/auth/exchange" do
+    auth0_id_token = conn.params["auth0_id_token"]
 
-    case Models.User.create(attr) do
-      { :ok, user } -> render_token(conn, 201, user)
-      { :error, changeset } -> render_error(conn, 400, get_error_from_changeset(changeset))
-      nil -> render_error(conn, 403, "Sign-up is currently disabled")
+    case Auth.exchange(auth0_id_token) do
+      { :ok, user } -> render_token(conn, 200, user, auth0_id_token)
+      { :error, reason } -> render_error(conn, 422, reason)
     end
   end
 
 
-  get "/validate-token" do
+  get "/auth/validate" do
     token = conn.params["token"]
 
-    case Guardian.decode_and_verify(token) do
-      { :ok, _ } -> render_empty(conn, 202)
-      { :error, _ } -> render_empty(conn, 403)
+    case Auth.validate_token(token) do
+      { :ok } -> render_empty(conn, 202)
+      { :error }-> render_empty(conn, 403)
     end
   end
 

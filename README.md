@@ -18,33 +18,31 @@ _You can find old code in the legacy branches._
 
 ### Authentication
 
+Uses Auth0's passwordless authentication.
+
 ```markdown
-POST  /sign-up
+POST  /auth/start
 
 __Request body:__
 
 {
-  "email": "...",
-  "password": "...",
-  "username": "..."
+  "email": "..."
 }
 
 __Response body:__
 
 {
   "data": {
-    "token": "...",
-    "user": { username: "..." }
+    "success": true || false
   }
 }
 
-POST  /sign-in
+POST  /auth/exchange
 
 __Request body:__
 
 {
-  "login": "...",
-  "password": "..."
+  "TODO"
 }
 
 __Response body:__

@@ -45,10 +45,10 @@ defmodule KeyMaps.Mixfile do
   # Type "mix help deps" for more examples and options
   defp deps do
     [
-      { :corsica, "~> 0.4.2" },
-      { :comeonin, "~> 2.5.1" },
+      { :corsica, "~> 0.5.0" },
+      { :comeonin, "~> 2.5.2" },
       { :cowboy, "~> 1.0.4" },
-      { :ecto, "~> 2.0.2" },
+      { :ecto, "~> 2.0.3" },
       { :ectograph, "~> 0.2.0" },
       { :graphql, "~> 0.3.1" },
       { :guardian, "~> 0.12.0" },

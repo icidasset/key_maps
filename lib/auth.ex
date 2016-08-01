@@ -27,11 +27,9 @@ defmodule KeyMaps.Auth do
   #
   def exchange(auth0_id_token) do
     a = if is_nil(auth0_id_token), do: { :error, "Invalid Auth0 token" }
-    b = if is_nil(System.get_env("ENABLE_SIGN_UP")), do: { :error, "Sign-up is current disabled" }
-    x = a || b
 
-    if x,
-      do: x,
+    if a,
+      do: a,
     else: start_exchange_flow(auth0_id_token)
   end
 
@@ -47,16 +45,17 @@ defmodule KeyMaps.Auth do
       { :ok, info } ->
         email = info["email"]
         user = KeyMaps.Models.User.get_by_email(email)
+        disallow_signup = (System.get_env("ENABLE_SIGN_UP") != "1")
 
-        if user do
-          { :ok, user }
+        cond do
+          user -> { :ok, user }
+          disallow_signup -> { :error, "Sign-up is current disabled" }
 
-        else
-          case KeyMaps.Models.User.create(%{ email: email }) do
-            { :ok, user } -> { :ok, user }
-            { :error, changeset } -> { :error, get_error_from_changeset(changeset) }
-          end
-
+          true ->
+            case KeyMaps.Models.User.create(%{ email: email }) do
+              { :ok, user } -> { :ok, user }
+              { :error, changeset } -> { :error, get_error_from_changeset(changeset) }
+            end
         end
 
       _ -> results

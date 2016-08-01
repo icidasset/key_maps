@@ -73,7 +73,7 @@ defmodule KeyMaps.Utils do
   # Private
   #
   defp render_json(conn, status, map) do
-    content = Poison.encode!(map)
+    content = Poison.encode!(map, escape: :unicode)
 
     Plug.Conn.put_resp_content_type(conn, "application/json")
     Plug.Conn.send_resp(conn, status, content)

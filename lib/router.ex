@@ -1,6 +1,6 @@
 defmodule KeyMaps.Router do
   use Plug.Router
-  alias KeyMaps.{Auth, Models}
+  alias KeyMaps.{Auth}
   import KeyMaps.Utils
   require Logger
 

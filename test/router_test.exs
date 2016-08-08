@@ -56,58 +56,6 @@ defmodule RouterTest do
   #
 
   @tag :users
-  test "users -- sign up and in" do
-    conn = request_with_json_body(:post, "/sign-up", @user_auth)
-    token = data_response(conn)["token"]
-
-    # assert
-    assert conn.status == 201
-    assert token
-    assert String.length(token) > 0
-
-    # --- sign in with email
-    params = %{ login: @user_auth.email, password: @user_auth.password }
-    conn = request_with_json_body(:post, "/sign-in", params)
-    token = data_response(conn)["token"]
-
-    # assert
-    assert conn.status == 200
-    assert token
-    assert String.length(token) > 0
-
-    # --- sign in with username
-    params = %{ login: @user_auth.username, password: @user_auth.password }
-    conn = request_with_json_body(:post, "/sign-in", params)
-    token = data_response(conn)["token"]
-
-    # assert
-    assert conn.status == 200
-    assert token
-    assert String.length(token) > 0
-  end
-
-
-  @tag :users
-  test "users -- should have a unique email" do
-    attr = Map.put(@user_default, :username, "something")
-    conn = request_with_json_body(:post, "/sign-up", attr)
-
-    # assert
-    assert conn.status == 400
-  end
-
-
-  @tag :users
-  test "users -- should have a unique username" do
-    attr = Map.put(@user_default, :email, "other-email@example.com")
-    conn = request_with_json_body(:post, "/sign-up", attr)
-
-    # assert
-    assert conn.status == 400
-  end
-
-
-  @tag :users
   test "users -- should be authenticated for graphql queries (ie. /api)" do
     conn = graphql_request(:query, :maps, ~w(name))
     message = error_response(conn)["message"]
@@ -457,8 +405,8 @@ defmodule RouterTest do
   #
 
   @tag :public
-  test "public -- map" do
-    conn = request(:get, "/public/default/quotes", nil)
+  test "public -- map", context do
+    conn = request(:get, "/public/#{context.user_id}/quotes", nil)
 
     data = data_response(conn)
     data = Enum.filter data, fn(d) ->
@@ -481,8 +429,8 @@ defmodule RouterTest do
   end
 
 
-  test "public -- map -- sorted" do
-    conn = request(:get, "/public/default/quotes", %{ sort_by: "author" })
+  test "public -- map -- sorted", context do
+    conn = request(:get, "/public/#{context.user_id}/quotes", %{ sort_by: "author" })
 
     data = data_response(conn)
     data = Enum.filter data, fn(d) ->
@@ -499,8 +447,8 @@ defmodule RouterTest do
   end
 
 
-  test "public -- map -- timestamps" do
-    conn = request(:get, "/public/default/quotes", %{ timestamps: "1" })
+  test "public -- map -- timestamps", context do
+    conn = request(:get, "/public/#{context.user_id}/quotes", %{ timestamps: "1" })
 
     data = data_response(conn)
     data = Enum.filter data, fn(d) ->
@@ -519,7 +467,7 @@ defmodule RouterTest do
 
   test "public -- map -- single item", context do
     id = Integer.to_string(context.map_item_1.id)
-    conn = request(:get, "/public/default/quotes/" <> id, %{})
+    conn = request(:get, "/public/#{context.user_id}/quotes/" <> id, %{})
     data = data_response(conn)
 
     # assert

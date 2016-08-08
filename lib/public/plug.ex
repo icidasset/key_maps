@@ -32,7 +32,7 @@ defmodule KeyMaps.Public.Plug do
 
 
   def call(%Conn{method: _} = conn, _) do
-    render_error(conn, 405, "GraphQL only supports GET and POST requests.")
+    render_error(conn, 405, "The public space only supports GET requests.")
   end
 
 
@@ -59,10 +59,11 @@ defmodule KeyMaps.Public.Plug do
 
 
   defp collect_and_render(conn, map, opts) do
-    processor_options = conn.query_params
-
-    if opts.map_item_id != nil do
-      processor_options = Map.put(processor_options, "map_item_id", opts.map_item_id)
+    processor_options = cond do
+      opts.map_item_id != nil ->
+        Map.put(conn.query_params, "map_item_id", opts.map_item_id)
+      true ->
+        conn.query_params
     end
 
     map_items = Processor.run(map, processor_options)

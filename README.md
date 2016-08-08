@@ -63,7 +63,7 @@ __Request body:__
 __Response body:__
 
 Status 200 with empty body if valid
-Status 422 with empty body if invalid
+Status 403 with empty body if invalid
 ```
 
 Use the `token` to authenticate requests.

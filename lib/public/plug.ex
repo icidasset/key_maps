@@ -20,7 +20,7 @@ defmodule KeyMaps.Public.Plug do
     # opts
     opts = %{
       id: Enum.at(path, 0),
-      map_name: Enum.at(path, 1),
+      map_name: URI.decode(Enum.at(path, 1)),
       map_item_id: Enum.at(path, 2),
     }
 

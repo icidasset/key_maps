@@ -4,7 +4,7 @@ defmodule KeyMaps.Models.MapItem do
   alias KeyMaps.{Repo, Models}
 
   import Ecto.Changeset
-  import Ecto.Query, only: [from: 1, from: 2]
+  import Ecto.Query, only: [from: 2]
 
 
   schema "map_items" do
@@ -173,6 +173,9 @@ defmodule KeyMaps.Models.MapItem do
 
 
   defp do_filter_attributes(args, map) do
+    IO.inspect args
+    IO.inspect map
+
     Enum.filter args, fn(a) ->
       key = elem(a, 0) |> Atom.to_string
       Enum.member?(map.attributes, key)

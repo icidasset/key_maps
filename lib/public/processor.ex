@@ -16,14 +16,13 @@ defmodule KeyMaps.Public.Processor do
     include_timestamps = Map.has_key?(opts, "timestamps")
 
     map_items = Enum.map map.map_items, fn(m) ->
-      attr = m.attributes
-
       if include_timestamps do
-        attr = Map.put(attr, :inserted_at, m.inserted_at)
-        attr = Map.put(attr, :updated_at, m.updated_at)
+        m.attributes
+        |> Map.put(:inserted_at, m.inserted_at)
+        |> Map.put(:updated_at, m.updated_at)
+      else
+        m.attributes
       end
-
-      attr
     end
 
     # to be continued
@@ -48,15 +47,16 @@ defmodule KeyMaps.Public.Processor do
           do: &>=/2,
         else: &<=/2
 
-      map_items = Enum.sort_by(
+      Enum.sort_by(
         map_items,
         ( fn(m) -> Map.get(m, the_sort_key) || "" end ),
         ( sort_method )
       )
-    end
 
-    # return
-    map_items
+    else
+      map_items
+
+    end
   end
 
 end

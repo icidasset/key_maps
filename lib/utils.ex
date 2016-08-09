@@ -29,14 +29,16 @@ defmodule KeyMaps.Utils do
       length(changeset.errors) > 0 ->
         field = Keyword.keys(changeset.errors) |> List.first |> Atom.to_string
         field = String.replace(field, "_", " ")
-        fieldError = Keyword.values(changeset.errors) |> List.first
 
-        if is_tuple(fieldError) do
-          fieldError = String.replace(
+        fieldError = Keyword.values(changeset.errors) |> List.first
+        fieldError = if is_tuple(fieldError) do
+          String.replace(
             elem(fieldError, 0),
             "%{count}",
             to_string(elem(fieldError, 1)[:count])
           )
+        else
+          fieldError
         end
 
         String.capitalize(field) <> " " <> fieldError

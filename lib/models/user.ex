@@ -1,9 +1,6 @@
 defmodule KeyMaps.Models.User do
   use Ecto.Schema
-
   alias KeyMaps.{Repo, Models}
-
-  import Comeonin.Bcrypt
   import Ecto.Changeset
 
 

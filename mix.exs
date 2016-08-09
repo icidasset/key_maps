@@ -16,7 +16,6 @@ defmodule KeyMaps.Mixfile do
   def application do
     [
       applications: [
-        :comeonin,
         :cowboy,
         :ecto,
         :ectograph,
@@ -25,8 +24,7 @@ defmodule KeyMaps.Mixfile do
         :logger,
         :plug,
         :plug_graphql,
-        :postgrex,
-        :slugger,
+        :postgrex
       ],
       mod: {
         KeyMaps,
@@ -47,17 +45,15 @@ defmodule KeyMaps.Mixfile do
   defp deps do
     [
       { :corsica, "~> 0.5.0" },
-      { :comeonin, "~> 2.5.2" },
       { :cowboy, "~> 1.0.4" },
       { :ecto, "~> 2.0.3" },
       { :ectograph, "~> 0.2.0" },
       { :graphql, "~> 0.3.1" },
       { :guardian, "~> 0.12.0" },
       { :httpoison, "~> 0.9.0" },
-      { :plug, "~> 1.1.6" },
+      { :plug, "~> 1.2.0-rc.0", override: true },
       { :plug_graphql, "~> 0.3.1" },
-      { :postgrex, "~> 0.11.2" },
-      { :slugger, "~> 0.1.0" }
+      { :postgrex, "~> 0.11.2" }
     ]
   end
 end

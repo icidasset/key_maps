@@ -4,7 +4,7 @@ defmodule KeyMaps.Models.Map do
   alias KeyMaps.{Repo, Models}
 
   import Ecto.Changeset
-  import Ecto.Query, only: [from: 1, from: 2]
+  import Ecto.Query, only: [from: 2]
 
 
   schema "maps" do
@@ -14,7 +14,7 @@ defmodule KeyMaps.Models.Map do
     field :settings, :map, default: %{}
 
     belongs_to :user, Models.User
-    has_many :map_items, Models.MapItem
+    has_many :map_items, Models.MapItem, on_delete: :delete_all
 
     timestamps
   end
@@ -26,17 +26,6 @@ defmodule KeyMaps.Models.Map do
     |> validate_required(~w(name attributes user_id)a)
     |> unique_constraint(:name, name: :maps_name_user_id_index)
     |> validate_length(:attributes, min: 1)
-    |> update_attributes(:attributes)
-  end
-
-
-  #
-  # {field} Attributes
-  #
-  def update_attributes(changeset, field) do
-    update_change changeset, field, fn(attributes) ->
-      Enum.map(attributes, &Slugger.slugify_downcase/1)
-    end
   end
 
 

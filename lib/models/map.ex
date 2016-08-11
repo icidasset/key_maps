@@ -26,6 +26,21 @@ defmodule KeyMaps.Models.Map do
     |> validate_required(~w(name attributes user_id)a)
     |> unique_constraint(:name, name: :maps_name_user_id_index)
     |> validate_length(:attributes, min: 1)
+    |> validate_change(:attributes, &validate_attributes/2)
+  end
+
+
+  def validate_attributes(:attributes, attributes) do
+    errors = Enum.map attributes, fn(attr) ->
+      if attr && Regex.match?(~r/^\w+$/, attr),
+        do: nil,
+      else: [attributes: "cannot contain invalid keys" <>
+                         " (only alphanumeric characters and underscores)"]
+    end
+
+    errors
+      |> Enum.reject(&(is_nil(&1)))
+      |> List.flatten
   end
 
 
@@ -49,6 +64,7 @@ defmodule KeyMaps.Models.Map do
 
 
   def create(params, args, _) do
+    args = clean_args(args)
     args = %{ user_id: params.user_id } |> Map.merge(args)
 
     # insert
@@ -60,6 +76,7 @@ defmodule KeyMaps.Models.Map do
 
 
   def update(params, args, _) do
+    args = clean_args(args)
     map_args = Map.take(args, [:id])
     map = Models.Map.get(params, map_args, nil)
 
@@ -104,6 +121,23 @@ defmodule KeyMaps.Models.Map do
   def load_map_item_into(map, item_id) do
     query = from(m in Models.MapItem, where: m.id == ^item_id)
     Repo.preload(map, map_items: query)
+  end
+
+
+  def clean_args(args) do
+    if Map.has_key?(args, :attributes) do
+      n = cond do
+        length(args.attributes) === 0 -> false
+        length(Enum.reject(args.attributes, &(is_nil(&1)))) === 0 -> false
+        true -> true
+      end
+
+      if n == false,
+        do: Map.delete(args, :attributes),
+      else: args
+    else
+      args
+    end
   end
 
 end

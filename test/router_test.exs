@@ -157,12 +157,12 @@ defmodule RouterTest do
     )
 
     # assert
-    assert error_response(conn)["message"] =~ "at least 1 item"
+    assert error_response(conn)["message"] =~ "Attributes can't be blank"
   end
 
 
   @tag :maps
-  test "maps -- create -- should have valid attributes", context do
+  test "maps -- create -- should have valid attributes (a)", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -177,7 +177,7 @@ defmodule RouterTest do
 
 
   @tag :maps
-  test "maps -- create -- should sluggify attributes", context do
+  test "maps -- create -- should have valid attributes (b)", context do
     conn = graphql_request(
       :mutation,
       :createMap,
@@ -187,9 +187,7 @@ defmodule RouterTest do
     )
 
     # assert
-    assert conn.status == 200
-    assert List.first(data_response(conn)["createMap"]["attributes"]) != "must be slugged"
-    assert List.first(data_response(conn)["createMap"]["attributes"]) == "must-be-slugged"
+    assert error_response(conn)["message"] =~ "Attributes cannot contain invalid keys"
   end
 
 

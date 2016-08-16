@@ -142,6 +142,20 @@ mutation M { updateMap(id: MAP_ID, name: "Updated name") { ... }}
 # 7. Remove a map item and a map
 mutation M { removeMapItem(id: ITEM_ID) { ... }}
 mutation M { removeMap(id: MAP_ID) { ... }}
+
+# 8. Additional operations
+# 8.1 Creating multiple map items at once
+STRING = to_urlsafe_base64(
+  to_json(
+    [
+      { item_1_key: "Value - 1" },
+      { item_2_key: "Value - 2" }
+    ]
+  )
+)
+
+mutation M { createMapItems(items: #{ STRING }) { id, attribute }}
+-> [{ id: 1 }, { id: 2 }]
 ```
 
 __Notes__  

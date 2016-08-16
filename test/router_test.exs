@@ -318,6 +318,41 @@ defmodule RouterTest do
 
 
   @tag :map_items
+  test "map items -- create multiple", context do
+    items = Base.url_encode64(
+      Poison.encode!([
+        %{ quote: "CMI - 1", author: "CMI - Author 1" },
+        %{ quote: "CMI - 2", author: "CMI - Author 2" },
+      ])
+    )
+
+    conn = do_graphql_request(
+      :mutation,
+      context.token,
+      """
+      mutation M {
+        createMapItems(
+          map: "Quotes",
+          items: "#{items}"
+        ) {
+          id,
+          attributes
+        }
+      }
+      """
+    )
+
+    # data
+    data = data_response(conn)["createMapItems"]
+
+    # assert
+    assert conn.status == 200
+    assert length(data) == 2
+    assert is_nil(Enum.at(data, 0)["id"]) == false
+  end
+
+
+  @tag :map_items
   test "map items -- all", context do
     conn = graphql_request(
       :query,

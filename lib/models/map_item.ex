@@ -90,6 +90,15 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
+  def create_multiple(params, args, _) do
+    map = do_get_map(params, args)
+
+    if map,
+      do: do_create_multiple(map, args),
+    else: do_raise_map_error()
+  end
+
+
   def update(params, args, internal) do
     map_item = get(params, args, nil)
     other_args = KeyMaps.Utils.extract_other_arguments(internal)
@@ -135,6 +144,26 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
+  defp do_create_multiple(map, %{ items: items }) do
+    items = items
+      |> Base.url_decode64!
+      |> Poison.decode!
+
+    { :ok, items } = Repo.transaction fn ->
+      Enum.map items, fn(item) ->
+        do_create(map, item)
+      end
+    end
+
+    items
+  end
+
+
+  defp do_create_multiple(map, _) do
+    raise "Missing the items argument"
+  end
+
+
   defp do_update(map_item, params, args) do
     map = do_get_map(params, %{ map_id: map_item.map_id })
 
@@ -174,7 +203,8 @@ defmodule KeyMaps.Models.MapItem do
 
   defp do_filter_attributes(args, map) do
     Enum.filter args, fn(a) ->
-      key = elem(a, 0) |> Atom.to_string
+      key = elem(a, 0)
+      key = if is_binary(key), do: key, else: Atom.to_string(key)
       Enum.member?(map.attributes, key)
     end
   end

@@ -46,12 +46,12 @@ defmodule KeyMaps.Mixfile do
     [
       { :corsica, "~> 0.5.0" },
       { :cowboy, "~> 1.0.4" },
-      { :ecto, "~> 2.0.3" },
+      { :ecto, "~> 2.0.4" },
       { :ectograph, "~> 0.2.0" },
       { :graphql, "~> 0.3.1" },
       { :guardian, "~> 0.12.0" },
       { :httpoison, "~> 0.9.0" },
-      { :plug, "~> 1.2.0-rc.0", override: true },
+      { :plug, "~> 1.2.0", override: true },
       { :plug_graphql, "~> 0.3.1" },
       { :postgrex, "~> 0.11.2" }
     ]

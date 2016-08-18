@@ -159,7 +159,7 @@ defmodule KeyMaps.Models.MapItem do
   end
 
 
-  defp do_create_multiple(map, _) do
+  defp do_create_multiple(_, _) do
     raise "Missing the items argument"
   end
 

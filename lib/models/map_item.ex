@@ -147,6 +147,7 @@ defmodule KeyMaps.Models.MapItem do
   defp do_create_multiple(map, %{ items: items }) do
     items = items
       |> Base.url_decode64!(padding: false)
+      |> URI.decode
       |> Poison.decode!
 
     { :ok, items } = Repo.transaction fn ->

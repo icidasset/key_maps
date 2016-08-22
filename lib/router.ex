@@ -23,7 +23,7 @@ defmodule KeyMaps.Router do
 
 
   def start_link do
-    port = String.to_integer(System.get_env("PORT")) || 4000
+    port = String.to_integer(System.get_env("PORT") || "4000")
     if Mix.env == :dev, do: Logger.info "Running `Key Maps` on port " <> Integer.to_string(port)
     { :ok, _ } = Plug.Adapters.Cowboy.http KeyMaps.Router, [], port: port
   end

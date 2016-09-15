@@ -10,12 +10,20 @@ defmodule KeyMaps.Router do
     pass: ["*/*"],
     json_decoder: Poison
 
-  plug Corsica,
-    allow_headers: ["accept", "authorization", "content-type", "origin"],
-    origins: [
-      ~r{^https?://localhost:\d+$},
-      ~r{^https?://keymaps.surge.sh$},
-    ]
+  # middleware - cors
+  defmodule CORS do
+    use Corsica.Router,
+      allow_headers: ["accept", "authorization", "content-type", "origin"],
+      origins: [
+        ~r{^https?://localhost:\d+$},
+        ~r{^https?://keymaps.surge.sh$},
+      ]
+
+    resource "/public/*", origins: "*"
+    resource "/*"
+  end
+
+  plug CORS
 
   # => endpoint
   plug :match

@@ -52,13 +52,7 @@ __Response body:__
 }
 
 
-POST /auth/validate
-
-__Request body:__
-
-{
-  "token": "..."
-}
+GET /auth/validate?token=...
 
 __Response body:__
 

@@ -116,7 +116,7 @@ query Q { mapItems(map: "Quotes") {
 }}
 
 # 4. Get all maps
-query Q { maps() {
+query Q { maps {
   id,
   name,
   attributes,

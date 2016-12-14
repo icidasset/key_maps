@@ -16,6 +16,7 @@ defmodule KeyMaps.Router do
       allow_headers: ["accept", "authorization", "content-type", "origin"],
       origins: [
         ~r{^https?://localhost:\d+$},
+        ~r{^https?://storage.icidasset.com$},
         ~r{^https?://keymaps.surge.sh$},
       ]
 
